@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
+import com.jakewharton.threetenabp.AndroidThreeTen
+import org.threeten.bp.LocalDate
 
 class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
@@ -15,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        AndroidThreeTen.init(this)
 
         tabLayout = findViewById(R.id.bottom_tab_layout)
 

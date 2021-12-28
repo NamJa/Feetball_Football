@@ -22,6 +22,10 @@ class FootballResponse {
                 FixtureStatus(status)
                     short - String => 경기의 상태 ( ex) PST=Match PostPoned, FT=Match Finished, NS=Not Started
 
+            League(league)
+                id - Int      (리그 ID)
+                name - String (리그 이름)
+
             Teams(teams)
                 TeamHome(home)
                     id - Int
