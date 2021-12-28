@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/fragment_pager"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_tab_layout"
         android:background="@color/black">
 
-    </androidx.viewpager.widget.ViewPager>
+    </FrameLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/bottom_tab_layout"

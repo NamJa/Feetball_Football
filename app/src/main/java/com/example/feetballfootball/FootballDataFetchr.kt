@@ -18,6 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 private const val TAG = "FootballDataFetchr"
 
 class FootballDataFetchr {
+    var leagueCodeList: MutableList<String> = mutableListOf("39", "140", "135", "78", "61", "45", "48", "528", "143", "81", "137", "66", "2", "3", "531", "848")
     private val footballApi: FootballApi
     private lateinit var footballDataRequest: Call<FootballResponse>
 

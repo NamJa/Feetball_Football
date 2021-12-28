@@ -4,8 +4,11 @@ class FootballResponse {
     lateinit var response: List<FixtureResponse>
     // json 최상위 객체 "response"를 받기 위함
 }
-/*
+/**
+ **********************************
+    API 구조
     class(json 변수 및 생성되는 변수)
+ **********************************
     FootballResponse
         FixtureResponse(response)
 
