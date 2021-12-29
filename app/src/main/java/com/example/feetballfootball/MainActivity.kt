@@ -5,7 +5,6 @@ import android.os.Bundle
 import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import com.jakewharton.threetenabp.AndroidThreeTen
-import org.threeten.bp.LocalDate
 
 class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
@@ -57,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             1 -> {
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.fragment_container, LeagueTableFragment.newInstance())
+                    .replace(R.id.fragment_container, LeaguesFragment.newInstance())
                     .addToBackStack(null)
                     .commit()
             }

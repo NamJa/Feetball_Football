@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 
-class LeagueTableFragment : Fragment() {
+class LeaguesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,11 +18,11 @@ class LeagueTableFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_league_table, container, false)
+        return inflater.inflate(R.layout.fragment_leagues, container, false)
     }
 
     companion object {
         @JvmStatic
-        fun newInstance() = LeagueTableFragment()
+        fun newInstance() = LeaguesFragment()
     }
 }
