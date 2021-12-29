@@ -51,18 +51,21 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragment_container, FixtureFragment.newInstance())
+                    .addToBackStack(null)
                     .commit()
             }
             1 -> {
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragment_container, LeagueTableFragment.newInstance())
+                    .addToBackStack(null)
                     .commit()
             }
             else -> {
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragment_container, NewsFragment.newInstance())
+                    .addToBackStack(null)
                     .commit()
             }
         }

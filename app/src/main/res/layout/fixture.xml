@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity=""
+    android:orientation="horizontal"
+    android:paddingVertical="10dp">
+
+    <TextView
+        android:id="@+id/elapsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="59'"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/team_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/score_or_time"
+        android:text="borussia dortmund"
+        android:textSize="16sp" />
+
+    <!-- 경기가 아직 시작되지 않았거나(경기 시작 시간 출력), 연기될 경우(ex: "연기") 상태 출력 -->
+    <TextView
+        android:id="@+id/score_or_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginHorizontal="20dp"
+        android:text="1-1"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/team_away"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/score_or_time"
+        android:text="Tottenham Hotspur"
+        android:textSize="16sp" />
+
+</RelativeLayout>
