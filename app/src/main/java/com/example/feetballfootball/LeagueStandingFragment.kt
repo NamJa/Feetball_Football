@@ -1,5 +1,6 @@
 package com.example.feetballfootball
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -100,7 +102,20 @@ class LeagueStandingFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: StandItemHolder, position: Int) {
-
+            data.get(position).description?.let { description ->
+                if(description.startsWith('P')){
+                    if(description.contains("Champ")) {
+                        holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.teal_200))
+                    } else if (description.contains("Europa")) {
+                        holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.indigo_500))
+                    } else {
+                        holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_300))
+                    }
+                } else {
+                    // 강등 시 색 지정
+                    holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red_600))
+                }
+            }
             holder.rank.text =      data.get(position).rank.toString()
             holder.teamName.text =  data.get(position).team.name
             holder.played.text =    data.get(position).all.played.toString()

@@ -6,5 +6,6 @@ data class Standings (
     var points: Int,
     var goalsDiff: Int,
     var form: String,
+    var description: String?,
     var all: All
 )
