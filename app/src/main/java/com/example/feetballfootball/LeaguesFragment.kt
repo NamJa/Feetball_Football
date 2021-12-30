@@ -10,11 +10,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 private const val TAG = "LeaguesFragment"
-private const val EPL = 1
-private const val LALIGA = 2
-private const val SERIEA = 3
-private const val BUNDES = 4
-private const val LIGUE1 = 5
+private const val EPL = 39
+private const val LALIGA = 140
+private const val SERIEA = 135
+private const val BUNDES = 78
+private const val LIGUE1 = 61
 
 class LeaguesFragment : Fragment() {
 

@@ -36,7 +36,7 @@ interface FootballApi {
 
     @GET("standings")
     fun fetchStands(
-        @Query("league") league: String,
-        @Query("season") season: String
+        @Query("league") league: Int,
+        @Query("season") season: Int
     ): Call<LeagueStandingsResponse>
 }

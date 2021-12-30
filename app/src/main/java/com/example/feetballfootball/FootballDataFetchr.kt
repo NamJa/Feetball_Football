@@ -1,13 +1,14 @@
 package com.example.feetballfootball
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.feetballfootball.api.FixtureResponse
 import com.example.feetballfootball.api.FootballApi
 import com.example.feetballfootball.api.FootballResponse
-import com.example.feetballfootball.api.leaguestanding.League
 import com.example.feetballfootball.api.leaguestanding.LeagueStandingsResponse
 import com.example.feetballfootball.api.leaguestanding.StandingResponse
+import com.example.feetballfootball.api.leaguestanding.Standings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,7 +28,7 @@ private const val API_KEY = "8194c946e31c7c72e64bd0d85d6734a0"
 class FootballDataFetchr {
     val leagueCodeList: List<Int> =
         mutableListOf(39, 140, 135, 78, 61, 45, 48, 528, 143, 81, 137, 66, 2, 3, 531, 848)
-    private var resultLiveData: MutableLiveData<Int> = MutableLiveData()
+    private var fixtureResultLiveData: MutableLiveData<Int> = MutableLiveData()
 
     private val footballApi: FootballApi
 
@@ -52,26 +53,6 @@ class FootballDataFetchr {
         footballApi = retrofit.create(FootballApi::class.java)
     }
 
-    fun fetchLeagueStandings(league: String, season: String) {
-        footballApi.fetchStands(league, season).enqueue(object : Callback<LeagueStandingsResponse> {
-            override fun onResponse(
-                call: Call<LeagueStandingsResponse>,
-                response: Response<LeagueStandingsResponse>
-            ) {
-                Log.d("fetchLeagueStandings", "houhouhou")
-                if (response.isSuccessful){
-                    val leagueStandingsResponse: LeagueStandingsResponse? = response.body()
-                    val standingResponse: List<StandingResponse>? = leagueStandingsResponse?.response
-                    standingResponse?.let {
-                        Log.d(FETCHSTANDING, it.get(0).league.standings.get(0).get(0).team.name)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<LeagueStandingsResponse>, t: Throwable) {
-                Log.e(FETCHSTANDING, "리그 데이터 수신 실패", t)
-            }
-        })
-    }
     // /* async 함수 */
 //    fun fetchFootballFixtures(date: String, season: Int) : MutableLiveData<Array<MutableList<FixtureResponse>?>> {
 ////        var footballDataByLeague: MutableList<List<FixtureResponse>> = mutableListOf(listOf<FixtureResponse>())
@@ -114,6 +95,7 @@ class FootballDataFetchr {
 //    }
 
     /*동기 실행 함수*/
+    /* 리그 일정 데이터(전 리그)*/
     fun fetchFootballFixturesExecute(
         date: String,
         season: Int
@@ -140,7 +122,7 @@ class FootballDataFetchr {
                                 }
                             }
                         }
-                        resultLiveData.value = 1
+                        fixtureResultLiveData.value = 1
                     }
                 } else {
                     data = response.body()?.response ?: emptyList()
@@ -151,6 +133,36 @@ class FootballDataFetchr {
     }
 
     fun getResultData(): MutableLiveData<Int> {
-        return resultLiveData
+        return fixtureResultLiveData
+    }
+
+    /* 리그 순위 데이터 parsing */
+    fun fetchLeagueStandings(league: Int, season: Int): LiveData<List<Standings>> {
+        var standingLiveData: MutableLiveData<List<Standings>> = MutableLiveData()
+
+        footballApi.fetchStands(league, season).enqueue(object : Callback<LeagueStandingsResponse> {
+            override fun onResponse(
+                call: Call<LeagueStandingsResponse>,
+                response: Response<LeagueStandingsResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val leagueStandingsResponse: LeagueStandingsResponse? = response.body()
+                    val standingResponse: List<StandingResponse>? = leagueStandingsResponse?.response
+                    standingResponse?.let {
+//                        Log.d(FETCHSTANDING, it.get(0).league.standings.get(0).get(0).team.name)
+                        //                        필수                     필수    순위
+//                        Log.d(FETCHSTANDING, it.get(0).league.name)
+                        // json 구조가 좀 이상함
+                        val res = it.get(0).league.standings.get(0)
+                        standingLiveData.value = res
+                        Log.d(FETCHSTANDING, it.get(0).league.standings.get(0).size.toString())
+                    }
+                }
+            }
+            override fun onFailure(call: Call<LeagueStandingsResponse>, t: Throwable) {
+                Log.e(FETCHSTANDING, "리그 데이터 수신 실패", t)
+            }
+        })
+        return standingLiveData
     }
 }
