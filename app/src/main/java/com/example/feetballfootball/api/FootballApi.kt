@@ -1,5 +1,6 @@
 package com.example.feetballfootball.api
 
+import com.example.feetballfootball.api.leaguestanding.LeagueStandingsResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -32,4 +33,10 @@ interface FootballApi {
         @Query("season") season: Int,
         @Query("timezone") timezone: String
     ): Call<FootballResponse>
+
+    @GET("standings")
+    fun fetchStands(
+        @Query("league") league: String,
+        @Query("season") season: String
+    ): Call<LeagueStandingsResponse>
 }

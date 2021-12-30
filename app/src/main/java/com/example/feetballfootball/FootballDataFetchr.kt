@@ -1,19 +1,27 @@
 package com.example.feetballfootball
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.feetballfootball.api.FixtureResponse
 import com.example.feetballfootball.api.FootballApi
 import com.example.feetballfootball.api.FootballResponse
+import com.example.feetballfootball.api.leaguestanding.League
+import com.example.feetballfootball.api.leaguestanding.LeagueStandingsResponse
+import com.example.feetballfootball.api.leaguestanding.StandingResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.concurrent.thread
 
 private const val TAG = "FootballDataFetchr"
+private const val FETCHSTANDING = "fetchLeagueStandings"
 private const val API_KEY = "8194c946e31c7c72e64bd0d85d6734a0"
 
 class FootballDataFetchr {
@@ -42,6 +50,27 @@ class FootballDataFetchr {
             .build()
 
         footballApi = retrofit.create(FootballApi::class.java)
+    }
+
+    fun fetchLeagueStandings(league: String, season: String) {
+        footballApi.fetchStands(league, season).enqueue(object : Callback<LeagueStandingsResponse> {
+            override fun onResponse(
+                call: Call<LeagueStandingsResponse>,
+                response: Response<LeagueStandingsResponse>
+            ) {
+                Log.d("fetchLeagueStandings", "houhouhou")
+                if (response.isSuccessful){
+                    val leagueStandingsResponse: LeagueStandingsResponse? = response.body()
+                    val standingResponse: List<StandingResponse>? = leagueStandingsResponse?.response
+                    standingResponse?.let {
+                        Log.d(FETCHSTANDING, it.get(0).league.standings.get(0).get(0).team.name)
+                    }
+                }
+            }
+            override fun onFailure(call: Call<LeagueStandingsResponse>, t: Throwable) {
+                Log.e(FETCHSTANDING, "리그 데이터 수신 실패", t)
+            }
+        })
     }
     // /* async 함수 */
 //    fun fetchFootballFixtures(date: String, season: Int) : MutableLiveData<Array<MutableList<FixtureResponse>?>> {

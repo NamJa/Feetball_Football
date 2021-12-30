@@ -2,11 +2,14 @@ package com.example.feetballfootball
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import com.jakewharton.threetenabp.AndroidThreeTen
 
-class MainActivity : AppCompatActivity() {
+private const val TAG = "MainActivity"
+
+class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks {
     private lateinit var tabLayout: TabLayout
 
     val footballDataFetchr = FootballDataFetchr()
@@ -68,5 +71,14 @@ class MainActivity : AppCompatActivity() {
                     .commit()
             }
         }
+    }
+
+    override fun onLeagueSelected(leagueId: Int) {
+        val fragment = LeagueStandingFragment.newInstance(leagueId)
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
