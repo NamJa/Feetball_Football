@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp">
+        android:layout_marginTop="20dp">
 
         <Button
             android:id="@+id/prevFixture"
@@ -24,7 +24,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:textSize="20sp"
+            android:gravity="center_vertical"
+            android:textAlignment="gravity"
+            android:textColor="@color/black"
+            android:textSize="22sp"
             android:textStyle="bold"
             tools:text="2021-12-29" />
 
@@ -34,11 +37,11 @@
             android:background="@drawable/ic_arrow_forward"
             android:textSize="18sp" />
     </LinearLayout>
-<!--    <ProgressBar-->
-<!--        android:id="@+id/progressbar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@id/date_container"/>-->
+    <!--    <ProgressBar-->
+    <!--        android:id="@+id/progressbar"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@id/date_container"/>-->
 
 
     <androidx.recyclerview.widget.RecyclerView

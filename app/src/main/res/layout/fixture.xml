@@ -26,10 +26,10 @@
         android:id="@+id/score_or_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
         android:layout_marginHorizontal="20dp"
         android:text="1-1"
+        android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold" />
 
