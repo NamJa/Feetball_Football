@@ -1,10 +1,12 @@
 package com.example.feetballfootball
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
@@ -15,22 +17,24 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.FixtureResponse
 import org.threeten.bp.LocalDate
+import org.threeten.bp.temporal.Temporal
 
 private const val TAG = "FixtureFragment"
 
 class FixtureFragment : Fragment() {
 
-    var currentDate = LocalDate.now().toString()
+    var currentDate = LocalDate.now()
 
     private lateinit var progressBar: ProgressBar
     private lateinit var fixtureDateTextView: TextView
+    private lateinit var prevButton: Button
+    private lateinit var nextButton: Button
 
     private lateinit var feetballfootballViewModel: FeetballFootballViewModel
 
     private lateinit var fixtureData: MutableLiveData<Array<MutableList<FixtureResponse>?>>
     private lateinit var fixtureDataExecute: Array<MutableList<FixtureResponse>?>
     private lateinit var resultData: MutableLiveData<Int>
-    private var fixtureFinalData: MutableList<MutableList<FixtureResponse>> = mutableListOf()
 
     private lateinit var allLeaugeFixtureRecyclerView: RecyclerView
 
@@ -46,7 +50,27 @@ class FixtureFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_fixture, container, false)
         fixtureDateTextView = view.findViewById(R.id.fixture_date)
-        fixtureDateTextView.text = currentDate
+        prevButton = view.findViewById(R.id.prev_fixture_button)
+        nextButton = view.findViewById(R.id.next_fixture_button)
+
+        fixtureDateTextView.text = currentDate.toString()
+
+
+        prevButton.setOnClickListener {
+            currentDate = currentDate.minusDays(1)
+
+            fixtureDateTextView.text = currentDate.toString()
+            fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
+            resultData = feetballfootballViewModel.resultData
+        }
+        nextButton.setOnClickListener {
+            currentDate = currentDate.plusDays(1)
+
+            fixtureDateTextView.text = currentDate.toString()
+            fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
+            resultData = feetballfootballViewModel.resultData
+        }
+
 
         //fixtureData = feetballfootballViewModel.fixtureData
         fixtureDataExecute = feetballfootballViewModel.fixtureDataExecute
@@ -72,6 +96,7 @@ class FixtureFragment : Fragment() {
         resultData.observe(
             viewLifecycleOwner,
             Observer {
+                val fixtureFinalData: MutableList<MutableList<FixtureResponse>> = mutableListOf()
                 // arrayOfNull로 처리한 함수를 여기에서 null값 없이 재처리
                 for (i in 0 until fixtureDataExecute.size) {
                     if(fixtureDataExecute[i] == null) {
@@ -85,7 +110,7 @@ class FixtureFragment : Fragment() {
         )
     }
     private fun updateUI(fixtureData: MutableList<MutableList<FixtureResponse>>) {
-        var adapter = AllFixtureRecyclerViewAdapter(fixtureData)
+        val adapter = AllFixtureRecyclerViewAdapter(fixtureData)
         allLeaugeFixtureRecyclerView.adapter = adapter
         allLeaugeFixtureRecyclerView.layoutManager = LinearLayoutManager(context)
     }
@@ -116,9 +141,9 @@ class FixtureFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: LeagueFixtureHolder, position: Int) {
-                holder.leagueTitleTextView.text = allFixtureData.get(position).get(0).league.name
-                holder.allFixturesRecyclerView.adapter = FixtureRecyclerViewAdapter(allFixtureData[position])
-                holder.allFixturesRecyclerView.layoutManager = LinearLayoutManager(context)
+            holder.leagueTitleTextView.text = allFixtureData.get(position).get(0).league.name
+            holder.allFixturesRecyclerView.adapter = FixtureRecyclerViewAdapter(allFixtureData[position])
+            holder.allFixturesRecyclerView.layoutManager = LinearLayoutManager(context)
         }
 
         override fun getItemCount(): Int {

@@ -23,7 +23,7 @@ import kotlin.concurrent.thread
 
 private const val TAG = "FootballDataFetchr"
 private const val FETCHSTANDING = "fetchLeagueStandings"
-private const val API_KEY = "8194c946e31c7c72e64bd0d85d6734a0"
+private const val API_KEY = "b4be97da4d76733e9ca2391bb8794e5c"
 
 class FootballDataFetchr {
     val leagueCodeList: List<Int> =
@@ -39,6 +39,7 @@ class FootballDataFetchr {
                 val request = original.newBuilder()
                     .header("x-rapidapi-key", API_KEY)
                     .header("x-rapidapi-host", "v3.football.api-sports.io")
+                    .header("Authorization", "Basic Og==")
                     .build()
                 return chain.proceed(request)
             }
@@ -147,20 +148,22 @@ class FootballDataFetchr {
             ) {
                 if (response.isSuccessful) {
                     val leagueStandingsResponse: LeagueStandingsResponse? = response.body()
+                    leagueStandingsResponse?.let {
+                        Log.d(FETCHSTANDING, it.response.toString())
+                    }
                     val standingResponse: List<StandingResponse>? = leagueStandingsResponse?.response
                     standingResponse?.let {
+                        Log.d(FETCHSTANDING, it.toString())
 //                        Log.d(FETCHSTANDING, it.get(0).league.standings.get(0).get(0).team.name)
                         //                        필수                     필수    순위
-//                        Log.d(FETCHSTANDING, it.get(0).league.name)
                         // json 구조가 좀 이상함
                         val res = it.get(0).league.standings.get(0)
                         standingLiveData.value = res
-                        Log.d(FETCHSTANDING, it.get(0).league.standings.get(0).size.toString())
                     }
                 }
             }
             override fun onFailure(call: Call<LeagueStandingsResponse>, t: Throwable) {
-                Log.e(FETCHSTANDING, "리그 데이터 수신 실패", t)
+                Log.e(FETCHSTANDING, "리그 순위 데이터 수신 실패", t)
             }
         })
         return standingLiveData

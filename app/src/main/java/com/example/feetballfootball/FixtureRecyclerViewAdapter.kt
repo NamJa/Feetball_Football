@@ -55,7 +55,7 @@ class FixtureRecyclerViewAdapter(var fixtureData: MutableList<FixtureResponse>):
                 holder.awayTeamTextView.text = fixtureData.get(position).teams.home.name
             }
             else -> {
-                holder.elapsedTextView.text = ""
+                holder.elapsedTextView.text = fixtureData.get(position).fixture.status.elapsed.toString()
                 holder.homeTeamTextView.text = fixtureData.get(position).teams.home.name
                 var goals = fixtureData.get(position).goals
                 holder.scoreOrTimeTextView.text = (goals.home.toString() +"-"+goals.away.toString())

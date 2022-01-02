@@ -10,16 +10,23 @@ import org.threeten.bp.Year
 
 class FeetballFootballViewModel: ViewModel() {
     var currentDate = LocalDate.now().toString()
-    var currentYear = Year.now().value
     //val fixtureData :MutableLiveData<Array<MutableList<FixtureResponse>?>>
     val fixtureDataExecute : Array<MutableList<FixtureResponse>?>
     var resultData: MutableLiveData<Int>
     private val footballDataFetchr = FootballDataFetchr()
 
+    val currentSeason = if (LocalDate.now().monthValue < 7) {
+        Year.now().minusYears(1).value
+    } else { Year.now().value }
+
     init {
         //fixtureData = footballDataFetchr.fetchFootballFixtures(currentDate, currentYear)
-        fixtureDataExecute = footballDataFetchr.fetchFootballFixturesExecute(currentDate, currentYear)
+        fixtureDataExecute = fetchFixtureData(currentDate)
         resultData = footballDataFetchr.getResultData()
+    }
+
+    fun fetchFixtureData(date: String) : Array<MutableList<FixtureResponse>?> {
+        return footballDataFetchr.fetchFootballFixturesExecute(date, currentSeason)
     }
 
 

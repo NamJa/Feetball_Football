@@ -13,7 +13,7 @@
         android:layout_marginTop="20dp">
 
         <Button
-            android:id="@+id/prevFixture"
+            android:id="@+id/prev_fixture_button"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_arrow_back"
@@ -32,6 +32,7 @@
             tools:text="2021-12-29" />
 
         <Button
+            android:id="@+id/next_fixture_button"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_arrow_forward"

@@ -2,10 +2,14 @@ package com.example.feetballfootball
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import com.jakewharton.threetenabp.AndroidThreeTen
+import org.threeten.bp.LocalDate
+import org.threeten.bp.Year
+import kotlin.reflect.typeOf
 
 private const val TAG = "MainActivity"
 
@@ -27,7 +31,6 @@ class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks {
         if (isFragmentContainerEmpty) {
             showFragment(tabPos = 0)
         }
-
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
