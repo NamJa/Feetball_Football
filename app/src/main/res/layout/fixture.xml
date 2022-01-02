@@ -11,13 +11,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="59'"
+        android:textStyle="bold"
         android:textSize="16sp" />
+
 
     <TextView
         android:id="@+id/team_home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/score_or_time"
+        android:ems="10"
+        android:layout_marginLeft="40dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="borussia dortmund"
         android:textSize="16sp" />
 
@@ -34,11 +40,16 @@
         android:textStyle="bold" />
 
     <TextView
+        android:textAlignment="textEnd"
         android:id="@+id/team_away"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/score_or_time"
+        android:ellipsize="end"
+        android:ems="14"
+        android:maxLines="1"
         android:text="Tottenham Hotspur"
+        android:layout_marginRight="20dp"
         android:textSize="16sp" />
 
 </RelativeLayout>
