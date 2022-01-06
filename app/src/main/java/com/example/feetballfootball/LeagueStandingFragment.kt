@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.leaguestanding.StandingResponse
 import com.example.feetballfootball.api.leaguestanding.Standings
+import com.example.feetballfootball.api.leaguestanding.Team
+import com.squareup.picasso.Picasso
 import org.w3c.dom.Text
 
 private const val TAG = "LeagueStandingFragment"
@@ -70,6 +73,7 @@ class LeagueStandingFragment : Fragment() {
 
         val posColor: TextView
         val rank: TextView
+        val teamLogo: ImageView
         val teamName: TextView
         val played: TextView
         val win: TextView
@@ -81,6 +85,7 @@ class LeagueStandingFragment : Fragment() {
         init {
             posColor = itemView.findViewById(R.id.pos_color_textview)
             rank = itemView.findViewById(R.id.rank_textview)
+            teamLogo = itemView.findViewById(R.id.team_logo)
             teamName = itemView.findViewById(R.id.team_name_textview)
             played = itemView.findViewById(R.id.played_textview)
             win = itemView.findViewById(R.id.win_textview)
@@ -90,8 +95,11 @@ class LeagueStandingFragment : Fragment() {
             points = itemView.findViewById(R.id.points_textview)
         }
 
-        fun bind(itemView: View) {
-
+        fun bindLogo(team: Team) {
+            Picasso.get()
+                .load(team.logo)
+                .resize(20,20)
+                .into(teamLogo)
         }
     }
 
@@ -117,6 +125,7 @@ class LeagueStandingFragment : Fragment() {
                 }
             }
             holder.rank.text =      data.get(position).rank.toString()
+            holder.bindLogo(data.get(position).team)
             holder.teamName.text =  data.get(position).team.name
             holder.played.text =    data.get(position).all.played.toString()
             holder.win.text =       data.get(position).all.win.toString()
