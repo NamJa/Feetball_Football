@@ -5,10 +5,10 @@
 
 ## Screentshots
 ### 경기 일정
-<img src="./images/fixture_0103_3.jpg" width="180" height="380"> <img src="./images/fixture_0103_1.jpg" width="180" height="380"> <img src="./images/fixture_0103_2.jpg" width="180" height="380">
+<img src="./images/fixture_0107_1.jpg" width="180" height="380"> <img src="./images/fixture_0107_2.jpg" width="180" height="380">
 
 ### 리그 순위
-<img src="https://github.com/NamJa/Feetball_Football/blob/master/images/leagues.jpg?raw=true" width="180" height="380"> <img src="https://github.com/NamJa/Feetball_Football/blob/master/images/epl_standing.jpg?raw=true" width="180" height="380"> <img src="https://github.com/NamJa/Feetball_Football/blob/master/images/laliga_standing.jpg?raw=true" width="180" height="380"> <img src="https://github.com/NamJa/Feetball_Football/blob/master/images/bundes_standing.jpg?raw=true" width="180" height="380">
+<img src="https://github.com/NamJa/Feetball_Football/blob/master/images/leagues.jpg?raw=true" width="180" height="380"> <img src="./images/standing_0107_1.jpg" width="180" height="380"> <img src="./images/standing_0107_3.jpg" width="180" height="380"> <img src="./images/standing_0107_2.jpg" width="180" height="380">
 
 ### 뉴스 소식
 <img src="https://github.com/NamJa/Feetball_Football/blob/master/images/newsFragment.jpg?raw=true" width="180" height="380">
