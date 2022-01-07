@@ -98,7 +98,7 @@ class LeagueStandingFragment : Fragment() {
         fun bindLogo(team: Team) {
             Picasso.get()
                 .load(team.logo)
-                .resize(20,20)
+                .resize(100,100)
                 .into(teamLogo)
         }
     }

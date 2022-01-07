@@ -19,7 +19,7 @@
         <TextView
             android:id="@+id/rank_textview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="1"
             android:textAlignment="center" />
@@ -33,7 +33,7 @@
         <TextView
             android:id="@+id/team_name_textview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="3.5"
             android:layout_marginLeft="10dp"
             android:text="Manchester City"
@@ -42,7 +42,7 @@
         <TextView
             android:id="@+id/played_textview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="20"
             android:textAlignment="center"
@@ -51,7 +51,7 @@
         <TextView
             android:id="@+id/win_textview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="16"
             android:textAlignment="center"
@@ -60,7 +60,7 @@
         <TextView
             android:id="@+id/draw_textview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="2"
             android:textAlignment="center"
@@ -69,7 +69,7 @@
         <TextView
             android:id="@+id/lose_textview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="2"
             android:textAlignment="center"
@@ -78,7 +78,7 @@
         <TextView
             android:id="@+id/goalDiff_textview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="39"
             android:textAlignment="center"
@@ -87,7 +87,7 @@
         <TextView
             android:id="@+id/points_textview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:gravity="right"
             android:text="50"
