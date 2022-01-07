@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="0.1"
-        android:background="@color/white"/>
+        android:background="@color/white" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -24,7 +24,6 @@
             android:text="1"
             android:textAlignment="center" />
 
-        <!--            android:layout_weight="0.33"-->
         <ImageView
             android:id="@+id/team_logo"
             android:layout_width="20dp"
@@ -34,8 +33,8 @@
             android:id="@+id/team_name_textview"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3.5"
             android:layout_marginLeft="10dp"
+            android:layout_weight="3.5"
             android:text="Manchester City"
             android:textColor="@color/black" />
 
@@ -88,11 +87,11 @@
             android:id="@+id/points_textview"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
             android:layout_weight="0.5"
             android:gravity="right"
             android:text="50"
             android:textAlignment="gravity"
-            android:layout_marginRight="2dp"
             android:textColor="@color/black" />
     </LinearLayout>
 
