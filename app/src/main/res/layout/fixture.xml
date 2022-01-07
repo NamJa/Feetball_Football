@@ -33,7 +33,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/elapsed"
-        app:layout_constraintWidth_percent="0.32" />
+        app:layout_constraintWidth_percent="0.3" />
 
     <ImageView
         android:id="@+id/team_home_logo"
@@ -81,6 +81,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/team_away_logo"
         app:layout_constraintTop_toBottomOf="@id/elapsed"
-        app:layout_constraintWidth_percent="0.32" />
+        app:layout_constraintWidth_percent="0.3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
