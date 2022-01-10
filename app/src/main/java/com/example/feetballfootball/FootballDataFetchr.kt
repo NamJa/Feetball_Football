@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.feetballfootball.api.FixtureResponse
 import com.example.feetballfootball.api.FootballApi
 import com.example.feetballfootball.api.FootballResponse
+import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
+import com.example.feetballfootball.api.fixturedetail.MatchDetailResponse
 import com.example.feetballfootball.api.leaguestanding.LeagueStandingsResponse
 import com.example.feetballfootball.api.leaguestanding.StandingResponse
 import com.example.feetballfootball.api.leaguestanding.Standings
@@ -23,6 +25,7 @@ import kotlin.concurrent.thread
 
 private const val TAG = "FootballDataFetchr"
 private const val FETCHSTANDING = "fetchLeagueStandings"
+private const val FETCHDETAILDATA = "fetchFixtureDetailData"
 private const val API_KEY = "b4be97da4d76733e9ca2391bb8794e5c"
 
 class FootballDataFetchr {
@@ -167,5 +170,30 @@ class FootballDataFetchr {
             }
         })
         return standingLiveData
+    }
+
+    /* 세부 경기 데이터 parsing */
+    fun fetchFixtureDetailData(id: Int) {
+
+        footballApi.fetchFixtureDetail(id, timezone = "Asia/Seoul").enqueue(object : Callback<MatchDetailResponse> {
+            override fun onResponse(
+                call: Call<MatchDetailResponse>,
+                response: Response<MatchDetailResponse>
+            ) {
+                if(response.isSuccessful) {
+                    val matchDetailResponse: MatchDetailResponse? = response.body()
+                    val fixtureDetailResponse: List<FixtureDetailResponse>? = matchDetailResponse?.response
+                    fixtureDetailResponse?.let {
+                        Log.d(FETCHDETAILDATA, it[0].players[0].team.name)
+                        Log.d(FETCHDETAILDATA, it[0].players[0].players[0].player.name)
+                        Log.d(FETCHDETAILDATA, it[0].players[0].players[0].statistics[0].games.rating.toString())
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<MatchDetailResponse>, t: Throwable) {
+                Log.e(FETCHDETAILDATA, "세부 경기 데이터 수신 실패", t)
+            }
+        })
     }
 }

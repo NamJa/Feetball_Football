@@ -79,6 +79,8 @@ class FixtureFragment : Fragment() {
         allLeaugeFixtureRecyclerView = view.findViewById(R.id.league_fixture_recyclerview) as RecyclerView
         allLeaugeFixtureRecyclerView.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         allLeaugeFixtureRecyclerView.layoutManager = LinearLayoutManager(context)
+
+        feetballfootballViewModel.houhou()
         return view
     }
 

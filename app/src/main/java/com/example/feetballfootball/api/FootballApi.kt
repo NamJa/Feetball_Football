@@ -1,9 +1,9 @@
 package com.example.feetballfootball.api
 
+import com.example.feetballfootball.api.fixturedetail.MatchDetailResponse
 import com.example.feetballfootball.api.leaguestanding.LeagueStandingsResponse
 import retrofit2.Call
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.Query
 
 interface FootballApi {
@@ -39,4 +39,10 @@ interface FootballApi {
         @Query("league") league: Int,
         @Query("season") season: Int
     ): Call<LeagueStandingsResponse>
+
+    @GET("fixtures")
+    fun fetchFixtureDetail(
+        @Query("id") id: Int,
+        @Query("timezone") timezone: String
+    ): Call<MatchDetailResponse>
 }
