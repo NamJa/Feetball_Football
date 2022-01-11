@@ -1,5 +1,7 @@
 package com.example.feetballfootball.api.fixturedetail
 
+import com.google.gson.annotations.SerializedName
+
 class TeamColors {
-    lateinit var player: TeamColorCode
+    @SerializedName("player") lateinit var teamColorCode: TeamColorCode
 }
