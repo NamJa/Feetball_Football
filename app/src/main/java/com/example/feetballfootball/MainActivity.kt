@@ -87,6 +87,12 @@ class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks, FixtureRecy
     }
 
     override fun onFixtureSelected(fixtureId: Int) {
-        Toast.makeText(this, "MainActivity.onFixtureSelected: $fixtureId", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, "MainActivity.onFixtureSelected: $fixtureId", Toast.LENGTH_SHORT).show()
+        val fragment = FixtureDetailFragment.newInstance(fixtureId)
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
