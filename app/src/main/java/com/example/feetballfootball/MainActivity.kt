@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -13,7 +14,7 @@ import kotlin.reflect.typeOf
 
 private const val TAG = "MainActivity"
 
-class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks {
+class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks, FixtureRecyclerViewAdapter.Callbacks {
     private lateinit var tabLayout: TabLayout
 
     val footballDataFetchr = FootballDataFetchr()
@@ -83,5 +84,9 @@ class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    override fun onFixtureSelected(fixtureId: Int) {
+        Toast.makeText(this, "MainActivity.onFixtureSelected: $fixtureId", Toast.LENGTH_SHORT).show()
     }
 }

@@ -1,5 +1,6 @@
 package com.example.feetballfootball
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -23,20 +24,19 @@ private const val TAG = "FixtureFragment"
 
 class FixtureFragment : Fragment() {
 
-    var currentDate = LocalDate.now()
-
-    private lateinit var progressBar: ProgressBar
-    private lateinit var fixtureDateTextView: TextView
-    private lateinit var prevButton: Button
-    private lateinit var nextButton: Button
-
     private lateinit var feetballfootballViewModel: FeetballFootballViewModel
 
     private lateinit var fixtureData: MutableLiveData<Array<MutableList<FixtureResponse>?>>
     private lateinit var fixtureDataExecute: Array<MutableList<FixtureResponse>?>
     private lateinit var resultData: MutableLiveData<Int>
 
+    private lateinit var progressBar: ProgressBar
+    private lateinit var fixtureDateTextView: TextView
+    private lateinit var prevButton: Button
+    private lateinit var nextButton: Button
     private lateinit var allLeaugeFixtureRecyclerView: RecyclerView
+
+    var currentDate = LocalDate.now()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,7 +144,7 @@ class FixtureFragment : Fragment() {
 
         override fun onBindViewHolder(holder: LeagueFixtureHolder, position: Int) {
             holder.leagueTitleTextView.text = allFixtureData.get(position).get(0).league.name
-            holder.allFixturesRecyclerView.adapter = FixtureRecyclerViewAdapter(allFixtureData[position])
+            holder.allFixturesRecyclerView.adapter = FixtureRecyclerViewAdapter(requireContext(), allFixtureData[position])
             holder.allFixturesRecyclerView.layoutManager = LinearLayoutManager(context)
         }
 
