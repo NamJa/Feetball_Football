@@ -47,7 +47,8 @@ FixtureFragment에서 출력할 구성하는게 제일 골치아팠는데, API �
 - [LifeCycle-Extensions](https://developer.android.com/jetpack/androidx/releases/lifecycle?hl=ko)
 - [Coroutine](https://developer.android.com/kotlin/coroutines?hl=ko)
 - [ThreeTenbp](https://www.threeten.org/threetenbp/)
-- [Picasso - 사용예정](https://square.github.io/picasso/)
+- [Picasso](https://square.github.io/picasso/)
+- [Material UI](https://material.io/)
 
 ## RoadMap
 - 경기 일정
