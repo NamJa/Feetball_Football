@@ -1,28 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".FixtureDetailFragment">
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/toolbar_height"
+                app:layout_collapseMode="pin">
+
+            </androidx.appcompat.widget.Toolbar>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/dummySpace"
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/teamNames"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_below="@id/dummySpace">
+
+                    <TextView
+                        android:id="@+id/hometeam_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:maxLines="2"
+                        tools:text="Manchester City"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/matchElapsed"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.35"
+                        tools:text="종료됨"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/awayteam_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:maxLines="2"
+                        tools:text="Borussia Mönchengladbach"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/teamNames">
+                    <TextView
+                        android:id="@+id/hometeam_scorer_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="textEnd"
+                        tools:text="A. Saint-Maximin 49' 52' 53' 55' 56'\nC. Willson 54'" />
+                    <ImageView
+                        android:id="@+id/goal_icon"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        app:tint="@color/black"
+                        android:scaleType="centerInside"
+                        android:layout_weight="0.2"
+                        android:src="@drawable/ic_league"
+                        android:visibility="invisible"/>
+                    <TextView
+                        android:id="@+id/awayteam_scorer_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        tools:text="sss\nerfdfdf\ndfdfd\ndfdfdfdf\nsdfsdfsdf\nfgfgfg\nfgfgfgfgf\nfgfgfg" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/recyclerview"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent" />-->
+        <TextView
+            android:id="@+id/fixtureID_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="fdfdfdfdfd"/>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <ImageView
+        android:id="@+id/hometeam_imageview"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_centerVertical="true"
+        android:antialias="true"
+        android:scaleType="fitXY"
+        app:layout_behavior=".behavior.BehaviorHomeTeam" />
 
     <TextView
-        android:id="@+id/IDtest_textview"
+        android:id="@+id/score_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment"
-        android:layout_centerInParent="true"/>
+        android:text="        "
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_behavior=".behavior.BehaviorScoreTextView" />
 
     <ImageView
-        android:id="@+id/homeTeam"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:scaleType="centerInside"/>
+        android:id="@+id/awayteam_imageview"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_centerVertical="true"
+        android:antialias="true"
+        android:scaleType="fitXY"
+        app:layout_behavior=".behavior.BehaviorAwayTeam" />
 
-    <ImageView
-        android:id="@+id/awayTeam"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentRight="true"
-        android:scaleType="centerInside"/>
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:background="#ffbe00"-->
+    <!--        app:layout_behavior=".behavior.BehaviorDetailInfo"-->
+    <!--        android:orientation="vertical">-->
+    <!--        <LinearLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="40dp">-->
+    <!--            <TextView-->
+    <!--                android:id="@+id/homeTeamName"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:text="Manchester City"-->
+    <!--                android:textAlignment="center"-->
+    <!--                android:maxLines="2"-->
+    <!--                android:textColor="@color/black"-->
+    <!--                android:textStyle="bold"-->
+    <!--                android:layout_weight="1"/>-->
+    <!--            <TextView-->
+    <!--                android:id="@+id/matchElapsed"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:text="종료됨"-->
+    <!--                android:textColor="@color/black"-->
+    <!--                android:textAlignment="center"-->
+    <!--                android:textStyle="bold"-->
+    <!--                android:layout_weight="1.35"/>-->
+    <!--            <TextView-->
+    <!--                android:id="@+id/awayTeamName"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:text="Borussia Mönchengladbach"-->
+    <!--                android:textColor="@color/black"-->
+    <!--                android:textAlignment="center"-->
+    <!--                android:textStyle="bold"-->
+    <!--                android:maxLines="2"-->
+    <!--                android:layout_weight="1"/>-->
+    <!--        </LinearLayout>-->
+    <!--    </LinearLayout>-->
 
-</RelativeLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
