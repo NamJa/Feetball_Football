@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.Fixture
 import com.example.feetballfootball.api.FixtureResponse
 import com.example.feetballfootball.api.Teams
+import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 
 class FixtureRecyclerViewAdapter(var context: Context, var fixtureData: MutableList<FixtureResponse>): RecyclerView.Adapter<FixtureRecyclerViewAdapter.DataViewHolder>() {
@@ -52,11 +53,9 @@ class FixtureRecyclerViewAdapter(var context: Context, var fixtureData: MutableL
         fun bindLogo(teams: Teams) {
             Picasso.get()
                 .load(teams.home.logoUrl)
-                .resize(100,100)
                 .into(homeTeamLogo)
             Picasso.get()
                 .load(teams.away.logoUrl)
-                .resize(100,100)
                 .into(awayTeamLogo)
         }
         fun bind(fixture: Fixture) {
@@ -64,7 +63,11 @@ class FixtureRecyclerViewAdapter(var context: Context, var fixtureData: MutableL
         }
 
         override fun onClick(p0: View?) {
-            callbacks.onFixtureSelected(fixture.id)
+            if(fixture.status.short == "PST" || fixture.status.short == "NS" || fixture.status.short == "CANC") {
+                Toast.makeText(context, R.string.toast_message_match_is_not_started, Toast.LENGTH_SHORT).show()
+            } else {
+                callbacks.onFixtureSelected(fixture.id)
+            }
         }
     }
 

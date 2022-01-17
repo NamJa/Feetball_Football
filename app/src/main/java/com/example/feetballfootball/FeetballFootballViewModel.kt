@@ -29,8 +29,4 @@ class FeetballFootballViewModel: ViewModel() {
         return footballDataFetchr.fetchFootballFixturesExecute(date, currentSeason)
     }
 
-    fun houhou() {
-        footballDataFetchr.fetchFixtureDetailData(id=710763)
-    }
-
 }

@@ -173,7 +173,8 @@ class FootballDataFetchr {
     }
 
     /* 세부 경기 데이터 parsing */
-    fun fetchFixtureDetailData(id: Int) {
+    fun fetchFixtureDetailData(id: Int): LiveData<List<FixtureDetailResponse>> {
+        val fixtureDetailLiveData: MutableLiveData<List<FixtureDetailResponse>> = MutableLiveData()
 
         footballApi.fetchFixtureDetail(id, timezone = "Asia/Seoul").enqueue(object : Callback<MatchDetailResponse> {
             override fun onResponse(
@@ -184,9 +185,11 @@ class FootballDataFetchr {
                     val matchDetailResponse: MatchDetailResponse? = response.body()
                     val fixtureDetailResponse: List<FixtureDetailResponse>? = matchDetailResponse?.response
                     fixtureDetailResponse?.let {
-                        Log.d(FETCHDETAILDATA, it[0].players[0].team.name)
-                        Log.d(FETCHDETAILDATA, it[0].players[0].players[0].player.name)
-                        Log.d(FETCHDETAILDATA, it[0].players[0].players[0].statistics[0].games.rating.toString())
+//                        Log.d(FETCHDETAILDATA, it[0].players[0].team.name)
+//                        Log.d(FETCHDETAILDATA, it[0].players[0].players[0].player.name)
+//                        Log.d(FETCHDETAILDATA, it[0].players[0].players[0].statistics[0].games.rating.toString())
+                        // 경기가 연기된 경우에는 위의 로깅 구문이 null값으로 들어온다.
+                        fixtureDetailLiveData.value = it
                     }
                 }
             }
@@ -195,5 +198,6 @@ class FootballDataFetchr {
                 Log.e(FETCHDETAILDATA, "세부 경기 데이터 수신 실패", t)
             }
         })
+        return fixtureDetailLiveData
     }
 }

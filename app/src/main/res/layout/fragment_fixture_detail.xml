@@ -12,4 +12,17 @@
         android:text="@string/hello_blank_fragment"
         android:layout_centerInParent="true"/>
 
+    <ImageView
+        android:id="@+id/homeTeam"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerInside"/>
+
+    <ImageView
+        android:id="@+id/awayTeam"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentRight="true"
+        android:scaleType="centerInside"/>
+
 </RelativeLayout>
