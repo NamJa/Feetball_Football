@@ -50,20 +50,20 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:maxLines="2"
-                        tools:text="Manchester City"
                         android:textAlignment="center"
                         android:textColor="@color/black"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="Manchester City" />
 
                     <TextView
                         android:id="@+id/matchElapsed"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1.35"
-                        tools:text="종료됨"
                         android:textAlignment="center"
                         android:textColor="@color/black"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="종료됨" />
 
                     <TextView
                         android:id="@+id/awayteam_textview"
@@ -71,10 +71,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:maxLines="2"
-                        tools:text="Borussia Mönchengladbach"
                         android:textAlignment="center"
                         android:textColor="@color/black"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="Borussia Mönchengladbach" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -111,7 +111,6 @@
             </RelativeLayout>
 
 
-
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -122,6 +121,7 @@
         android:fillViewport="true"
         android:scrollbars="none"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -146,54 +146,60 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="10dp"
-                    android:background="@drawable/drawable_line"
                     android:layout_gravity="center"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_line" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="요약"
-                    android:textSize="15sp"
-                    android:textColor="@color/black"
-
-                    android:textAlignment="center"
                     android:layout_weight="1"
-                    />
+                    android:text="요약"
+                    android:textAlignment="center"
+
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="10dp"
-                    android:background="@drawable/drawable_line"
                     android:layout_gravity="center"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_line" />
             </LinearLayout>
             <!--      요약 내용      -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <View
                     android:id="@+id/split_ball_possession"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_centerHorizontal="true"/>
+                    android:layout_centerHorizontal="true" />
+
                 <TextView
                     android:id="@+id/ball_possession_string"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="점유율"
-                    android:layout_marginTop="15dp"
-                    android:textSize="12sp"
                     android:layout_centerHorizontal="true"
-                    android:textColor="@color/black"/>
+                    android:layout_marginTop="15dp"
+                    android:text="점유율"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
                 <ProgressBar
                     android:id="@+id/ball_possession_progressbar"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="9dp"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_below="@id/ball_possession_string"
-                    android:layout_centerHorizontal="true"/>
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="9dp" />
 
                 <TextView
                     android:id="@+id/home_ball_possession"
@@ -202,12 +208,13 @@
                     android:layout_below="@id/ball_possession_string"
                     android:layout_alignEnd="@id/split_ball_possession"
                     android:layout_alignParentStart="true"
+                    android:layout_marginTop="15dp"
                     android:fontFamily="sans-serif-black"
                     android:textAlignment="center"
-                    android:textSize="30sp"
-                    tools:text="31%"
                     android:textColor="@color/black"
-                    />
+                    android:textSize="30sp"
+                    tools:text="31%" />
+
                 <TextView
                     android:id="@+id/away_ball_possession"
                     android:layout_width="0dp"
@@ -215,39 +222,42 @@
                     android:layout_below="@id/ball_possession_string"
                     android:layout_alignStart="@id/split_ball_possession"
                     android:layout_alignParentEnd="true"
+                    android:layout_marginTop="15dp"
                     android:fontFamily="sans-serif-black"
                     android:textAlignment="center"
-                    android:textSize="30sp"
-                    tools:text="69%"
                     android:textColor="@color/black"
-                    />
+                    android:textSize="30sp"
+                    tools:text="69%" />
+
             </RelativeLayout>
             <!--   슈팅   -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="10dp"
-                    android:background="@drawable/drawable_line"
                     android:layout_gravity="center"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_line" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="슈팅"
-                    android:textSize="15sp"
-                    android:textColor="@color/black"
-
-                    android:textAlignment="center"
                     android:layout_weight="1"
-                    />
+                    android:text="슈팅"
+                    android:textAlignment="center"
+
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="10dp"
-                    android:background="@drawable/drawable_line"
                     android:layout_gravity="center"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_line" />
             </LinearLayout>
             <!--   슈팅(공격) 통계   -->
             <LinearLayout
@@ -286,10 +296,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:background="@color/black"
-                        tools:text="5"
                         android:textColor="@color/white"
                         android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="5" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -375,11 +385,11 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
                                     android:layout_centerHorizontal="true"
                                     android:text="유효 슈팅"
                                     android:textColor="@color/white"
                                     android:textSize="15sp"
-                                    android:layout_centerInParent="true"
                                     android:textStyle="bold" />
 
                                 <TextView
@@ -408,19 +418,18 @@
                 </LinearLayout>
 
 
-
-
             </LinearLayout>
 
             <!--      패스 통계      -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <View
                     android:id="@+id/split_pass"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_centerHorizontal="true"/>
+                    android:layout_centerHorizontal="true" />
 
                 <TextView
                     android:id="@+id/pass_accur_string_1"
@@ -429,41 +438,43 @@
                     android:layout_centerHorizontal="true"
                     android:text="패스 성공률"
                     android:textColor="@color/black" />
+
                 <TextView
                     android:id="@+id/pass_accur_string_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="패스 성공 / 전체"
-                    android:layout_centerHorizontal="true"
-                    android:textSize="11sp"
                     android:layout_below="@id/pass_accur_string_1"
-                    />
+                    android:layout_centerHorizontal="true"
+                    android:text="패스 성공 / 전체"
+                    android:textSize="11sp" />
+
                 <TextView
                     android:id="@+id/home_accuracy"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    tools:text="69%"
                     android:layout_below="@id/pass_accur_string_2"
-                    android:layout_marginTop="10dp"
-                    android:textSize="30sp"
-                    android:fontFamily="sans-serif-black"
-                    android:layout_alignParentStart="true"
                     android:layout_alignEnd="@id/split_pass"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="sans-serif-black"
                     android:textAlignment="center"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:textSize="30sp"
+                    tools:text="69%" />
+
                 <TextView
                     android:id="@+id/away_accuracy"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    tools:text="88%"
                     android:layout_below="@id/pass_accur_string_2"
-                    android:textSize="30sp"
-                    android:fontFamily="sans-serif-black"
+                    android:layout_alignStart="@id/split_pass"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="10dp"
-                    android:layout_alignStart="@id/split_pass"
+                    android:fontFamily="sans-serif-black"
                     android:textAlignment="center"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:textSize="30sp"
+                    tools:text="88%" />
 
                 <TextView
                     android:id="@+id/home_pass_accur_by_total"
@@ -476,6 +487,7 @@
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     tools:text="233 / 340" />
+
                 <TextView
                     android:id="@+id/away_pass_accur_by_total"
                     android:layout_width="0dp"
@@ -489,7 +501,6 @@
                     tools:text="666 / 757" />
 
             </RelativeLayout>
-
 
 
         </LinearLayout>
