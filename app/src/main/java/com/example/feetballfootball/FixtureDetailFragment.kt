@@ -58,6 +58,7 @@ class FixtureDetailFragment : Fragment() {
 
                 // appbarUpdateUI() 함수로 들어가야 할 내용들
                 // index 0: home, index 1: away
+                /* APP BAR LAYOUT -- START --*/
                 val HomeAwayTeamIDList: MutableList<Int> = mutableListOf()
 
                 var homeTeamScorer = mutableMapOf<String, MutableList<String>>()
@@ -101,6 +102,10 @@ class FixtureDetailFragment : Fragment() {
 
                 homeTeamScorerTextView.text = WriteWhoScoredOnTextView(homeTeamScorer)
                 awayTeamScorerTextView.text = WriteWhoScoredOnTextView(awayTeamScorer)
+                /* APP BAR LAYOUT -- END --*/
+
+                /* STATISTICS */
+
             }
         )
         return view

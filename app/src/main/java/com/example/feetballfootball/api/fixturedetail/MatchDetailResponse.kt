@@ -137,5 +137,5 @@ class MatchDetailResponse {
  *                              minutes - Int?      (출전시간: 경기에 출전하지 않으면 null값이 됨)
  *                              number - Int        (선수 등 번호)
  *                              rating - String?    (경기 평점: 뛰지 않았다면 null값이 됨)
-
+ *
  * */

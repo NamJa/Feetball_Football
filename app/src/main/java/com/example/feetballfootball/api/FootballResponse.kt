@@ -40,3 +40,16 @@ class FootballResponse {
                 home - Int
                 away - Int
 * */
+/**
+ * ***************  League  ******************
+ * 39: EPL, 140: LA LIGA,
+ * 135: SERIE A, 78: BUNDESLIGA,
+ * 61: LIGUE 1,
+ * ****************  Cup  ********************
+ * 45: FA CUP, 48: League CUP,
+ * 528: Community Shield, 143: Copa del Rey,
+ * 81: DFB Pokal, 137: Coppa Italia,
+ * 66: Couppe de France,
+ * **********  UEFA LEAGUE & CUP  ************
+ * 2: UEFA Champions League, 3: UEFA Europa League, 531: Super Cup, 848: UEFA Europa Conference League
+* */
