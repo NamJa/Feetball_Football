@@ -1,19 +1,30 @@
 package com.example.feetballfootball
 
+import android.content.res.ColorStateList
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.Dimension
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
 import com.google.android.material.appbar.AppBarLayout
 import com.squareup.picasso.Picasso
+import org.apache.http.conn.scheme.LayeredSocketFactory
 
 private const val TAG = "FixtureDetailFragment"
 private const val ARG_FIXTURE_ID = "fixture_id"
@@ -23,7 +34,7 @@ class FixtureDetailFragment : Fragment() {
 
     private lateinit var fixtureDetailViewModel: FixtureDetailViewModel
     private lateinit var fixtureDetailLiveData: LiveData<List<FixtureDetailResponse>>
-
+    /*************** Appbar Layout *******************/
     private lateinit var homeTeamTextView: TextView
     private lateinit var awayTeamTextView: TextView
     private lateinit var matchScoreTextView: TextView
@@ -34,6 +45,27 @@ class FixtureDetailFragment : Fragment() {
     private lateinit var awayTeamImageView: ImageView
     private lateinit var goalIcon: ImageView
     private lateinit var appBarLayout: AppBarLayout
+    /*************** Statistics *******************/
+    private lateinit var homeBallPossession: TextView
+    private lateinit var awayBallPossession: TextView
+    private lateinit var homeTotalShooting: TextView
+    private lateinit var awayTotalShooting: TextView
+    private lateinit var homeCornerKicks: TextView
+    private lateinit var awayCornerKicks: TextView
+    private lateinit var homeShotOff: TextView
+    private lateinit var awayShotOff: TextView
+    private lateinit var homeShotOn: TextView
+    private lateinit var awayShotOn: TextView
+    private lateinit var homeAccuracy: TextView
+    private lateinit var awayAccuracy: TextView
+    private lateinit var homePass: TextView
+    private lateinit var awayPass: TextView
+
+    private lateinit var ballPossessionProgressBar: ProgressBar
+    private lateinit var totalshootingProgressBar: ProgressBar
+    private lateinit var cornerkickProgressBar: ProgressBar
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +90,7 @@ class FixtureDetailFragment : Fragment() {
 
                 // appbarUpdateUI() 함수로 들어가야 할 내용들
                 // index 0: home, index 1: away
-                /* APP BAR LAYOUT -- START --*/
+                /** APP BAR LAYOUT -- START -- **/
                 val HomeAwayTeamIDList: MutableList<Int> = mutableListOf()
 
                 var homeTeamScorer = mutableMapOf<String, MutableList<String>>()
@@ -102,9 +134,11 @@ class FixtureDetailFragment : Fragment() {
 
                 homeTeamScorerTextView.text = WriteWhoScoredOnTextView(homeTeamScorer)
                 awayTeamScorerTextView.text = WriteWhoScoredOnTextView(awayTeamScorer)
-                /* APP BAR LAYOUT -- END --*/
+                /** APP BAR LAYOUT -- END -- **/
 
-                /* STATISTICS */
+                /** STATISTICS -- START -- **/
+
+
 
             }
         )
@@ -113,17 +147,36 @@ class FixtureDetailFragment : Fragment() {
 
 
     fun initView(view: View) {
+        /*************** Appbar Layout *******************/
         homeTeamTextView = view.findViewById(R.id.hometeam_textview)
         awayTeamTextView = view.findViewById(R.id.awayteam_textview)
         matchScoreTextView = view.findViewById(R.id.score_textview)
         matchStatusTextView = view.findViewById(R.id.matchElapsed)
         homeTeamScorerTextView = view.findViewById(R.id.hometeam_scorer_textview)
         awayTeamScorerTextView = view.findViewById(R.id.awayteam_scorer_textview)
-
         homeTeamImageView = view.findViewById(R.id.hometeam_imageview)
         awayTeamImageView = view.findViewById(R.id.awayteam_imageview)
         goalIcon = view.findViewById(R.id.goal_icon)
         appBarLayout = view.findViewById(R.id.appBarLayout)
+        /*************** Statistics *******************/
+        homeBallPossession = view.findViewById(R.id.home_ball_possession)
+        awayBallPossession = view.findViewById(R.id.away_ball_possession)
+        homeTotalShooting = view.findViewById(R.id.home_total_shooting)
+        awayTotalShooting = view.findViewById(R.id.away_total_shooting)
+        homeCornerKicks = view.findViewById(R.id.home_cornerkicks)
+        awayCornerKicks = view.findViewById(R.id.away_cornerkicks)
+        homeShotOff = view.findViewById(R.id.home_shotoff)
+        awayShotOff = view.findViewById(R.id.away_shotoff)
+        homeShotOn = view.findViewById(R.id.home_shoton)
+        awayShotOn = view.findViewById(R.id.away_shoton)
+        homeAccuracy = view.findViewById(R.id.home_accuracy)
+        awayAccuracy = view.findViewById(R.id.away_accuracy)
+        homePass = view.findViewById(R.id.home_pass_accur_by_total)
+        awayPass = view.findViewById(R.id.away_pass_accur_by_total)
+        ballPossessionProgressBar = view.findViewById(R.id.ball_possession_progressbar)
+        totalshootingProgressBar = view.findViewById(R.id.total_shooting_progressbar)
+        cornerkickProgressBar = view.findViewById(R.id.cornerkicks_progressbar)
+
     }
 
     fun WhoScoredByTeam(
@@ -153,6 +206,38 @@ class FixtureDetailFragment : Fragment() {
             scorer += "\n"
         }
         return scorer
+    }
+
+    fun setChangeProgressbarColor(progressBar: ProgressBar, homeTeamColor: String, awayTeamColor: String) {
+        val progressBarDrawable = progressBar.progressDrawable as LayerDrawable
+        val backgroundDrawable = progressBarDrawable.getDrawable(0) // 배경 progressbar
+        val progressDrawable = progressBarDrawable.getDrawable(1)   // 진행된 progressbar
+
+        if (progressBar.id != R.id.ball_possession_progressbar) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // API 29+
+                backgroundDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(awayTeamColor), BlendMode.SRC_ATOP)
+            } else {
+                backgroundDrawable.setColorFilter(Color.parseColor(awayTeamColor), PorterDuff.Mode.SRC_IN)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                progressDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(homeTeamColor), BlendMode.SRC_ATOP)
+            } else {
+                progressDrawable.setColorFilter(Color.parseColor(homeTeamColor), PorterDuff.Mode.SRC_IN)
+            }
+        } else  { // 볼 점유율 Progressbar 작업
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // API 29+
+                backgroundDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(homeTeamColor), BlendMode.SRC_ATOP)
+            } else {
+                backgroundDrawable.setColorFilter(Color.parseColor(homeTeamColor), PorterDuff.Mode.SRC_IN)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                progressDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(awayTeamColor), BlendMode.SRC_ATOP)
+            } else {
+                progressBarDrawable.setColorFilter(Color.parseColor(awayTeamColor), PorterDuff.Mode.SRC_IN)
+            }
+        }
     }
 
 

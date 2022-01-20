@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--  progressbar의 background 부분을 설정한다. -->
+    <item android:id="@android:id/background">
+        <shape
+            android:innerRadiusRatio="3.71"
+            android:thicknessRatio="5.5"
+            android:shape="ring"
+            android:useLevel="false"
+            android:type="sweep">
+            <solid android:color="@color/purple_500"/>
+        </shape>
+    </item>
+
+    <item android:id="@android:id/progress">
+        <rotate
+            android:fromDegrees="270"
+            android:toDegrees="270">
+            <shape
+                android:innerRadiusRatio="3.71"
+                android:thicknessRatio="5.5"
+                android:shape="ring"
+                android:angle="0"
+                android:type="sweep">
+                <solid android:color="@color/red_orange_500" />
+            </shape>
+        </rotate>
+    </item>
+</layer-list>

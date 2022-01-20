@@ -132,10 +132,10 @@
 
             <!--                                         공격|
             유효 슈팅, 난사, 총 슈팅, 막힌 슛, 박스 내 슛, 박스 밖 슛,
-                                  요약 칸|
-             파울, 코너킥, 오프사이드, 점유율,
-                           반칙|
-             옐로 카드, 레드 카드,
+                             요약 칸|
+             코너킥, 오프사이드, 점유율,
+                                반칙|
+             파울, 옐로 카드, 레드 카드,
                필요 X|
              키퍼 선방,
                                       패스|
@@ -187,7 +187,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     android:text="점유율"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
@@ -195,11 +195,14 @@
                 <ProgressBar
                     android:id="@+id/ball_possession_progressbar"
                     style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_below="@id/ball_possession_string"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="9dp" />
+                    android:layout_marginTop="9dp"
+                    android:indeterminate="false"
+                    android:progress="40"
+                    android:progressDrawable="@drawable/circle_progressbar" />
 
                 <TextView
                     android:id="@+id/home_ball_possession"
@@ -210,7 +213,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_marginTop="15dp"
                     android:fontFamily="sans-serif-black"
-                    android:textAlignment="center"
+                    android:paddingLeft="40dp"
                     android:textColor="@color/black"
                     android:textSize="30sp"
                     tools:text="31%" />
@@ -224,16 +227,124 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="15dp"
                     android:fontFamily="sans-serif-black"
-                    android:textAlignment="center"
+                    android:paddingRight="40dp"
+                    android:textAlignment="textEnd"
                     android:textColor="@color/black"
                     android:textSize="30sp"
                     tools:text="69%" />
+
+                <LinearLayout
+                    android:id="@+id/total_shooting_linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ball_possession_progressbar"
+                    android:layout_marginTop="10dp"
+                    android:paddingHorizontal="40dp">
+
+                    <TextView
+                        android:id="@+id/home_total_shooting"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="7"
+                        android:textColor="@color/black"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="총 슈팅"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/away_total_shooting"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="14"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/black"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/total_shooting_progressbar"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:layout_below="@id/total_shooting_linearLayout"
+                    android:indeterminate="false"
+                    android:paddingHorizontal="40dp"
+                    android:progress="30"
+                    android:progressDrawable="@drawable/horizon_progressbar" />
+
+                <LinearLayout
+                    android:id="@+id/cornerkicks_linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/total_shooting_progressbar"
+                    android:layout_marginTop="10dp"
+                    android:paddingHorizontal="40dp">
+
+                    <TextView
+                        android:id="@+id/home_cornerkicks"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="4"
+                        android:textColor="@color/black"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="코너킥"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/away_cornerkicks"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="6"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/black"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/cornerkicks_progressbar"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:layout_below="@id/cornerkicks_linearLayout"
+                    android:indeterminate="false"
+                    android:paddingHorizontal="40dp"
+                    android:progress="40"
+                    android:progressDrawable="@drawable/horizon_progressbar" />
+
+
 
             </RelativeLayout>
             <!--   슈팅   -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
 
                 <View
                     android:layout_width="0dp"

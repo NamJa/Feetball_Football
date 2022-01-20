@@ -14,4 +14,8 @@
     <color name="indigo_600">#3949AB</color>
     <color name="green_300">#81C784</color>
     <color name="red_600">#E53935</color>
+
+    <color name="seek_bar_background">#ababab</color>
+    <color name="seek_bar_progress">#ffb600</color>
+    <color name="seek_bar_secondary_progress">#3399CC</color>
 </resources>
