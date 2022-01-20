@@ -247,7 +247,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="sans-serif-black"
-                        android:text="7"
+                        tools:text="7"
                         android:textColor="@color/black"
                         android:textSize="17sp"
                         android:textStyle="bold" />
@@ -268,7 +268,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="sans-serif-black"
-                        android:text="14"
+                        tools:text="14"
                         android:textAlignment="textEnd"
                         android:textColor="@color/black"
                         android:textSize="17sp" />
@@ -299,10 +299,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="sans-serif-black"
-                        android:text="4"
                         android:textColor="@color/black"
                         android:textSize="17sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="4" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -320,10 +320,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="sans-serif-black"
-                        android:text="6"
                         android:textAlignment="textEnd"
                         android:textColor="@color/black"
-                        android:textSize="17sp" />
+                        android:textSize="17sp"
+                        tools:text="6" />
                 </LinearLayout>
 
                 <ProgressBar
@@ -374,12 +374,93 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="25dp">
-
+                android:orientation="vertical">
+                <!--   슈팅 정확도   -->
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="40dp">
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:id="@+id/split_shooting"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_centerHorizontal="true" />
+
+                    <TextView
+                        android:id="@+id/shoot_accur_string_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="슈팅 정확도"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/shoot_accur_string_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/shoot_accur_string_1"
+                        android:layout_centerHorizontal="true"
+                        android:text="패스 성공 / 전체"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/home_shot_accuracy"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/shoot_accur_string_2"
+                        android:layout_alignEnd="@id/split_shooting"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="sans-serif-black"
+                        tools:text="29%"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="30sp" />
+
+                    <TextView
+                        android:id="@+id/away_shot_accuracy"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/shoot_accur_string_2"
+                        android:layout_alignStart="@id/split_shooting"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="sans-serif-black"
+                        tools:text="43%"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="30sp" />
+
+                    <TextView
+                        android:id="@+id/home_shots_accur_by_total"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/away_shot_accuracy"
+                        android:layout_alignEnd="@id/split_shooting"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginTop="10dp"
+                        tools:text="233 / 340"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/away_shots_accur_by_total"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/away_shot_accuracy"
+                        android:layout_alignStart="@id/split_shooting"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="10dp"
+                        tools:text="666 / 757"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+                </RelativeLayout>
+                <!--   골 포스트 ui 상단   -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginHorizontal="25dp">
 
                     <View
                         android:id="@+id/split_shotoff"
@@ -388,25 +469,28 @@
                         android:layout_centerHorizontal="true" />
 
                     <LinearLayout
+                        android:id="@+id/home_goalpost_shotoff_1"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_alignEnd="@id/split_shotoff"
                         android:layout_alignParentStart="true"
-                        android:background="@color/black" />
+                        android:orientation="horizontal"
+                        tools:background="@color/black" />
 
                     <LinearLayout
+                        android:id="@+id/away_goalpost_shotoff_1"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_alignStart="@id/split_shotoff"
                         android:layout_alignParentEnd="true"
-                        android:background="#393939" />
+                        tools:background="#393939"
+                        android:orientation="horizontal" />
 
                     <TextView
                         android:id="@+id/home_shotoff"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:background="@color/black"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -425,25 +509,27 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_marginEnd="20dp"
-                        android:background="#393939"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         tools:text="5" />
                 </RelativeLayout>
-
+                <!--   골 포스트 ui 하단   -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="90dp"
+                    android:layout_marginHorizontal="25dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/home_shotoff">
 
                     <LinearLayout
+                        android:id="@+id/home_goalpost_shotoff_2"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@color/black" />
+                        tools:background="@color/black"
+                        android:orientation="horizontal" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -463,18 +549,22 @@
                                 android:layout_centerHorizontal="true" />
 
                             <LinearLayout
+                                android:id="@+id/home_goalpost_shoton"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_alignEnd="@id/split"
                                 android:layout_alignParentStart="true"
-                                android:background="@color/black" />
+                                tools:background="@color/black"
+                                android:orientation="horizontal" />
 
                             <LinearLayout
+                                android:id="@+id/away_goalpost_shoton"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_alignStart="@id/split"
                                 android:layout_alignParentEnd="true"
-                                android:background="#393939" />
+                                tools:background="#393939"
+                                android:orientation="horizontal" />
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -520,19 +610,122 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/away_goalpost_shotoff_2"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="#393939" />
+                        tools:background="#393939"
+                        android:orientation="horizontal" />
 
 
                 </LinearLayout>
 
+                <!--  막힌 슈팅 출력  -->
+                <LinearLayout
+                    android:id="@+id/blocked_shots_linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/total_shooting_progressbar"
+                    android:layout_marginTop="10dp"
+                    android:paddingHorizontal="40dp">
+
+                    <TextView
+                        android:id="@+id/home_blocked_shots"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="@color/black"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        tools:text="1" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="막힌 슈팅"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/away_blocked_shots"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/black"
+                        android:textSize="17sp"
+                        tools:text="2" />
+                </LinearLayout>
+                <ProgressBar
+                    android:id="@+id/blocked_shots_progressbar"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:indeterminate="false"
+                    android:paddingHorizontal="40dp"
+                    android:progress="40"
+                    android:progressDrawable="@drawable/horizon_progressbar" />
+
+                <!--  오프사이드 출력  -->
+                <LinearLayout
+                    android:id="@+id/offside"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:paddingHorizontal="40dp">
+
+                    <TextView
+                        android:id="@+id/home_offside"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="@color/black"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        tools:text="1" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="오프사이드"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/away_offside"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/black"
+                        android:textSize="17sp"
+                        tools:text="2" />
+                </LinearLayout>
+                <ProgressBar
+                    android:id="@+id/offside_progressbar"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:indeterminate="false"
+                    android:paddingHorizontal="40dp"
+                    android:progress="40"
+                    android:progressDrawable="@drawable/horizon_progressbar" />
 
             </LinearLayout>
 
             <!--      패스 통계      -->
             <RelativeLayout
+                android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

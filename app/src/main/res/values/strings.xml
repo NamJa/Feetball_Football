@@ -3,4 +3,7 @@
 
     <string name="toast_message_match_is_not_started">경기가 시작되지 않았습니다.</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="accurpass_by_total">%1$s / %2$s</string>
+    <string name="accurshot_by_total">%1$s / %2$s</string>
+    <string name="accurshot_percent">%1$s\u0025</string>
 </resources>
