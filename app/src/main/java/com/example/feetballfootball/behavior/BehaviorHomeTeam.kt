@@ -41,7 +41,7 @@ class BehaviorHomeTeam(private var context: Context, attrs: AttributeSet) :
             child.scaleX = 0.45f
             child.scaleY = 0.45f
         }
-        Log.d("yasyasyas", (dependency.height+dependency.y).toString())
+//        Log.d("yasyasyas", (dependency.height+dependency.y).toString())
         val marginLeft = (dependency.width / 2)/8.toFloat()
         child.x = marginLeft-(dependency.y*0.2f)
         return false

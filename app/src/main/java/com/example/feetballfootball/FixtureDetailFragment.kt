@@ -12,17 +12,20 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.Dimension
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
 import com.google.android.material.appbar.AppBarLayout
 import com.squareup.picasso.Picasso
+import kotlin.math.abs
 
 private const val TAG = "FixtureDetailFragment"
 private const val ARG_FIXTURE_ID = "fixture_id"
@@ -42,7 +45,16 @@ class FixtureDetailFragment : Fragment() {
     private lateinit var homeTeamImageView: ImageView
     private lateinit var awayTeamImageView: ImageView
     private lateinit var goalIcon: ImageView
+    private lateinit var toolbar: Toolbar
     private lateinit var appBarLayout: AppBarLayout
+
+    private val fadeIn by lazy {
+        AnimationUtils.loadAnimation(context, R.anim.fade_in)
+    }
+    private val fadeOut by lazy {
+        AnimationUtils.loadAnimation(context, R.anim.fade_out)
+    }
+
     /*************** Statistics *******************/
     private lateinit var homeBallPossession: TextView
     private lateinit var awayBallPossession: TextView
@@ -86,7 +98,7 @@ class FixtureDetailFragment : Fragment() {
     private  var awayGoalPost: MutableList<LinearLayout> = mutableListOf()
 
 
-
+    private var getAppBarYMax = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +114,7 @@ class FixtureDetailFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_fixture_detail, container, false)
 
         initView(view)
+        initAppbarLayoutAnimation()
 
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
@@ -115,7 +128,7 @@ class FixtureDetailFragment : Fragment() {
 
                 var homeTeamScorer = mutableMapOf<String, MutableList<String>>()
                 var awayTeamScorer = mutableMapOf<String, MutableList<String>>()
-
+                getAppBarYMax = appBarLayout.height - toolbar.height
                 Picasso.get()
                     .load(it.get(0).teams.home.logoUrl)
                     .resize(100, 100)
@@ -167,12 +180,12 @@ class FixtureDetailFragment : Fragment() {
                 var homePassesAccurate = ""
                 var awayPassesAccurate = ""
                 // 흰색을 팀 컬러로 가져오는 경우, ui가 제대로 보이지 않기 때문에 검은색으로 설정
-                val hometeamColor = if("#"+it[0].lineups[0].team.colors.teamColorCode.colorCode == "#ffffff") {
+                var hometeamColor = if("#"+it[0].lineups[0].team.colors.teamColorCode.colorCode == "#ffffff") {
                                         "#000000"
                                     } else {
                                         "#"+it[0].lineups[0].team.colors.teamColorCode.colorCode
                                     }
-                val awayteamColor = if("#"+it[0].lineups[1].team.colors.teamColorCode.colorCode == "#ffffff") {
+                var awayteamColor = if("#"+it[0].lineups[1].team.colors.teamColorCode.colorCode == "#ffffff") {
                                         "#000000"
                                     } else {
                                         "#"+it[0].lineups[1].team.colors.teamColorCode.colorCode
@@ -294,12 +307,13 @@ class FixtureDetailFragment : Fragment() {
         homeTeamTextView = view.findViewById(R.id.hometeam_textview)
         awayTeamTextView = view.findViewById(R.id.awayteam_textview)
         matchScoreTextView = view.findViewById(R.id.score_textview)
-        matchStatusTextView = view.findViewById(R.id.matchElapsed)
+        matchStatusTextView = view.findViewById(R.id.match_status)
         homeTeamScorerTextView = view.findViewById(R.id.hometeam_scorer_textview)
         awayTeamScorerTextView = view.findViewById(R.id.awayteam_scorer_textview)
         homeTeamImageView = view.findViewById(R.id.hometeam_imageview)
         awayTeamImageView = view.findViewById(R.id.awayteam_imageview)
         goalIcon = view.findViewById(R.id.goal_icon)
+        toolbar = view.findViewById(R.id.toolbar)
         appBarLayout = view.findViewById(R.id.appBarLayout)
         /*************** Statistics *******************/
         homeBallPossession = view.findViewById(R.id.home_ball_possession)
@@ -382,34 +396,77 @@ class FixtureDetailFragment : Fragment() {
         return scorer
     }
 
+    fun initAppbarLayoutAnimation() {
+        appBarLayout.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+                if(abs(verticalOffset) >= getAppBarYMax / 2) {
+                    if (homeTeamTextView.visibility != View.INVISIBLE) {
+                        homeTeamTextView.startAnimation(fadeOut)
+                        awayTeamTextView.startAnimation(fadeOut)
+                        matchStatusTextView.startAnimation(fadeOut)
+                        homeTeamScorerTextView.startAnimation(fadeOut)
+                        awayTeamScorerTextView.startAnimation(fadeOut)
+                        goalIcon.startAnimation(fadeOut)
+
+                        homeTeamTextView.visibility = View.INVISIBLE
+                        awayTeamTextView.visibility = View.INVISIBLE
+                        matchStatusTextView.visibility = View.INVISIBLE
+                        homeTeamScorerTextView.visibility = View.INVISIBLE
+                        awayTeamScorerTextView.visibility = View.INVISIBLE
+                        goalIcon.visibility = View.INVISIBLE
+                    }
+
+                } else {
+                    if(homeTeamTextView.visibility != View.VISIBLE) {
+                        homeTeamTextView.startAnimation(fadeIn)
+                        awayTeamTextView.startAnimation(fadeIn)
+                        matchStatusTextView.startAnimation(fadeIn)
+                        homeTeamScorerTextView.startAnimation(fadeIn)
+                        awayTeamScorerTextView.startAnimation(fadeIn)
+                        goalIcon.startAnimation(fadeIn)
+
+                        homeTeamTextView.visibility = View.VISIBLE
+                        awayTeamTextView.visibility = View.VISIBLE
+                        matchStatusTextView.visibility = View.VISIBLE
+                        homeTeamScorerTextView.visibility = View.VISIBLE
+                        awayTeamScorerTextView.visibility = View.VISIBLE
+                        goalIcon.visibility = View.VISIBLE
+                    }
+                }
+            }
+        )
+    }
+
     fun setChangeProgressbarColor(progressBar: ProgressBar, homeTeamColor: String, awayTeamColor: String, progress: Int, maxProgress: Int) {
         val progressBarDrawable = progressBar.progressDrawable as LayerDrawable
         val backgroundDrawable = progressBarDrawable.getDrawable(0) // 배경 progressbar
         val progressDrawable = progressBarDrawable.getDrawable(1)   // 진행된 progressbar
+        val homeColor = if(maxProgress == 0) { "#616161"} else { homeTeamColor }
+        val awayColor = if(maxProgress == 0) { "#616161"} else { awayTeamColor }
 
         if (progressBar.id != R.id.ball_possession_progressbar) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // API 29+
-                backgroundDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(awayTeamColor), BlendMode.SRC_ATOP)
+                backgroundDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(awayColor), BlendMode.SRC_ATOP)
             } else {
-                backgroundDrawable.setColorFilter(Color.parseColor(awayTeamColor), PorterDuff.Mode.SRC_IN)
+                backgroundDrawable.setColorFilter(Color.parseColor(awayColor), PorterDuff.Mode.SRC_IN)
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                progressDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(homeTeamColor), BlendMode.SRC_ATOP)
+                progressDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(homeColor), BlendMode.SRC_ATOP)
             } else {
-                progressDrawable.setColorFilter(Color.parseColor(homeTeamColor), PorterDuff.Mode.SRC_IN)
+                progressDrawable.setColorFilter(Color.parseColor(homeColor), PorterDuff.Mode.SRC_IN)
             }
         } else  { // 볼 점유율 Progressbar 작업
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // API 29+
-                backgroundDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(homeTeamColor), BlendMode.SRC_ATOP)
+                backgroundDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(homeColor), BlendMode.SRC_ATOP)
             } else {
-                backgroundDrawable.setColorFilter(Color.parseColor(homeTeamColor), PorterDuff.Mode.SRC_IN)
+                backgroundDrawable.setColorFilter(Color.parseColor(homeColor), PorterDuff.Mode.SRC_IN)
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                progressDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(awayTeamColor), BlendMode.SRC_ATOP)
+                progressDrawable.colorFilter = BlendModeColorFilter(Color.parseColor(awayColor), BlendMode.SRC_ATOP)
             } else {
-                progressBarDrawable.setColorFilter(Color.parseColor(awayTeamColor), PorterDuff.Mode.SRC_IN)
+                progressDrawable.setColorFilter(Color.parseColor(awayColor), PorterDuff.Mode.SRC_IN)
             }
         }
         progressBar.max = maxProgress
