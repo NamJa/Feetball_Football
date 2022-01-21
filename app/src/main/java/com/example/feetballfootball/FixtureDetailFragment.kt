@@ -183,8 +183,8 @@ class FixtureDetailFragment : Fragment() {
                 var awayShotTotal = ""
                 Log.d(TAG, fixtureID.toString())
                 for (i in 0 until homeStatistics.size) {
-                    val homeTypeValue = if (homeStatistics[i].value == "null") { 0 } else { homeStatistics[i].value }
-                    val awayTypeValue = if (awayStatistics[i].value == "null") { 0 } else { awayStatistics[i].value }
+                    val homeTypeValue = homeStatistics[i].value ?: 0
+                    val awayTypeValue = awayStatistics[i].value ?: 0
 
                     when(homeStatistics[i].type) {
                         "Shots on Goal" -> {
