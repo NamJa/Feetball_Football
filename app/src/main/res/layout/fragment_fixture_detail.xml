@@ -132,14 +132,19 @@
 
             <!--                                         공격|
             유효 슈팅, 난사, 총 슈팅, 막힌 슛, 박스 내 슛, 박스 밖 슛,
+                o       o      o       o        x       x
                              요약 칸|
              코너킥, 오프사이드, 점유율,
+                o       o       o
                                 반칙|
              파울, 옐로 카드, 레드 카드,
+             x        x        x
                필요 X|
              키퍼 선방,
+                x
                                       패스|
              패스 횟수, 정확한 패스, 패스 성공률
+                o       o           o
              -->
 
             <!--      요약      -->
@@ -723,6 +728,36 @@
 
             </LinearLayout>
 
+            <!--     패스     -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_line" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="패스"
+                    android:textAlignment="center"
+
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_line" />
+            </LinearLayout>
             <!--      패스 통계      -->
             <RelativeLayout
                 android:layout_marginTop="15dp"
@@ -805,6 +840,36 @@
                     tools:text="666 / 757" />
 
             </RelativeLayout>
+
+            <!--     반칙     -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_line" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="반칙"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_line" />
+            </LinearLayout>
 
 
         </LinearLayout>
