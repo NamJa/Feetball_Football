@@ -23,7 +23,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
 import com.google.android.material.appbar.AppBarLayout
 import com.squareup.picasso.Picasso
-import org.w3c.dom.Text
 
 private const val TAG = "FixtureDetailFragment"
 private const val ARG_FIXTURE_ID = "fixture_id"
@@ -65,14 +64,23 @@ class FixtureDetailFragment : Fragment() {
     private lateinit var awayPass: TextView
     private lateinit var homeBlockedShot: TextView
     private lateinit var awayBlockedShot: TextView
-    private lateinit var homeOffsideTextView: TextView
-    private lateinit var awayOffsideTextView: TextView
+    private lateinit var homeOffside: TextView
+    private lateinit var awayOffside: TextView
+    private lateinit var homeFoul: TextView
+    private lateinit var awayFoul: TextView
+    private lateinit var homeYellowcard: TextView
+    private lateinit var awayYellowcard: TextView
+    private lateinit var homeRedcard: TextView
+    private lateinit var awayRedcard: TextView
 
     private lateinit var ballPossessionProgressBar: ProgressBar
     private lateinit var totalshootingProgressBar: ProgressBar
     private lateinit var cornerkickProgressBar: ProgressBar
     private lateinit var blockedShotProgressBar: ProgressBar
     private lateinit var offsideProgressBar: ProgressBar
+    private lateinit var foulProgressBar: ProgressBar
+    private lateinit var yellowcardProgressBar: ProgressBar
+    private lateinit var redcardProgressBar: ProgressBar
 
     private var homeGoalPost: MutableList<LinearLayout> = mutableListOf()
     private  var awayGoalPost: MutableList<LinearLayout> = mutableListOf()
@@ -206,7 +214,6 @@ class FixtureDetailFragment : Fragment() {
                             awayBlockedShot.text = awayTypeValue.toString()
                             setChangeProgressbarColor(blockedShotProgressBar, hometeamColor, awayteamColor, homeBlocked, homeBlocked+awayBlocked)
                         }
-//                        "Fouls" -> ""
                         "Corner Kicks" -> {
                             val homeProgress = homeTypeValue.toString().toInt()
                             val maxProgress = homeProgress + awayTypeValue.toString().toInt()
@@ -215,11 +222,11 @@ class FixtureDetailFragment : Fragment() {
                             setChangeProgressbarColor(cornerkickProgressBar, hometeamColor, awayteamColor, homeProgress, maxProgress)
                         }
                         "Offsides" -> {
-                            val homeOffside = homeTypeValue.toString().toInt()
-                            val awayOffside = awayTypeValue.toString().toInt()
-                            homeOffsideTextView.text = homeTypeValue.toString()
-                            awayOffsideTextView.text = awayTypeValue.toString()
-                            setChangeProgressbarColor(offsideProgressBar, hometeamColor, awayteamColor, homeOffside, homeOffside+awayOffside)
+                            val offsideHome = homeTypeValue.toString().toInt()
+                            val offsideAway = awayTypeValue.toString().toInt()
+                            homeOffside.text = homeTypeValue.toString()
+                            awayOffside.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(offsideProgressBar, hometeamColor, awayteamColor, offsideHome, offsideHome+offsideAway)
                         }
                         "Ball Possession" -> {
                             homeBallPossession.text = homeTypeValue.toString()
@@ -228,8 +235,27 @@ class FixtureDetailFragment : Fragment() {
                             val awayProgress = awayTypeValue.toString().split("%")[0].toInt()
                             setChangeProgressbarColor(ballPossessionProgressBar, hometeamColor, awayteamColor, awayProgress, maxProgress = 100)
                         }
-//                        "Yellow Cards" -> ""
-//                        "Red Cards" -> ""
+                        "Fouls" -> {
+                            val foulHome = homeTypeValue.toString().toInt()
+                            val foulAway = awayTypeValue.toString().toInt()
+                            homeFoul.text = homeTypeValue.toString()
+                            awayFoul.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(foulProgressBar, hometeamColor, awayteamColor, foulHome, foulHome+foulAway)
+                        }
+                        "Yellow Cards" -> {
+                            val yellowHome = homeTypeValue.toString().toInt()
+                            val yellowAway = awayTypeValue.toString().toInt()
+                            homeYellowcard.text = homeTypeValue.toString()
+                            awayYellowcard.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(yellowcardProgressBar, hometeamColor, awayteamColor, yellowHome, yellowHome+yellowAway)
+                        }
+                        "Red Cards" -> {
+                            val redHome = homeTypeValue.toString().toInt()
+                            val redAway = awayTypeValue.toString().toInt()
+                            homeRedcard.text = homeTypeValue.toString()
+                            awayRedcard.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(redcardProgressBar, hometeamColor, awayteamColor, redHome, redHome+redAway)
+                        }
                         "Passes %" -> {
                             homeAccuracy.text = homeTypeValue.toString()
                             awayAccuracy.text = awayTypeValue.toString()
@@ -248,8 +274,6 @@ class FixtureDetailFragment : Fragment() {
                 awayPass.text = getString(R.string.accurpass_by_total, awayPassesAccurate, awayTotalPasses)
                 val homeShotAccurPercent = ((homeShotOnNum.toDouble() / homeShotTotal.toDouble())*100).toInt().toString()
                 val awayShotAccurPercent = ((awayShotOnNum.toDouble() / awayShotTotal.toDouble())*100).toInt().toString()
-//                Log.d("homeShotAccurPercent", homeShotAccurPercent)
-                var tempText = getString(R.string.accurshot_percent)
                 homeShotAccuracy.text = homeShotAccurPercent + "%"
                 awayShotAccuracy.text = awayShotAccurPercent + "%"
                 homeShotsAccurByTotal.text = getString(R.string.accurshot_by_total, homeShotOnNum, homeShotTotal)
@@ -298,14 +322,23 @@ class FixtureDetailFragment : Fragment() {
         awayShotsAccurByTotal = view.findViewById(R.id.away_shots_accur_by_total)
         homeBlockedShot = view.findViewById(R.id.home_blocked_shots)
         awayBlockedShot = view.findViewById(R.id.away_blocked_shots)
-        homeOffsideTextView = view.findViewById(R.id.home_offside)
-        awayOffsideTextView = view.findViewById(R.id.away_offside)
+        homeOffside = view.findViewById(R.id.home_offside)
+        awayOffside = view.findViewById(R.id.away_offside)
+        homeFoul = view.findViewById(R.id.home_foul)
+        awayFoul = view.findViewById(R.id.away_foul)
+        homeYellowcard = view.findViewById(R.id.home_yellowcard)
+        awayYellowcard = view.findViewById(R.id.away_yellowcard)
+        homeRedcard = view.findViewById(R.id.home_redcard)
+        awayRedcard = view.findViewById(R.id.away_redcard)
 
         ballPossessionProgressBar = view.findViewById(R.id.ball_possession_progressbar)
         totalshootingProgressBar = view.findViewById(R.id.total_shooting_progressbar)
         cornerkickProgressBar = view.findViewById(R.id.cornerkicks_progressbar)
         blockedShotProgressBar = view.findViewById(R.id.blocked_shots_progressbar)
         offsideProgressBar = view.findViewById(R.id.offside_progressbar)
+        foulProgressBar = view.findViewById(R.id.foul_progressbar)
+        yellowcardProgressBar = view.findViewById(R.id.yellowcard_progressbar)
+        redcardProgressBar = view.findViewById(R.id.redcard_progressbar)
 
         homeGoalPost.add(view.findViewById(R.id.home_goalpost_shotoff_1))
         homeGoalPost.add(view.findViewById(R.id.home_goalpost_shotoff_2))

@@ -870,6 +870,153 @@
                     android:layout_weight="1"
                     android:background="@drawable/drawable_line" />
             </LinearLayout>
+            <!--  파울  -->
+            <LinearLayout
+                android:id="@+id/foul"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="40dp">
+
+                <TextView
+                    android:id="@+id/home_foul"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    tools:text="1" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
+                    android:text="파울"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/away_foul"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+                    tools:text="2" />
+            </LinearLayout>
+            <ProgressBar
+                android:id="@+id/foul_progressbar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:indeterminate="false"
+                android:paddingHorizontal="40dp"
+                android:progress="40"
+                android:progressDrawable="@drawable/horizon_progressbar" />
+            <!--  경고 출력  -->
+            <LinearLayout
+                android:id="@+id/yellowcard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="40dp">
+
+                <TextView
+                    android:id="@+id/home_yellowcard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    tools:text="1" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
+                    android:text="경고"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/away_yellowcard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+                    tools:text="2" />
+            </LinearLayout>
+            <ProgressBar
+                android:id="@+id/yellowcard_progressbar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:indeterminate="false"
+                android:paddingHorizontal="40dp"
+                android:progress="40"
+                android:progressDrawable="@drawable/horizon_progressbar" />
+            <!--  퇴장 출력  -->
+            <LinearLayout
+                android:id="@+id/redcard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="40dp">
+
+                <TextView
+                    android:id="@+id/home_redcard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    tools:text="1" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
+                    android:text="퇴장"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/away_redcard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+                    tools:text="2" />
+            </LinearLayout>
+            <ProgressBar
+                android:id="@+id/redcard_progressbar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:indeterminate="false"
+                android:paddingHorizontal="40dp"
+                android:progress="40"
+                android:progressDrawable="@drawable/horizon_progressbar" />
 
 
         </LinearLayout>
