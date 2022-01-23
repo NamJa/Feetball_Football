@@ -22,7 +22,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
+import com.example.feetballfootball.api.fixturedetail.PlayerData
 import com.google.android.material.appbar.AppBarLayout
 import com.squareup.picasso.Picasso
 import kotlin.math.abs
@@ -94,8 +97,14 @@ class FixtureDetailFragment : Fragment() {
     private lateinit var yellowcardProgressBar: ProgressBar
     private lateinit var redcardProgressBar: ProgressBar
 
+    /*************** LineUp *******************/
+    private lateinit var homeLineupRecyclerView: RecyclerView
+    private lateinit var awayLineupRecyclerView: RecyclerView
+
     private var homeGoalPost: MutableList<LinearLayout> = mutableListOf()
     private  var awayGoalPost: MutableList<LinearLayout> = mutableListOf()
+    var startLineup: MutableList<MutableList<PlayerData>> = mutableListOf()
+    var colData: MutableList<PlayerData> = mutableListOf()
 
 
     private var getAppBarYMax = 0
@@ -115,6 +124,9 @@ class FixtureDetailFragment : Fragment() {
 
         initView(view)
         initAppbarLayoutAnimation()
+        Log.d(TAG, fixtureID.toString())
+
+
 
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
@@ -296,6 +308,47 @@ class FixtureDetailFragment : Fragment() {
 
                 /** STATISTICS -- END -- **/
 
+                /** LINEUP -- START -- **/
+//                it[0].lineups[0].startXI[0]
+//                val lineupData = it[0].lineups[0].startXI[0].player.grid
+                var lineupData = it[0].lineups[0]
+
+                for (teamIndex in 0..1) {
+                    var row = "1"
+                    startLineup = mutableListOf()
+                    colData = mutableListOf()
+                    Log.d("startllineup", "startllineup1"+startLineup.size.toString())
+                    for (i in 0..11) {
+                        if (i == 11) {
+                            startLineup.add(colData)
+                            break
+                        }
+                        if (row == it[0].lineups[teamIndex].startXI[i].player.grid.split(":")[0]) {
+                            colData.add(it[0].lineups[teamIndex].startXI[i])
+                        } else {
+                            row = it[0].lineups[teamIndex].startXI[i].player.grid.split(":")[0]
+                            startLineup.add(colData)
+                            colData = mutableListOf()
+                            colData.add(it[0].lineups[teamIndex].startXI[i])
+
+                        }
+                    }
+                    if (teamIndex == 0) {
+                        homeLineupRecyclerView.adapter = LineupRowAdapter(startLineup, teamIndex)
+                        homeLineupRecyclerView.layoutManager = LinearLayoutManager(context)
+                        startLineup = mutableListOf()
+                        colData = mutableListOf()
+                    } else {
+                        startLineup.forEach {
+                            it.forEach {
+                                Log.d("startllineup", it.player.name)
+                            }
+                        }
+                        awayLineupRecyclerView.adapter = LineupRowAdapter(startLineup, teamIndex)
+                        awayLineupRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
+                    }
+                    Log.d("startllineup", "startllineup2"+startLineup.size.toString())
+                }
             }
         )
         return view
@@ -360,6 +413,9 @@ class FixtureDetailFragment : Fragment() {
         awayGoalPost.add(view.findViewById(R.id.away_goalpost_shotoff_1))
         awayGoalPost.add(view.findViewById(R.id.away_goalpost_shotoff_2))
         awayGoalPost.add(view.findViewById(R.id.away_goalpost_shoton))
+
+        homeLineupRecyclerView = view.findViewById(R.id.home_lineup_recyclerView)
+        awayLineupRecyclerView = view.findViewById(R.id.away_lineup_recyclerView)
     }
 
     fun WhoScoredByTeam(
@@ -478,6 +534,36 @@ class FixtureDetailFragment : Fragment() {
             goalpost.setBackgroundColor(Color.parseColor(teamColor))
         }
 
+    }
+
+    private inner class LineupRowAdapter(val startXI: List<List<PlayerData>>, var teamIndex: Int): RecyclerView.Adapter<LineupRowAdapter.RowHolder>() {
+        inner class RowHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val rowRecylerView: RecyclerView
+            init {
+                rowRecylerView = itemView.findViewById(R.id.row_recyclerview)
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RowHolder {
+            val view = layoutInflater.inflate(R.layout.lineup_row_recycler_item, parent, false)
+            return RowHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: RowHolder, position: Int) {
+            holder.rowRecylerView.adapter = LineupColAdapter(requireContext(), startXI[position])
+            if(teamIndex == 0) { // 홈 팀일 경우
+                holder.rowRecylerView.layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            } else {
+                holder.rowRecylerView.layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, true)
+            }
+
+        }
+
+        override fun getItemCount(): Int {
+            return startXI.size
+        }
     }
 
 
