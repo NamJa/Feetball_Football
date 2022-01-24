@@ -1020,24 +1020,158 @@
                 android:progressDrawable="@drawable/horizon_progressbar" />
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/home_lineup_recyclerView"
+            <!--      stadium line      -->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:background="@color/stadium_field"
+                android:layout_marginBottom="40dp"
+                tools:context=".MainActivity">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:textAlignment="center"
-                android:text="원정팀"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/purple_700"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/home_lineup_recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="3dp"
+                    app:layout_constraintBottom_toTopOf="@id/away_lineup_recyclerView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/away_lineup_recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/away_lineup_recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="3dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/home_lineup_recyclerView"/>
+
+                <!--    draw field line    -->
+                <!--    Home team Goal-Line    -->
+                <ImageView
+                    android:id="@+id/home_penalty_inbox"
+                    android:layout_width="133dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:elevation="2dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/stadium_home_penalty_area_in"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/home_penalty_outbox"
+                    android:layout_width="293dp"
+                    android:layout_height="120dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/stadium_field"
+                    android:elevation="1dp"
+                    android:src="@drawable/stadium_home_penalty_area_out"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/home_penalty_arc"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_below="@id/home_penalty_inbox"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/stadium_penalty_area_arc"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/home_penalty_inbox" />
+
+
+                <ImageView
+                    android:id="@+id/halfline"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_centerVertical="true"
+                    android:elevation="0dp"
+                    android:src="@drawable/stadium_halfline"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerInParent="true"
+                    android:elevation="0dp"
+                    android:src="@drawable/stadium_halfline_circle"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!--    Away team Goal-Line    -->
+                <ImageView
+                    android:id="@+id/away_penalty_inbox"
+                    android:layout_width="133dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:elevation="2dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/stadium_away_penalty_area_in"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+                <ImageView
+                    android:id="@+id/away_penalty_outbox"
+                    android:layout_width="293dp"
+                    android:layout_height="120dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/stadium_field"
+                    android:elevation="1dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:src="@drawable/stadium_away_penalty_area_out" />
+
+                <ImageView
+                    android:id="@+id/away_penalty_arc"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_above="@id/away_penalty_inbox"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:elevation="0dp"
+                    android:src="@drawable/stadium_penalty_area_arc"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/away_penalty_inbox"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/home_lineup_recyclerView"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="20dp"-->
+<!--                android:textAlignment="center"-->
+<!--                android:text="원정팀"-->
+<!--                android:textSize="20sp"-->
+<!--                android:textStyle="bold"-->
+<!--                android:textColor="@color/purple_700"/>-->
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/away_lineup_recyclerView"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
 
 
 
