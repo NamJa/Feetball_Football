@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.fixturedetail.PlayerData
 import com.squareup.picasso.Picasso
@@ -22,6 +23,8 @@ class LineupColAdapter(val context: Context, val rowLineup: List<PlayerData>): R
             Picasso.get()
                 .load("https://media.api-sports.io/football/players/${id}.png")
                 .into(playerImage)
+            playerImage.background = AppCompatResources.getDrawable(context, R.drawable.player_face_bg_circle)
+            playerImage.clipToOutline = true
         }
     }
 
