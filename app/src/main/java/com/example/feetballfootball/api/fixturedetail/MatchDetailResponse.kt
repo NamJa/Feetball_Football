@@ -119,14 +119,14 @@ class MatchDetailResponse {
  *                      value - Any?    (각 항목의 값, Any? 인 이유는 정수값이나 string값이나 null값이 들어오기 때문)
  *
  *
-*               List<PlayersByTeamData>(players)
+*               List<PlayersByTeamData>(players) - index 0: 홈 팀, index 1: 원정 팀 => 총 2개의 인덱스
  *                  Team(team)
  *                      id - Int
  *                      name - String
  *                      logo - String
  *
  *
- *                  List<PlayerRatingData>(players) - index 0: 홈 팀, index 1: 원정 팀 => 총 2개의 인덱스
+ *                  List<PlayerRatingData>(players)
  *                      ShortPlayerData(player)
  *                          id - Int                (선수 id)
  *                          name - String           (선수 이름)

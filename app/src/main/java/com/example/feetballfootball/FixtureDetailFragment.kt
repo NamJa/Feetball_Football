@@ -26,6 +26,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
 import com.example.feetballfootball.api.fixturedetail.PlayerData
+import com.example.feetballfootball.api.fixturedetail.PlayerRatingData
+import com.example.feetballfootball.api.fixturedetail.PlayersByTeamData
 import com.google.android.material.appbar.AppBarLayout
 import com.squareup.picasso.Picasso
 import kotlin.math.abs
@@ -38,7 +40,7 @@ class FixtureDetailFragment : Fragment() {
 
     private lateinit var fixtureDetailViewModel: FixtureDetailViewModel
     private lateinit var fixtureDetailLiveData: LiveData<List<FixtureDetailResponse>>
-    /*************** Appbar Layout *******************/
+    /*************** Appbar Layout - START *******************/
     private lateinit var homeTeamTextView: TextView
     private lateinit var awayTeamTextView: TextView
     private lateinit var matchScoreTextView: TextView
@@ -57,8 +59,9 @@ class FixtureDetailFragment : Fragment() {
     private val fadeOut by lazy {
         AnimationUtils.loadAnimation(context, R.anim.fade_out)
     }
+    /*************** Appbar Layout - END *******************/
 
-    /*************** Statistics *******************/
+    /*************** Statistics - START *******************/
     private lateinit var homeBallPossession: TextView
     private lateinit var awayBallPossession: TextView
     private lateinit var homeTotalShooting: TextView
@@ -96,8 +99,14 @@ class FixtureDetailFragment : Fragment() {
     private lateinit var foulProgressBar: ProgressBar
     private lateinit var yellowcardProgressBar: ProgressBar
     private lateinit var redcardProgressBar: ProgressBar
+    /*************** Statistics - END *******************/
 
-    /*************** LineUp *******************/
+    /*************** LineUp - START *******************/
+    private lateinit var lineupHomeTeamName: TextView
+    private lateinit var lineupAwayTeamName: TextView
+    private lateinit var homeTeamFormation: TextView
+    private lateinit var awayTeamFormation: TextView
+
     private lateinit var homeLineupRecyclerView: RecyclerView
     private lateinit var awayLineupRecyclerView: RecyclerView
 
@@ -105,6 +114,7 @@ class FixtureDetailFragment : Fragment() {
     private  var awayGoalPost: MutableList<LinearLayout> = mutableListOf()
     var startLineup: MutableList<MutableList<PlayerData>> = mutableListOf()
     var colData: MutableList<PlayerData> = mutableListOf()
+    /*************** LineUp - END *******************/
 
 
     private var getAppBarYMax = 0
@@ -334,21 +344,23 @@ class FixtureDetailFragment : Fragment() {
                         }
                     }
                     if (teamIndex == 0) {
-                        homeLineupRecyclerView.adapter = LineupRowAdapter(startLineup, teamIndex)
+                        val teamRating = it[0].players[teamIndex]
+                        lineupHomeTeamName.text = it[0].lineups[teamIndex].team.name
+                        homeTeamFormation.text = it[0].lineups[teamIndex].formation
+                        homeLineupRecyclerView.adapter = LineupRowAdapter(startLineup, teamIndex, teamRating)
                         homeLineupRecyclerView.layoutManager = LinearLayoutManager(context)
                         startLineup = mutableListOf()
                         colData = mutableListOf()
                     } else {
-                        startLineup.forEach {
-                            it.forEach {
-                                Log.d("startllineup", it.player.name)
-                            }
-                        }
-                        awayLineupRecyclerView.adapter = LineupRowAdapter(startLineup, teamIndex)
+                        val teamRating = it[0].players[teamIndex]
+                        lineupAwayTeamName.text = it[0].lineups[teamIndex].team.name
+                        awayTeamFormation.text = it[0].lineups[teamIndex].formation
+                        awayLineupRecyclerView.adapter = LineupRowAdapter(startLineup, teamIndex, teamRating)
                         awayLineupRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
                     }
                     Log.d("startllineup", "startllineup2"+startLineup.size.toString())
                 }
+                /** LINEUP -- END -- **/
             }
         )
         return view
@@ -414,6 +426,11 @@ class FixtureDetailFragment : Fragment() {
         awayGoalPost.add(view.findViewById(R.id.away_goalpost_shotoff_2))
         awayGoalPost.add(view.findViewById(R.id.away_goalpost_shoton))
 
+        /*************** Lineup *******************/
+        lineupHomeTeamName = view.findViewById(R.id.hometeam_lineup_textview)
+        lineupAwayTeamName = view.findViewById(R.id.awayteam_lineup_textview)
+        homeTeamFormation = view.findViewById(R.id.hometeam_formation_textview)
+        awayTeamFormation = view.findViewById(R.id.awayteam_formation_textview)
         homeLineupRecyclerView = view.findViewById(R.id.home_lineup_recyclerView)
         awayLineupRecyclerView = view.findViewById(R.id.away_lineup_recyclerView)
     }
@@ -536,7 +553,7 @@ class FixtureDetailFragment : Fragment() {
 
     }
 
-    private inner class LineupRowAdapter(val startXI: List<List<PlayerData>>, var teamIndex: Int): RecyclerView.Adapter<LineupRowAdapter.RowHolder>() {
+    private inner class LineupRowAdapter(val startXI: List<List<PlayerData>>, var teamIndex: Int, var teamRating: PlayersByTeamData): RecyclerView.Adapter<LineupRowAdapter.RowHolder>() {
         inner class RowHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val rowRecylerView: RecyclerView
             init {
@@ -550,7 +567,7 @@ class FixtureDetailFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: RowHolder, position: Int) {
-            holder.rowRecylerView.adapter = LineupColAdapter(requireContext(), startXI[position])
+            holder.rowRecylerView.adapter = LineupColAdapter(requireContext(), startXI[position], teamRating)
             if(teamIndex == 0) { // 홈 팀일 경우
                 holder.rowRecylerView.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)

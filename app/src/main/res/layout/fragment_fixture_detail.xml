@@ -1028,6 +1028,34 @@
                 android:layout_marginBottom="40dp"
                 tools:context=".MainActivity">
 
+                <LinearLayout
+                    android:id="@+id/hometeam_formation"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:background="@color/stadium_line"
+                    android:gravity="center|start">
+
+                    <TextView
+                        android:id="@+id/hometeam_lineup_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="40dp"
+                        tools:text="Manchester City"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"/>
+                    <TextView
+                        android:id="@+id/hometeam_formation_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="4-3-3"
+                        android:textColor="@color/team_formation"
+                        android:layout_marginStart="15dp"/>
+
+                </LinearLayout>
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/home_lineup_recyclerView"
                     android:layout_width="match_parent"
@@ -1036,17 +1064,45 @@
                     app:layout_constraintBottom_toTopOf="@id/away_lineup_recyclerView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toBottomOf="@id/hometeam_formation"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/away_lineup_recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:elevation="3dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/awayteam_formation"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/home_lineup_recyclerView"/>
+
+                <LinearLayout
+                    android:id="@+id/awayteam_formation"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:background="@color/stadium_line"
+                    android:gravity="center|start">
+
+                    <TextView
+                        android:id="@+id/awayteam_lineup_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="40dp"
+                        tools:text="Liverpool"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"/>
+                    <TextView
+                        android:id="@+id/awayteam_formation_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="4-3-3"
+                        android:textColor="@color/team_formation"
+                        android:layout_marginStart="15dp"/>
+
+                </LinearLayout>
 
                 <!--    draw field line    -->
                 <!--    Home team Goal-Line    -->
@@ -1061,7 +1117,7 @@
                     android:src="@drawable/stadium_home_penalty_area_in"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/hometeam_formation" />
 
                 <ImageView
                     android:id="@+id/home_penalty_outbox"
@@ -1074,7 +1130,7 @@
                     android:src="@drawable/stadium_home_penalty_area_out"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/hometeam_formation" />
 
                 <ImageView
                     android:id="@+id/home_penalty_arc"
@@ -1124,7 +1180,7 @@
                     android:src="@drawable/stadium_away_penalty_area_in"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/awayteam_formation"
                     />
 
                 <ImageView
@@ -1137,7 +1193,7 @@
                     android:elevation="1dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/awayteam_formation"
                     android:src="@drawable/stadium_away_penalty_area_out" />
 
                 <ImageView

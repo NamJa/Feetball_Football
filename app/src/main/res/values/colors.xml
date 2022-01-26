@@ -9,6 +9,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red_orange_500">#F44336</color>
+    <color name="gray_300">#E0E0E0</color>
     <color name="gray_500">#9E9E9E</color>
     <color name="indigo_500">#3F51B5</color>
     <color name="indigo_600">#3949AB</color>
@@ -18,5 +19,7 @@
     <color name="stadium_field">#00935C</color>
     <color name="stadium_line">#1A9E6D</color>
 
-
+    <color name="team_formation">#AFF1CE</color>
+    <color name="player_rating_normal">#FF9800</color>
+    <color name="player_rating_great">#00E676</color>
 </resources>
