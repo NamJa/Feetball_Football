@@ -82,7 +82,7 @@ class FixtureDetailLineupFragment : Fragment() {
                         val teamRating = it[0].players[teamIndex]
                         lineupHomeTeamName.text = it[0].lineups[teamIndex].team.name
                         homeTeamFormation.text = it[0].lineups[teamIndex].formation
-                        homeLineupRecyclerView.adapter = LineupRowAdapter(startLineup, teamIndex, teamRating)
+                        homeLineupRecyclerView.adapter = StartingLineupRowAdapter(startLineup, teamIndex, teamRating)
                         homeLineupRecyclerView.layoutManager = LinearLayoutManager(context)
                         startLineup = mutableListOf()
                         colData = mutableListOf()
@@ -90,7 +90,7 @@ class FixtureDetailLineupFragment : Fragment() {
                         val teamRating = it[0].players[teamIndex]
                         lineupAwayTeamName.text = it[0].lineups[teamIndex].team.name
                         awayTeamFormation.text = it[0].lineups[teamIndex].formation
-                        awayLineupRecyclerView.adapter = LineupRowAdapter(startLineup, teamIndex, teamRating)
+                        awayLineupRecyclerView.adapter = StartingLineupRowAdapter(startLineup, teamIndex, teamRating)
                         awayLineupRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
                     }
                     Log.d("startllineup", "startllineup2"+startLineup.size.toString())
@@ -112,7 +112,7 @@ class FixtureDetailLineupFragment : Fragment() {
         awayLineupRecyclerView = view.findViewById(R.id.away_lineup_recyclerView)
     }
 
-    private inner class LineupRowAdapter(val startXI: List<List<PlayerData>>, var teamIndex: Int, var teamRating: PlayersByTeamData): RecyclerView.Adapter<LineupRowAdapter.RowHolder>() {
+    private inner class StartingLineupRowAdapter(val startXI: List<List<PlayerData>>, var teamIndex: Int, var teamRating: PlayersByTeamData): RecyclerView.Adapter<StartingLineupRowAdapter.RowHolder>() {
         inner class RowHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val rowRecylerView: RecyclerView
             init {
@@ -126,7 +126,7 @@ class FixtureDetailLineupFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: RowHolder, position: Int) {
-            holder.rowRecylerView.adapter = LineupColAdapter(requireContext(), startXI[position], teamRating)
+            holder.rowRecylerView.adapter = StartingLineupColAdapter(requireContext(), startXI[position], teamRating)
             if(teamIndex == 0) { // 홈 팀일 경우
                 holder.rowRecylerView.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)

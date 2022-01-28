@@ -9,14 +9,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.fixturedetail.PlayerData
-import com.example.feetballfootball.api.fixturedetail.PlayerRatingData
 import com.example.feetballfootball.api.fixturedetail.PlayersByTeamData
 import com.squareup.picasso.Picasso
 
-class LineupColAdapter(val context: Context, val rowLineup: List<PlayerData>, val teamRating: PlayersByTeamData): RecyclerView.Adapter<LineupColAdapter.ColHolder>() {
+class StartingLineupColAdapter(val context: Context, val rowLineup: List<PlayerData>, val teamRating: PlayersByTeamData): RecyclerView.Adapter<StartingLineupColAdapter.ColHolder>() {
     inner class ColHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val playerImage: ImageView
         val playerName: TextView
