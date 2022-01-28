@@ -1,13 +1,886 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".FixtureDetailStatisticsFragment">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:orientation="vertical">
 
-    <TextView
+    <!--      요약      -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content">
 
-</FrameLayout>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_line" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="요약"
+            android:textAlignment="center"
+
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_line" />
+    </LinearLayout>
+    <!--      요약 내용      -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/split_ball_possession"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/ball_possession_string"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="점유율"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <ProgressBar
+            android:id="@+id/ball_possession_progressbar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_below="@id/ball_possession_string"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="9dp"
+            android:indeterminate="false"
+            android:progress="40"
+            android:progressDrawable="@drawable/circle_progressbar" />
+
+        <TextView
+            android:id="@+id/home_ball_possession"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ball_possession_string"
+            android:layout_alignEnd="@id/split_ball_possession"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="15dp"
+            android:fontFamily="sans-serif-black"
+            android:paddingLeft="40dp"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            tools:text="31%" />
+
+        <TextView
+            android:id="@+id/away_ball_possession"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ball_possession_string"
+            android:layout_alignStart="@id/split_ball_possession"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="15dp"
+            android:fontFamily="sans-serif-black"
+            android:paddingRight="40dp"
+            android:textAlignment="textEnd"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            tools:text="69%" />
+
+        <LinearLayout
+            android:id="@+id/total_shooting_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ball_possession_progressbar"
+            android:layout_marginTop="10dp"
+            android:paddingHorizontal="40dp">
+
+            <TextView
+                android:id="@+id/home_total_shooting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                tools:text="7" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:text="총 슈팅"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/away_total_shooting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:textAlignment="textEnd"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                tools:text="14" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/total_shooting_progressbar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_below="@id/total_shooting_linearLayout"
+            android:indeterminate="false"
+            android:paddingHorizontal="40dp"
+            android:progress="30"
+            android:progressDrawable="@drawable/horizon_progressbar" />
+
+        <LinearLayout
+            android:id="@+id/cornerkicks_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/total_shooting_progressbar"
+            android:layout_marginTop="10dp"
+            android:paddingHorizontal="40dp">
+
+            <TextView
+                android:id="@+id/home_cornerkicks"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                tools:text="4" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:text="코너킥"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/away_cornerkicks"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:textAlignment="textEnd"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                tools:text="6" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/cornerkicks_progressbar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_below="@id/cornerkicks_linearLayout"
+            android:indeterminate="false"
+            android:paddingHorizontal="40dp"
+            android:progress="40"
+            android:progressDrawable="@drawable/horizon_progressbar" />
+
+
+    </RelativeLayout>
+    <!--   슈팅   -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_line" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="슈팅"
+            android:textAlignment="center"
+
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_line" />
+    </LinearLayout>
+    <!--   슈팅(공격) 통계   -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!--   슈팅 정확도   -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:id="@+id/split_shooting"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:id="@+id/shoot_accur_string_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="슈팅 정확도"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/shoot_accur_string_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/shoot_accur_string_1"
+                android:layout_centerHorizontal="true"
+                android:text="패스 성공 / 전체"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/home_shot_accuracy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/shoot_accur_string_2"
+                android:layout_alignEnd="@id/split_shooting"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-black"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="30sp"
+                tools:text="29%" />
+
+            <TextView
+                android:id="@+id/away_shot_accuracy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/shoot_accur_string_2"
+                android:layout_alignStart="@id/split_shooting"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-black"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="30sp"
+                tools:text="43%" />
+
+            <TextView
+                android:id="@+id/home_shots_accur_by_total"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/away_shot_accuracy"
+                android:layout_alignEnd="@id/split_shooting"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                tools:text="233 / 340" />
+
+            <TextView
+                android:id="@+id/away_shots_accur_by_total"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/away_shot_accuracy"
+                android:layout_alignStart="@id/split_shooting"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                tools:text="666 / 757" />
+        </RelativeLayout>
+        <!--   골 포스트 ui 상단   -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginHorizontal="25dp"
+            android:layout_marginTop="15dp">
+
+            <View
+                android:id="@+id/split_shotoff"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_centerHorizontal="true" />
+
+            <LinearLayout
+                android:id="@+id/home_goalpost_shotoff_1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_alignEnd="@id/split_shotoff"
+                android:layout_alignParentStart="true"
+                android:orientation="horizontal"
+                tools:background="@color/black" />
+
+            <LinearLayout
+                android:id="@+id/away_goalpost_shotoff_1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_alignStart="@id/split_shotoff"
+                android:layout_alignParentEnd="true"
+                android:orientation="horizontal"
+                tools:background="#393939" />
+
+            <TextView
+                android:id="@+id/home_shotoff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="5" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="빗나간 슈팅"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/away_shotoff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="20dp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="5" />
+        </RelativeLayout>
+        <!--   골 포스트 ui 하단   -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:layout_marginHorizontal="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/home_shotoff">
+
+            <LinearLayout
+                android:id="@+id/home_goalpost_shotoff_2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                tools:background="@color/black" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3.5"
+                android:paddingHorizontal="10dp"
+                android:paddingTop="10dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <View
+                        android:id="@+id/split"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_centerHorizontal="true" />
+
+                    <LinearLayout
+                        android:id="@+id/home_goalpost_shoton"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_alignEnd="@id/split"
+                        android:layout_alignParentStart="true"
+                        android:orientation="horizontal"
+                        tools:background="@color/black" />
+
+                    <LinearLayout
+                        android:id="@+id/away_goalpost_shoton"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_alignStart="@id/split"
+                        android:layout_alignParentEnd="true"
+                        android:orientation="horizontal"
+                        tools:background="#393939" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true">
+
+                        <TextView
+                            android:id="@+id/home_shoton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerInParent="true"
+                            android:layout_marginStart="20dp"
+                            android:textColor="@color/white"
+                            android:textSize="25sp"
+                            android:textStyle="bold"
+                            tools:text="5" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_centerHorizontal="true"
+                            android:text="유효 슈팅"
+                            android:textColor="@color/white"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/away_shoton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true"
+                            android:layout_marginEnd="20dp"
+                            android:textColor="@color/white"
+                            android:textSize="25sp"
+                            android:textStyle="bold"
+                            tools:text="5" />
+                    </RelativeLayout>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/away_goalpost_shotoff_2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                tools:background="#393939" />
+
+
+        </LinearLayout>
+
+        <!--  막힌 슈팅 출력  -->
+        <LinearLayout
+            android:id="@+id/blocked_shots_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/total_shooting_progressbar"
+            android:layout_marginTop="10dp"
+            android:paddingHorizontal="40dp">
+
+            <TextView
+                android:id="@+id/home_blocked_shots"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                tools:text="1" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:text="막힌 슈팅"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/away_blocked_shots"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:textAlignment="textEnd"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                tools:text="2" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/blocked_shots_progressbar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:indeterminate="false"
+            android:paddingHorizontal="40dp"
+            android:progress="40"
+            android:progressDrawable="@drawable/horizon_progressbar" />
+
+        <!--  오프사이드 출력  -->
+        <LinearLayout
+            android:id="@+id/offside"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingHorizontal="40dp">
+
+            <TextView
+                android:id="@+id/home_offside"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                tools:text="1" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:text="오프사이드"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/away_offside"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:textAlignment="textEnd"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                tools:text="2" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/offside_progressbar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:indeterminate="false"
+            android:paddingHorizontal="40dp"
+            android:progress="40"
+            android:progressDrawable="@drawable/horizon_progressbar" />
+
+    </LinearLayout>
+
+    <!--     패스     -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_line" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="패스"
+            android:textAlignment="center"
+
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_line" />
+    </LinearLayout>
+    <!--      패스 통계      -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp">
+
+        <View
+            android:id="@+id/split_pass"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/pass_accur_string_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="패스 성공률"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/pass_accur_string_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pass_accur_string_1"
+            android:layout_centerHorizontal="true"
+            android:text="패스 성공 / 전체"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/home_accuracy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pass_accur_string_2"
+            android:layout_alignEnd="@id/split_pass"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-black"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            tools:text="69%" />
+
+        <TextView
+            android:id="@+id/away_accuracy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pass_accur_string_2"
+            android:layout_alignStart="@id/split_pass"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-black"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            tools:text="88%" />
+
+        <TextView
+            android:id="@+id/home_pass_accur_by_total"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/home_accuracy"
+            android:layout_alignEnd="@id/split_pass"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            tools:text="233 / 340" />
+
+        <TextView
+            android:id="@+id/away_pass_accur_by_total"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/home_accuracy"
+            android:layout_alignStart="@id/split_pass"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            tools:text="666 / 757" />
+
+    </RelativeLayout>
+
+    <!--     반칙     -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_line" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="반칙"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_line" />
+    </LinearLayout>
+    <!--  파울  -->
+    <LinearLayout
+        android:id="@+id/foul"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingHorizontal="40dp">
+
+        <TextView
+            android:id="@+id/home_foul"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:text="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:text="파울"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/away_foul"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:textAlignment="textEnd"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            tools:text="2" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/foul_progressbar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:indeterminate="false"
+        android:paddingHorizontal="40dp"
+        android:progress="40"
+        android:progressDrawable="@drawable/horizon_progressbar" />
+    <!--  경고 출력  -->
+    <LinearLayout
+        android:id="@+id/yellowcard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingHorizontal="40dp">
+
+        <TextView
+            android:id="@+id/home_yellowcard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:text="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:text="경고"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/away_yellowcard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:textAlignment="textEnd"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            tools:text="2" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/yellowcard_progressbar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:indeterminate="false"
+        android:paddingHorizontal="40dp"
+        android:progress="40"
+        android:progressDrawable="@drawable/horizon_progressbar" />
+    <!--  퇴장 출력  -->
+    <LinearLayout
+        android:id="@+id/redcard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingHorizontal="40dp">
+
+        <TextView
+            android:id="@+id/home_redcard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:text="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:text="퇴장"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/away_redcard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:textAlignment="textEnd"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            tools:text="2" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/redcard_progressbar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginBottom="40dp"
+        android:indeterminate="false"
+        android:paddingHorizontal="40dp"
+        android:progress="40"
+        android:progressDrawable="@drawable/horizon_progressbar" />
+
+</LinearLayout>
