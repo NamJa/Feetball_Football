@@ -45,6 +45,7 @@ FixtureFragment에서 출력할 구성하는게 제일 골치아팠는데, API �
 - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel?hl=ko)
 - [GSON](https://github.com/google/gson)
 - [LifeCycle-Extensions](https://developer.android.com/jetpack/androidx/releases/lifecycle?hl=ko)
+- [ViewPager2](https://developer.android.com/jetpack/androidx/releases/viewpager2?hl=ko)
 - [Coroutine](https://developer.android.com/kotlin/coroutines?hl=ko)
 - [ThreeTenbp](https://www.threeten.org/threetenbp/)
 - [Picasso](https://square.github.io/picasso/)
@@ -59,7 +60,7 @@ FixtureFragment에서 출력할 구성하는게 제일 골치아팠는데, API �
     ~~- 슈팅 통계~~
 
     ~~- 라인업~~
-    
+
     ~~- 평점~~
 - 리그 순위
 
