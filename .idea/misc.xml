@@ -22,6 +22,7 @@
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/fixture.xml" value="0.264" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/fragment_fixture.xml" value="0.264" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/fragment_fixture_detail.xml" value="0.2" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/fragment_fixture_detail_lineup.xml" value="0.3312741312741313" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/fragment_league_standing.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/fragment_league_table.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/fragment_leagues.xml" value="0.25364583333333335" />
@@ -29,11 +30,8 @@
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/league_fixture.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/lineup_col_recycler_item.xml" value="0.536" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/lineup_row_recycler_item.xml" value="0.190234375" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/lineup_substitute_player_recycler_item.xml" value="0.33515625" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/standing_item.xml" value="0.2" />
-        <entry key="..\:/Users/ddori/StudioProjects/Feetball_Football/app/src/main/res/layout/fragment_fixture_detail.xml" value="0.25364583333333335" />
-        <entry key="..\:/Users/ddori/StudioProjects/Feetball_Football/app/src/main/res/layout/fragment_fixture_detail_lineup.xml" value="0.25364583333333335" />
-        <entry key="..\:/Users/ddori/StudioProjects/Feetball_Football/app/src/main/res/layout/fragment_fixture_detail_statistics.xml" value="0.446875" />
-        <entry key="..\:/Users/ddori/StudioProjects/Feetball_Football/app/src/main/res/layout/lineup_row_recycler_item.xml" value="0.25364583333333335" />
       </map>
     </option>
   </component>

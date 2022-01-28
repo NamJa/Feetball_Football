@@ -10,6 +10,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red_orange_500">#F44336</color>
     <color name="gray_300">#E0E0E0</color>
+    <color name="gray_400">#BDBDBD</color>
     <color name="gray_500">#9E9E9E</color>
     <color name="indigo_500">#3F51B5</color>
     <color name="indigo_600">#3949AB</color>

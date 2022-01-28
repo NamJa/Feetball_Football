@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/player_name_textview"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/gray_300"
+        android:textColor="@color/gray_400"
         tools:text="7" />
 
     <TextView

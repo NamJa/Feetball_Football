@@ -14,7 +14,12 @@ import com.example.feetballfootball.api.fixturedetail.PlayerData
 import com.example.feetballfootball.api.fixturedetail.PlayersByTeamData
 import com.squareup.picasso.Picasso
 
-class StartingLineupColAdapter(val context: Context, val rowLineup: List<PlayerData>, val teamRating: PlayersByTeamData): RecyclerView.Adapter<StartingLineupColAdapter.ColHolder>() {
+class PlayerLineupAdapter(
+    val context: Context,
+    val rowLineup: List<PlayerData>,
+    val teamRating: PlayersByTeamData,
+    val isSubsitute: Boolean
+): RecyclerView.Adapter<PlayerLineupAdapter.ColHolder>() {
     inner class ColHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val playerImage: ImageView
         val playerName: TextView
@@ -25,6 +30,8 @@ class StartingLineupColAdapter(val context: Context, val rowLineup: List<PlayerD
             playerName = itemView.findViewById(R.id.player_name_textview)
             playerRating = itemView.findViewById(R.id.player_rating)
             playerNumber = itemView.findViewById(R.id.player_number_textview)
+            if (isSubsitute)
+                playerName.setTextColor(context.resources.getColorStateList(R.color.black, null))
         }
         fun bindPlayerImage(id: Int) {
             Picasso.get()
@@ -35,11 +42,10 @@ class StartingLineupColAdapter(val context: Context, val rowLineup: List<PlayerD
         }
         fun bindPlayerRating(id: Int) {
             for(i in 0 until teamRating.players.size) {
-                if (id == teamRating.players[i].player.id) {
+                if (id == teamRating.players[i].player.id && teamRating.players[i].statistics[0].games.rating != null) {
                     val ratingFloat = teamRating.players[i].statistics[0].games.rating!!.toFloat()
                     playerRating.text = ratingFloat.toString()
                     if(ratingFloat >= 7.0f) {
-                        Log.d("LineColAdapter", ratingFloat.toString())
                         val textBackground = playerRating.background as GradientDrawable
                         textBackground.color = context.resources.getColorStateList(R.color.player_rating_great, null)
                     } else {
@@ -47,13 +53,21 @@ class StartingLineupColAdapter(val context: Context, val rowLineup: List<PlayerD
                         textBackground.color = context.resources.getColorStateList(R.color.player_rating_normal, null)
                     }
                 }
+                // 교체 명단에 들어 있지만, 경기를 뛰지 않아 평점이 발생하지 않은 경우
+                else if(id == teamRating.players[i].player.id && teamRating.players[i].statistics[0].games.rating == null) {
+                    val textBackground = playerRating.background as GradientDrawable
+                    textBackground.color = context.resources.getColorStateList(android.R.color.transparent, null)
+                }
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.lineup_col_recycler_item, parent, false)
-        return ColHolder(view)
+        if (isSubsitute) { // 교체 라인업을 출력하는 경우엔 lineup_substitute_xxx를 inflate한다. 추후에 리팩토링 대상
+            return ColHolder(LayoutInflater.from(context).inflate(R.layout.lineup_substitute_player_recycler_item, parent, false))
+        } else {
+            return ColHolder(LayoutInflater.from(context).inflate(R.layout.lineup_player_recycler_item, parent, false))
+        }
     }
 
     override fun onBindViewHolder(holder: ColHolder, position: Int) {
