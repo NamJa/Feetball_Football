@@ -21,7 +21,6 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.Temporal
 
 private const val TAG = "FixtureFragment"
-
 class FixtureFragment : Fragment() {
 
     private lateinit var feetballfootballViewModel: FeetballFootballViewModel
@@ -29,7 +28,6 @@ class FixtureFragment : Fragment() {
     private lateinit var fixtureData: MutableLiveData<Array<MutableList<FixtureResponse>?>>
     private lateinit var fixtureDataExecute: Array<MutableList<FixtureResponse>?>
     private lateinit var resultData: MutableLiveData<Int>
-
     private lateinit var progressBar: ProgressBar
     private lateinit var fixtureDateTextView: TextView
     private lateinit var prevButton: Button
@@ -49,6 +47,7 @@ class FixtureFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_fixture, container, false)
+        Log.d(TAG, currentDate.toString())
         fixtureDateTextView = view.findViewById(R.id.fixture_date)
         prevButton = view.findViewById(R.id.prev_fixture_button)
         nextButton = view.findViewById(R.id.next_fixture_button)
@@ -58,27 +57,24 @@ class FixtureFragment : Fragment() {
 
         prevButton.setOnClickListener {
             currentDate = currentDate.minusDays(1)
-
             fixtureDateTextView.text = currentDate.toString()
             fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
             resultData = feetballfootballViewModel.resultData
         }
         nextButton.setOnClickListener {
             currentDate = currentDate.plusDays(1)
-
             fixtureDateTextView.text = currentDate.toString()
             fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
             resultData = feetballfootballViewModel.resultData
         }
-
-
         //fixtureData = feetballfootballViewModel.fixtureData
-        fixtureDataExecute = feetballfootballViewModel.fixtureDataExecute
+        fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
         resultData = feetballfootballViewModel.resultData
-
         allLeaugeFixtureRecyclerView = view.findViewById(R.id.league_fixture_recyclerview) as RecyclerView
         allLeaugeFixtureRecyclerView.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         allLeaugeFixtureRecyclerView.layoutManager = LinearLayoutManager(context)
+
+
         return view
     }
 
@@ -88,14 +84,22 @@ class FixtureFragment : Fragment() {
 //        fixtureData.observe(
 //            viewLifecycleOwner,
 //            Observer {
-//                it?.let {
-//                    updateUI(it)
+//                val fixtureFinalData: MutableList<MutableList<FixtureResponse>> = mutableListOf()
+//                // arrayOfNull로 처리한 함수를 여기에서 null값 없이 재처리
+//                for (i in 0 until fixtureDataExecute.size) {
+//                    if(fixtureDataExecute[i] == null) {
+//                        continue
+//                    } else {
+//                        fixtureFinalData.add(fixtureDataExecute[i]!!)
+//                    }
 //                }
+//                updateUI(fixtureFinalData)
 //            }
 //        )
         resultData.observe(
             viewLifecycleOwner,
             Observer {
+                Log.d(TAG, "feetballfootballViewModel.currentDate: ${feetballfootballViewModel.currentDate.toString()}")
                 val fixtureFinalData: MutableList<MutableList<FixtureResponse>> = mutableListOf()
                 // arrayOfNull로 처리한 함수를 여기에서 null값 없이 재처리
                 for (i in 0 until fixtureDataExecute.size) {

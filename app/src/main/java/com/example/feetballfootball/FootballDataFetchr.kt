@@ -86,7 +86,7 @@ class FootballDataFetchr {
 //                            }
 //                        }
 //                        footballLiveData.value = footballDataByLeague
-//                        resultLiveData.value = 1
+//                        fixtureResultLiveData.value = 1
 //                    }
 //                }
 //            }
