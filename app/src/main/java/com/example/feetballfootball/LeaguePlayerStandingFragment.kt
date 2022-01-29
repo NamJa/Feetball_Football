@@ -6,10 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
+private const val ARG_LEAGUE_ID = "LEAGUE_ID"
+
 class LeaguePlayerStandingFragment : Fragment() {
+
+    private var leagueID: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        leagueID = arguments?.getInt(ARG_LEAGUE_ID) ?: 0
     }
 
     override fun onCreateView(
@@ -22,6 +27,13 @@ class LeaguePlayerStandingFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = LeaguePlayerStandingFragment()
+        fun newInstance(leagueId: Int) : LeaguePlayerStandingFragment {
+            val args = Bundle().apply {
+                putInt(ARG_LEAGUE_ID, leagueId)
+            }
+            return LeaguePlayerStandingFragment().apply {
+                arguments = args
+            }
+        }
     }
 }

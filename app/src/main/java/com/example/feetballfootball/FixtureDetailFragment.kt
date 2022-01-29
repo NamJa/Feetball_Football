@@ -74,8 +74,6 @@ class FixtureDetailFragment : Fragment() {
         initAppbarLayoutAnimation()
         Log.d(TAG, fixtureID.toString())
 
-        viewPager = view.findViewById(R.id.view_pager)
-
         tabs.addTab(tabs.newTab().setText("라인업"))
         tabs.addTab(tabs.newTab().setText("통계"))
 
@@ -172,8 +170,7 @@ class FixtureDetailFragment : Fragment() {
         toolbar = view.findViewById(R.id.toolbar)
         tabs = view.findViewById(R.id.fixture_detail_tab_layout)
         appBarLayout = view.findViewById(R.id.appBarLayout)
-
-
+        viewPager = view.findViewById(R.id.view_pager)
     }
 
     fun WhoScoredByTeam(
