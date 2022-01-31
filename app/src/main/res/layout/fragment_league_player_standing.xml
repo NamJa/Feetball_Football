@@ -16,11 +16,66 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
         />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:textColor="@color/gray_800"
+            android:text="순위"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="2.5"
+            android:textColor="@color/gray_800"
+            android:text="선수"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textAlignment="center"
+            android:textColor="@color/gray_800"
+            android:text="득점"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textAlignment="center"
+            android:textColor="@color/gray_800"
+            android:text="도움"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textAlignment="center"
+            android:textColor="@color/gray_800"
+            android:text="슈팅"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray_800"
+            android:layout_weight="0.5"
+            android:textAlignment="center"
+            android:text="PK"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/gray_800"
+            android:textAlignment="center"
+            android:text="유효 슈팅"/>
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/scorer_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -33,6 +88,61 @@
         android:layout_marginTop="30dp"
         android:layout_marginBottom="20dp"
         />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:textColor="@color/gray_800"
+            android:text="순위"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="2.5"
+            android:textColor="@color/gray_800"
+            android:text="선수"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textAlignment="center"
+            android:textColor="@color/gray_800"
+            android:text="도움"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textAlignment="center"
+            android:textColor="@color/gray_800"
+            android:text="득점"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textAlignment="center"
+            android:textColor="@color/gray_800"
+            android:text="슈팅"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray_800"
+            android:layout_weight="0.5"
+            android:textAlignment="center"
+            android:text="PK"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/gray_800"
+            android:textAlignment="center"
+            android:text="유효 슈팅"/>
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/assist_recyclerview"
