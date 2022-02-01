@@ -1,7 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <TextView
+        android:id="@+id/rank_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:textColor="@color/gray_800"
+        tools:text="1"/>
+    <TextView
+        android:id="@+id/player_name_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="2.5"
+        android:textColor="@color/gray_800"
+        tools:text="Mohamed Salah"/>
+    <TextView
+        android:id="@+id/player_goals_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:textAlignment="center"
+        android:textColor="@color/gray_800"
+        tools:text="16"/>
+    <TextView
+        android:id="@+id/player_assist_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:textAlignment="center"
+        android:textColor="@color/gray_800"
+        tools:text="9"/>
+    <TextView
+        android:id="@+id/total_shots_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:textAlignment="center"
+        android:textColor="@color/gray_800"
+        tools:text="56"/>
+    <TextView
+        android:id="@+id/pk_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/gray_800"
+        android:layout_weight="0.5"
+        android:textAlignment="center"
+        tools:text="2"/>
+    <TextView
+        android:id="@+id/on_shots_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@color/gray_800"
+        android:textAlignment="center"
+        tools:text="36"/>
 
 </LinearLayout>

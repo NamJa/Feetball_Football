@@ -2,6 +2,7 @@ package com.example.feetballfootball.api
 
 import com.example.feetballfootball.api.fixturedetail.MatchDetailResponse
 import com.example.feetballfootball.api.leaguestanding.LeagueStandingsResponse
+import com.example.feetballfootball.api.playerstanding.PlayerStandingResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -45,4 +46,16 @@ interface FootballApi {
         @Query("id") id: Int,
         @Query("timezone") timezone: String
     ): Call<MatchDetailResponse>
+
+    @GET("players/topscorers")
+    fun fetchTopScorers(
+        @Query("league") league: Int,
+        @Query("season") season: Int
+    ): Call<PlayerStandingResponse>
+
+    @GET("players/topassists")
+    fun fetchTopAssists(
+        @Query("league") league: Int,
+        @Query("season") season: Int
+    ): Call<PlayerStandingResponse>
 }

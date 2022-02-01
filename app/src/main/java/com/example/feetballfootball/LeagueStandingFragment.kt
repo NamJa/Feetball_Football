@@ -48,6 +48,8 @@ class LeagueStandingFragment : Fragment() {
         leagueId = arguments?.getInt(ARG_LEAGUE_ID)
         standingViewModel = ViewModelProvider(this).get(StandingViewModel::class.java)
 //        standingLiveData = standingViewModel.fetchStadingLiveData(leagueId!!)
+        footballDataFetchr.fetchPlayerScorerData(39, 2021)
+        footballDataFetchr.fetchPlayerAssistData(39, 2021)
     }
 
     override fun onCreateView(

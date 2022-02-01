@@ -11,6 +11,8 @@ import com.example.feetballfootball.api.fixturedetail.MatchDetailResponse
 import com.example.feetballfootball.api.leaguestanding.LeagueStandingsResponse
 import com.example.feetballfootball.api.leaguestanding.StandingResponse
 import com.example.feetballfootball.api.leaguestanding.Standings
+import com.example.feetballfootball.api.playerstanding.PlayerStandingResponse
+import com.example.feetballfootball.api.playerstanding.PlayerStandingStatistics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -199,5 +201,58 @@ class FootballDataFetchr {
             }
         })
         return fixtureDetailLiveData
+    }
+
+    /* 리그 득점 및 어시스트 순위*/
+    fun fetchPlayerScorerData(league: Int, season: Int): LiveData<List<PlayerStandingStatistics>> {
+
+        val playerScorerLiveData: MutableLiveData<List<PlayerStandingStatistics>> = MutableLiveData()
+
+        footballApi.fetchTopScorers(league, season).enqueue(object : Callback<PlayerStandingResponse> {
+            override fun onResponse(
+                call: Call<PlayerStandingResponse>,
+                response: Response<PlayerStandingResponse>
+            ) {
+                if(response.isSuccessful) {
+                    val standingResponse: PlayerStandingResponse? = response.body()
+                    val playerStandingResponse: List<PlayerStandingStatistics>? = standingResponse?.response
+                    playerStandingResponse?.let {
+                        Log.d("playerData", it[1].player.name)
+                        Log.d("playerData", it[1].statistics[0].goals.total.toString())
+                        playerScorerLiveData.value = it
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<PlayerStandingResponse>, t: Throwable) {
+                Log.e(FETCHDETAILDATA, "득점 데이터 수신 실패", t)
+            }
+        })
+        return playerScorerLiveData
+    }
+
+    fun fetchPlayerAssistData(league: Int, season: Int): LiveData<List<PlayerStandingStatistics>> {
+        val playerAssistLiveData: MutableLiveData<List<PlayerStandingStatistics>> = MutableLiveData()
+        footballApi.fetchTopAssists(league, season).enqueue(object : Callback<PlayerStandingResponse>{
+            override fun onResponse(
+                call: Call<PlayerStandingResponse>,
+                response: Response<PlayerStandingResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val standingResponse: PlayerStandingResponse? = response.body()
+                    val playerStandingResponse: List<PlayerStandingStatistics>? = standingResponse?.response
+                    playerStandingResponse?.let {
+                        Log.d("playerData", it[1].player.name)
+                        Log.d("playerData", it[1].statistics[0].goals.total.toString())
+                        playerAssistLiveData.value = it
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<PlayerStandingResponse>, t: Throwable) {
+                Log.e(FETCHDETAILDATA, "어시스트 데이터 수신 실패", t)
+            }
+        })
+        return playerAssistLiveData
     }
 }
