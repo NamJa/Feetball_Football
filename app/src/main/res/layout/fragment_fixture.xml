@@ -38,12 +38,6 @@
             android:background="@drawable/ic_arrow_forward"
             android:textSize="18sp" />
     </LinearLayout>
-    <!--    <ProgressBar-->
-    <!--        android:id="@+id/progressbar"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_below="@id/date_container"/>-->
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/league_fixture_recyclerview"
