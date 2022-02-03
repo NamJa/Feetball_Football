@@ -1,12 +1,15 @@
 package com.example.feetballfootball
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.*
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -22,6 +25,8 @@ class LeagueStandingFragment : Fragment() {
     private var leagueCodeMap = mapOf(39 to "Premier League", 140 to "LA LIGA", 135 to "SERIE A", 78 to "BUNDESLIGA", 61 to "LIGUE 1")
     private val tabTexts: List<String> = listOf("팀 순위", "개인 순위")
 
+    private lateinit var mainContainer: LinearLayout
+
     private lateinit var leagueTitle : TextView
     private lateinit var tabs: TabLayout
     private lateinit var viewPager: ViewPager2
@@ -33,8 +38,11 @@ class LeagueStandingFragment : Fragment() {
         super.onCreate(savedInstanceState)
         leagueId = arguments?.getInt(ARG_LEAGUE_ID)
         standingViewModel = ViewModelProvider(this).get(StandingViewModel::class.java)
-        footballDataFetchr.fetchPlayerScorerData(39, 2021)
-        footballDataFetchr.fetchPlayerAssistData(39, 2021)
+
+
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+//        window.statusBarColor = resources.getColor(R.color.black, null)
+//        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
     }
 
     override fun onCreateView(
@@ -43,6 +51,11 @@ class LeagueStandingFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_league_standing, container, false)
         initView(view)
+
+        val window: Window = requireActivity().window
+        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = false
+        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.black)
+
 
         leagueTitle.text = leagueCodeMap[leagueId]
 
@@ -67,6 +80,7 @@ class LeagueStandingFragment : Fragment() {
         return view
     }
     fun initView(view: View) {
+        mainContainer = view.findViewById(R.id.league_standing_container)
         leagueTitle = view.findViewById(R.id.league_title_textview)
         tabs = view.findViewById(R.id.tabLayout)
         viewPager = view.findViewById(R.id.viewPager)

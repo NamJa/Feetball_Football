@@ -6,9 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,10 +28,11 @@ class FixtureFragment : Fragment() {
 
     private lateinit var feetballfootballViewModel: FeetballFootballViewModel
 
-    private lateinit var fixtureData: MutableLiveData<Array<MutableList<FixtureResponse>?>>
     private lateinit var fixtureDataExecute: Array<MutableList<FixtureResponse>?>
     private lateinit var resultData: MutableLiveData<Int>
-    private lateinit var progressBar: ProgressBar
+
+    private lateinit var mainContainer: RelativeLayout
+
     private lateinit var fixtureDateTextView: TextView
     private lateinit var prevButton: Button
     private lateinit var nextButton: Button
@@ -45,10 +51,14 @@ class FixtureFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_fixture, container, false)
+        initView(view)
+
+        // 상단바 색상 및 아이콘 색상 조절
+        val window: Window = requireActivity().window
+        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = true
+        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.white)
+
         Log.d(TAG, currentDate.toString())
-        fixtureDateTextView = view.findViewById(R.id.fixture_date)
-        prevButton = view.findViewById(R.id.prev_fixture_button)
-        nextButton = view.findViewById(R.id.next_fixture_button)
 
         fixtureDateTextView.text = currentDate.toString()
 
@@ -111,6 +121,14 @@ class FixtureFragment : Fragment() {
             }
         )
     }
+
+    private fun initView(view: View) {
+        mainContainer = view.findViewById(R.id.fixture_fragment_main_container)
+        fixtureDateTextView = view.findViewById(R.id.fixture_date)
+        prevButton = view.findViewById(R.id.prev_fixture_button)
+        nextButton = view.findViewById(R.id.next_fixture_button)
+    }
+
     private fun updateUI(fixtureData: MutableList<MutableList<FixtureResponse>>) {
         val adapter = AllFixtureRecyclerViewAdapter(fixtureData)
         allLeaugeFixtureRecyclerView.adapter = adapter
