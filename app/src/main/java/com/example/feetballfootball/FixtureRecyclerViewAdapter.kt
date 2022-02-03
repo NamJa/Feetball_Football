@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.Fixture
 import com.example.feetballfootball.api.FixtureResponse
 import com.example.feetballfootball.api.Teams
-import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 
 class FixtureRecyclerViewAdapter(var context: Context, var fixtureData: MutableList<FixtureResponse>): RecyclerView.Adapter<FixtureRecyclerViewAdapter.DataViewHolder>() {

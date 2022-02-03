@@ -1,6 +1,5 @@
 package com.example.feetballfootball
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.FixtureResponse
 import org.threeten.bp.LocalDate
-import org.threeten.bp.temporal.Temporal
 
 private const val TAG = "FixtureFragment"
 class FixtureFragment : Fragment() {
