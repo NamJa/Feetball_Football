@@ -5,14 +5,13 @@
     android:id="@+id/events_recycler_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="15dp"
-    android:orientation="horizontal">
+    android:layout_marginVertical="15dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginEnd="15dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/eventSigns"
         app:layout_constraintTop_toTopOf="parent">
@@ -32,6 +31,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textColor="@color/black"
+            android:textSize="15sp"
             tools:text="Kevin De Bryne" />
 
         <TextView
@@ -40,16 +40,14 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textColor="@color/black"
+            android:textSize="15sp"
             tools:text="Khalid Khalifa Al Hajri" />
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/eventSigns"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_marginVertical="10dp"
+        android:layout_width="18dp"
+        android:layout_height="67dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,18 +57,24 @@
             android:id="@+id/substitutionICON"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="21dp"
+                android:scaleType="centerInside"
                 android:src="@drawable/arrow_circle_up" />
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="21dp"
+                android:scaleType="centerInside"
                 android:src="@drawable/arrow_circle_down" />
         </LinearLayout>
 
@@ -78,59 +82,91 @@
             android:id="@+id/goal_sign_imageview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/soccer_ball"
             android:visibility="gone"
-            android:src="@drawable/soccer_ball" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/penaltykick_imageview"
             android:layout_width="22dp"
             android:layout_height="30dp"
+            android:src="@drawable/penalty_kick"
             android:visibility="gone"
-            android:src="@drawable/penalty_kick" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/penaltykick_missed_imageview"
             android:layout_width="22dp"
             android:layout_height="30dp"
+            android:src="@drawable/penalty_kick_missed"
             android:visibility="gone"
-            android:src="@drawable/penalty_kick_missed" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/yellowcard_imageview"
             android:layout_width="15dp"
             android:layout_height="22dp"
             android:scaleType="fitXY"
+            android:src="@drawable/yellow_card"
             android:visibility="gone"
-            android:src="@drawable/yellow_card" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/redcard_imageview"
             android:layout_width="15dp"
             android:layout_height="22dp"
             android:scaleType="fitXY"
+            android:src="@drawable/red_card"
             android:visibility="gone"
-            android:src="@drawable/red_card" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/var_awarded_sign_imageview"
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:scaleType="centerInside"
             android:src="@drawable/var_sign"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/var_cancelled_imageview"
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:scaleType="centerInside"
             android:src="@drawable/var_cancelled"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginStart="15dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/eventSigns"
         app:layout_constraintTop_toTopOf="parent">
@@ -148,6 +184,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
+            android:textSize="15sp"
             tools:text="Kevin De Bryne" />
 
         <TextView
@@ -155,6 +192,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
+            android:textSize="15sp"
             tools:text="Khalid Khalifa Al Hajri" />
     </LinearLayout>
 

@@ -24,4 +24,7 @@
     <color name="team_formation">#AFF1CE</color>
     <color name="player_rating_normal">#FF9800</color>
     <color name="player_rating_great">#00E676</color>
+
+    <color name="events_subst_player_in">#43A047</color>
+    <color name="events_subst_player_out">#F44336</color>
 </resources>

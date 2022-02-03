@@ -90,6 +90,10 @@ class FixtureDetailEventsFragment : Fragment() {
                     }
                 }
                 "subst" -> {
+                    homeMainPlayer.setTextColor(resources.getColor(R.color.events_subst_player_in, null))
+                    awayMainPlayer.setTextColor(resources.getColor(R.color.events_subst_player_in, null))
+                    homeAssistPlayer.setTextColor(resources.getColor(R.color.events_subst_player_out, null))
+                    awayAssistPlayer.setTextColor(resources.getColor(R.color.events_subst_player_out, null))
                     setEventsOfPlayer(event, home, 0)
                 }
                 "Card" -> {
