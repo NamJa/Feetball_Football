@@ -45,7 +45,7 @@ class FixtureDetailFragment : Fragment() {
     private lateinit var tabs: TabLayout
     private lateinit var appBarLayout: AppBarLayout
 
-    private val tabTexts: List<String> = listOf("라인업", "통계")
+    private val tabTexts: List<String> = listOf("이벤트", "라인업", "통계")
 
     private val fadeIn by lazy {
         AnimationUtils.loadAnimation(context, R.anim.fade_in)
@@ -74,11 +74,7 @@ class FixtureDetailFragment : Fragment() {
         initAppbarLayoutAnimation()
         Log.d(TAG, fixtureID.toString())
 
-        tabs.addTab(tabs.newTab().setText("라인업"))
-        tabs.addTab(tabs.newTab().setText("통계"))
-
-
-        val adapter = ThreePagerAdapter(requireActivity(), 2, fixtureID)
+        val adapter = ThreePagerAdapter(requireActivity(), 3, fixtureID)
         viewPager.adapter = adapter
 
         TabLayoutMediator(tabs, viewPager) { tabs, position ->
@@ -276,14 +272,17 @@ class ThreePagerAdapter(
 
     override fun createFragment(position: Int): Fragment {
         when(position) {
-            0 -> {
-                return FixtureDetailLineupFragment.newInstance(fixtureID)
+            0 ->{
+                return FixtureDetailEventsFragment.newInstance(fixtureID)
             }
             1 -> {
+                return FixtureDetailLineupFragment.newInstance(fixtureID)
+            }
+            2 -> {
                 return FixtureDetailStatisticsFragment.newInstance(fixtureID)
             }
             else -> {
-                return FixtureDetailLineupFragment.newInstance(fixtureID)
+                return FixtureDetailEventsFragment.newInstance(fixtureID)
             }
         }
     }
