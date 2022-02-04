@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="0.1"
-        android:background="@color/white" />
+        android:background="?attr/colorSecondary" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -36,7 +36,7 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="3.5"
             android:text="Manchester City"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant" />
 
         <TextView
             android:id="@+id/played_textview"
@@ -45,7 +45,7 @@
             android:layout_weight="0.5"
             android:text="20"
             android:textAlignment="center"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant" />
 
         <TextView
             android:id="@+id/win_textview"
@@ -54,7 +54,7 @@
             android:layout_weight="0.5"
             android:text="16"
             android:textAlignment="center"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant" />
 
         <TextView
             android:id="@+id/draw_textview"
@@ -63,7 +63,7 @@
             android:layout_weight="0.5"
             android:text="2"
             android:textAlignment="center"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant" />
 
         <TextView
             android:id="@+id/lose_textview"
@@ -72,7 +72,7 @@
             android:layout_weight="0.5"
             android:text="2"
             android:textAlignment="center"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant" />
 
         <TextView
             android:id="@+id/goalDiff_textview"
@@ -81,7 +81,7 @@
             android:layout_weight="0.5"
             android:text="39"
             android:textAlignment="center"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant" />
 
         <TextView
             android:id="@+id/points_textview"
@@ -92,7 +92,7 @@
             android:gravity="right"
             android:text="50"
             android:textAlignment="gravity"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant" />
     </LinearLayout>
 
 </LinearLayout>

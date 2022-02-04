@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.4"
         android:textAlignment="center"
-        android:textColor="@color/gray_800"
+        android:textColor="?attr/colorSecondaryVariant"
         tools:text="1" />
 
     <ImageView
@@ -28,7 +28,7 @@
         android:layout_marginStart="10dp"
         android:layout_weight="2"
         android:gravity="center"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorPrimaryVariant"
         android:textStyle="bold"
         tools:text="Trent Alexander Arnold" />
 
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorPrimaryVariant"
         android:textStyle="bold"
         tools:text="10" />
 
@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:textAlignment="center"
-        android:textColor="@color/gray_800"
+        android:textColor="?attr/colorSecondaryVariant"
         tools:text="2" />
 
     <TextView
@@ -57,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:textAlignment="center"
-        android:textColor="@color/gray_800"
+        android:textColor="?attr/colorSecondaryVariant"
         tools:text="56" />
 
     <TextView
@@ -66,7 +66,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:textAlignment="center"
-        android:textColor="@color/gray_800"
+        android:textColor="?attr/colorSecondaryVariant"
         tools:text="2" />
 
     <TextView
@@ -75,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAlignment="center"
-        android:textColor="@color/gray_800"
+        android:textColor="?attr/colorSecondaryVariant"
         tools:text="36" />
 
 </LinearLayout>

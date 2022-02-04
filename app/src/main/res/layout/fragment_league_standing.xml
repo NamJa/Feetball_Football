@@ -4,23 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/league_standing_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSecondary"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="@color/black">
+        android:layout_height="50dp"
+        android:background="?attr/colorOnSecondary">
 
         <TextView
             android:id="@+id/league_title_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginLeft="30dp"
-            android:background="@color/black"
-            android:textColor="@color/white"
+            android:layout_marginStart="30dp"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="30sp"
             android:textStyle="bold"
             tools:text="PremierLeague" />
@@ -30,7 +29,7 @@
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/black"
+        android:background="?attr/colorOnSecondary"
         app:tabTextColor="?attr/colorPrimary" />
 
     <androidx.viewpager2.widget.ViewPager2

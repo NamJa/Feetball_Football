@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="?attr/colorOnSecondary"
     android:orientation="vertical">
 
 
@@ -89,5 +89,6 @@
         android:id="@+id/league_standing_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/colorSecondary"
         android:layout_marginEnd="1dp" />
 </LinearLayout>
