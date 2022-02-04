@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="19sp"
             tools:text="45'" />
 
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="15sp"
             tools:text="Kevin De Bryne" />
 
@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="15sp"
             tools:text="Khalid Khalifa Al Hajri" />
     </LinearLayout>
@@ -58,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -94,6 +94,7 @@
             android:layout_width="22dp"
             android:layout_height="30dp"
             android:src="@drawable/penalty_kick"
+            app:tint="?attr/colorPrimaryVariant"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -105,6 +106,7 @@
             android:layout_width="22dp"
             android:layout_height="30dp"
             android:src="@drawable/penalty_kick_missed"
+            app:tint="?attr/colorPrimaryVariant"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -141,6 +143,7 @@
             android:layout_height="22dp"
             android:scaleType="centerInside"
             android:src="@drawable/var_sign"
+            app:tint="?attr/colorPrimaryVariant"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -153,6 +156,7 @@
             android:layout_height="22dp"
             android:scaleType="centerInside"
             android:src="@drawable/var_cancelled"
+            app:tint="?attr/colorPrimaryVariant"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -175,7 +179,7 @@
             android:id="@+id/away_elapsed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="19sp"
             tools:text="45'" />
 
@@ -183,7 +187,7 @@
             android:id="@+id/away_main_player"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="15sp"
             tools:text="Kevin De Bryne" />
 
@@ -191,7 +195,7 @@
             android:id="@+id/away_assist_player"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="15sp"
             tools:text="Khalid Khalifa Al Hajri" />
     </LinearLayout>
