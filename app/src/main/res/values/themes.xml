@@ -14,5 +14,6 @@
         <!-- Customize your theme here. -->
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:windowBackground">@color/white</item>
+        <item name="appBarLayoutStyle">@color/white</item>
     </style>
 </resources>

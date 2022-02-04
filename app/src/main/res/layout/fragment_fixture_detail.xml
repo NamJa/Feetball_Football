@@ -28,7 +28,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="?attr/appBarLayoutStyle">
 
                 <LinearLayout
                     android:id="@+id/dummySpace"
@@ -51,7 +52,7 @@
                         android:layout_weight="1"
                         android:maxLines="2"
                         android:textAlignment="center"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/colorPrimaryVariant"
                         android:textStyle="bold"
                         tools:text="Manchester City" />
 
@@ -61,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1.35"
                         android:textAlignment="center"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/colorPrimaryVariant"
                         android:textStyle="bold"
                         tools:text="종료됨" />
 
@@ -72,7 +73,7 @@
                         android:layout_weight="1"
                         android:maxLines="2"
                         android:textAlignment="center"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/colorPrimaryVariant"
                         android:textStyle="bold"
                         tools:text="Borussia Mönchengladbach" />
                 </LinearLayout>
@@ -99,7 +100,7 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_league"
                         android:visibility="invisible"
-                        app:tint="@color/black" />
+                        app:tint="?attr/colorPrimaryVariant" />
 
                     <TextView
                         android:id="@+id/awayteam_scorer_textview"
@@ -111,15 +112,16 @@
                 </LinearLayout>
 
 
-
             </RelativeLayout>
 
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/fixture_detail_tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="?attr/appBarLayoutStyle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -129,19 +131,20 @@
         android:fillViewport="true"
         android:scrollbars="none"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            >
+            android:background="?attr/colorOnPrimary">
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
@@ -162,7 +165,7 @@
         android:layout_height="wrap_content"
         android:text="        "
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="?attr/colorPrimaryVariant"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_behavior=".behavior.BehaviorScoreTextView" />
