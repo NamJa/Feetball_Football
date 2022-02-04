@@ -12,12 +12,15 @@ private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks, FixtureRecyclerViewAdapter.Callbacks {
     private lateinit var tabLayout: TabLayout
 
-    val footballDataFetchr = FootballDataFetchr()
-    private lateinit var tabItem1: TabItem
-    private lateinit var tabItem2: TabItem
-    private lateinit var tabItem3: TabItem
+    private var selectedTabPosition = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        savedInstanceState?.let {
+            // Tab을 선택한 상태에서 DarkMode 전환 같은
+            // onCreate()를 호출하는 동작을 하게 되면 0번째 인덱스의 탭을 선택하는 문제 해결
+            selectedTabPosition = it.getInt("selectedTabPos")
+        }
         setContentView(R.layout.activity_main)
         AndroidThreeTen.init(this)
 
@@ -28,10 +31,13 @@ class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks, FixtureRecy
             showFragment(tabPos = 0)
         }
 
+        val tab: TabLayout.Tab = tabLayout.getTabAt(selectedTabPosition)!!
+        tab.select()
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
                     showFragment(tab.position)
+                    selectedTabPosition = tab.position
                 }
             }
 
@@ -43,9 +49,16 @@ class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks, FixtureRecy
             }
         })
 
-        //footballDataFetchr.fetchFootballFixtures("2021-12-27", 39, 2021)
         // fragment 생성 예정
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.run {
+            putInt("selectedTabPos", selectedTabPosition)
+        }
+        super.onSaveInstanceState(outState)
+    }
+
     fun showFragment(tabPos: Int) {
         when(tabPos) {
             0 -> {
