@@ -201,6 +201,9 @@
         android:id="@+id/coach_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/fixture_recycler_item_bg"
+        android:layout_marginHorizontal="7dp"
+        android:layout_marginTop="2dp"
         android:orientation="vertical"
         android:padding="15dp">
 
@@ -208,7 +211,7 @@
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:text="감독"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -237,7 +240,7 @@
                     android:maxLines="1"
                     android:textAlignment="center"
                     tools:text="Pep Guardiloa"
-                    android:textColor="@color/black" />
+                    android:textColor="?attr/colorPrimaryVariant" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"
@@ -262,7 +265,7 @@
                     android:maxLines="1"
                     android:textAlignment="center"
                     tools:text="Antonio Conte"
-                    android:textColor="@color/black" />
+                    android:textColor="?attr/colorPrimaryVariant" />
             </LinearLayout>
         </LinearLayout>
 
@@ -273,13 +276,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_marginHorizontal="7dp"
+        android:layout_marginTop="7dp"
+        android:background="@drawable/fixture_recycler_item_bg"
         android:padding="15dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:text="교체 명단"
-            android:textColor="@color/black"/>
+            android:textColor="?attr/colorPrimaryVariant"/>
 
         <LinearLayout
             android:layout_width="match_parent"

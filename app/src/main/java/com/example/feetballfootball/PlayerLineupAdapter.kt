@@ -30,8 +30,6 @@ class PlayerLineupAdapter(
             playerName = itemView.findViewById(R.id.player_name_textview)
             playerRating = itemView.findViewById(R.id.player_rating)
             playerNumber = itemView.findViewById(R.id.player_number_textview)
-            if (isSubsitute)
-                playerName.setTextColor(context.resources.getColorStateList(R.color.black, null))
         }
         fun bindPlayerImage(id: Int) {
             Picasso.get()

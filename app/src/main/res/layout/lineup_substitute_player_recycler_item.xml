@@ -47,10 +47,10 @@
             android:layout_alignParentBottom="true"
             android:ellipsize="end"
             android:maxLines="1"
+            android:elevation="20dp"
             android:textAlignment="center"
-            android:textColor="@color/white"
-            tools:text="Wan-Bissaca"
-            tools:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant"
+            tools:text="Wan-Bissaca" />
 
 
     </RelativeLayout>

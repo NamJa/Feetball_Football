@@ -41,8 +41,6 @@ class FixtureDetailLineupFragment : Fragment() {
     private lateinit var homeSubsLineupRecyclerView: RecyclerView
     private lateinit var awaySubsLineupRecyclerView: RecyclerView
 
-    private var homeGoalPost: MutableList<LinearLayout> = mutableListOf()
-    private  var awayGoalPost: MutableList<LinearLayout> = mutableListOf()
     var startLineup: MutableList<MutableList<PlayerData>> = mutableListOf()
     var playerData: MutableList<PlayerData> = mutableListOf()
 
@@ -63,8 +61,6 @@ class FixtureDetailLineupFragment : Fragment() {
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
             Observer {
-//                it[0].lineups[0].startXI[0]
-//                val lineupData = it[0].lineups[0].startXI[0].player.grid
                 var lineupData = it[0].lineups[0]
 
                 for (teamIndex in 0..1) {
@@ -115,6 +111,7 @@ class FixtureDetailLineupFragment : Fragment() {
                         Picasso.get()
                             .load(it[0].lineups[teamIndex].coach.photo)
                             .into(homeCoachImage)
+                        homeCoachImage.clipToOutline = true
 
                         homeSubsLineupRecyclerView.adapter = PlayerLineupAdapter(requireContext(), playerData, teamRating, isSubsitute = true)
                         homeSubsLineupRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -125,6 +122,7 @@ class FixtureDetailLineupFragment : Fragment() {
                         Picasso.get()
                             .load(it[0].lineups[teamIndex].coach.photo)
                             .into(awayCoachImage)
+                        awayCoachImage.clipToOutline = true
 
                         awaySubsLineupRecyclerView.adapter = PlayerLineupAdapter(requireContext(), playerData, teamRating, isSubsitute = true)
                         awaySubsLineupRecyclerView.layoutManager = LinearLayoutManager(context)
