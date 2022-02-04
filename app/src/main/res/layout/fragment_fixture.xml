@@ -4,40 +4,45 @@
     android:id="@+id/fixture_fragment_main_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorOnPrimary"
     tools:context=".FixtureFragment">
 
     <LinearLayout
         android:id="@+id/date_container"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp">
+        android:background="?attr/colorOnSecondary"
+        android:gravity="center">
 
-        <Button
-            android:id="@+id/prev_fixture_button"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_arrow_back"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/fixture_date"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:gravity="center_vertical"
-            android:textAlignment="gravity"
-            android:textColor="@color/black"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            tools:text="2021-12-29" />
+            android:layout_marginVertical="10dp">
 
-        <Button
-            android:id="@+id/next_fixture_button"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_arrow_forward"
-            android:textSize="18sp" />
+            <ImageView
+                android:id="@+id/prev_fixture_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/ic_arrow_back" />
+
+            <TextView
+                android:id="@+id/fixture_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="20dp"
+                android:textAlignment="gravity"
+                android:textColor="?attr/colorPrimaryVariant"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:text="2021-12-29" />
+
+            <ImageView
+                android:id="@+id/next_fixture_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/ic_arrow_forward" />
+        </LinearLayout>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -45,6 +50,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/date_container"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="15dp" />
+        android:layout_marginHorizontal="5dp" />
 </RelativeLayout>

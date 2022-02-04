@@ -8,11 +8,13 @@
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/arrow_circle_up_.xml" value="0.34324324324324323" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/circle_progressbar.xml" value="0.34324324324324323" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/drawable_line.xml" value="0.34324324324324323" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/fixture_recycler_item_bg.xml" value="0.1625" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/horizon_progressbar.xml" value="0.34324324324324323" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/horizon_seekbar.xml" value="0.34324324324324323" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/horizontal_seekbar.xml" value="0.34324324324324323" />
-        <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/ic_arrow_back.xml" value="0.21856540084388185" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/ic_arrow_back.xml" value="0.2" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/ic_arrow_forward.xml" value="0.21856540084388185" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/ic_baseline_arrow_back_ios_new_24.xml" value="0.21666666666666667" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/ic_baseline_arrow_circle_down_24.xml" value="0.34324324324324323" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/ic_baseline_arrow_circle_left_24.xml" value="0.34324324324324323" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/ic_fixture.xml" value="0.3764102564102564" />
@@ -20,6 +22,7 @@
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/ic_news.xml" value="0.3764102564102564" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/player_face_bg_circle.xml" value="0.34324324324324323" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/player_rating_bg_circle.xml" value="0.2972222222222222" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/recyclerview_divider.xml" value="0.1625" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/red_card.xml" value="0.34324324324324323" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/seek_thumb.xml" value="0.34324324324324323" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/drawable/soccer_ball.xml" value="0.34324324324324323" />

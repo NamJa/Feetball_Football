@@ -39,10 +39,6 @@ class LeagueStandingFragment : Fragment() {
         leagueId = arguments?.getInt(ARG_LEAGUE_ID)
         standingViewModel = ViewModelProvider(this).get(StandingViewModel::class.java)
 
-
-//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-//        window.statusBarColor = resources.getColor(R.color.black, null)
-//        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
     }
 
     override fun onCreateView(
@@ -52,9 +48,9 @@ class LeagueStandingFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_league_standing, container, false)
         initView(view)
 
-        val window: Window = requireActivity().window
-        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = false
-        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.black)
+//        val window: Window = requireActivity().window
+//        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = false
+//        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.black)
 
 
         leagueTitle.text = leagueCodeMap[leagueId]

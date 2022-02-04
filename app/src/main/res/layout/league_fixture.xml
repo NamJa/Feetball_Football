@@ -3,23 +3,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="3dp"
+    android:layout_marginVertical="7dp"
+    android:background="@drawable/fixture_recycler_item_bg"
+    android:elevation="2dp"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/league_title"
-        android:gravity=""
         android:layout_width="wrap_content"
         android:layout_height="40sp"
-        tools:text="Premier League"
-        android:textStyle="bold"
-        android:textColor="@color/black"
+        android:layout_marginStart="20dp"
+        android:gravity=""
+        android:textColor="?attr/colorPrimaryVariant"
         android:textSize="20sp"
-        tools:background="@color/teal_200"/>
+        android:textStyle="bold"
+        tools:background="@color/teal_200"
+        tools:text="Premier League" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="10dp"
         android:id="@+id/fixture_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" />
 
 </LinearLayout>

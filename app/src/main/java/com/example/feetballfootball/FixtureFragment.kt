@@ -7,11 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.MutableLiveData
@@ -34,8 +32,8 @@ class FixtureFragment : Fragment() {
     private lateinit var mainContainer: RelativeLayout
 
     private lateinit var fixtureDateTextView: TextView
-    private lateinit var prevButton: Button
-    private lateinit var nextButton: Button
+    private lateinit var prevButton: ImageView
+    private lateinit var nextButton: ImageView
     private lateinit var allLeaugeFixtureRecyclerView: RecyclerView
 
     var currentDate = LocalDate.now()
@@ -53,10 +51,10 @@ class FixtureFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_fixture, container, false)
         initView(view)
 
-        // 상단바 색상 및 아이콘 색상 조절
-        val window: Window = requireActivity().window
-        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = true
-        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.white)
+//        // 상단바 색상 및 아이콘 색상 조절
+//        val window: Window = requireActivity().window
+//        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = true
+//        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.white)
 
         Log.d(TAG, currentDate.toString())
 
@@ -78,11 +76,12 @@ class FixtureFragment : Fragment() {
         //fixtureData = feetballfootballViewModel.fixtureData
         fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
         resultData = feetballfootballViewModel.resultData
+
         allLeaugeFixtureRecyclerView = view.findViewById(R.id.league_fixture_recyclerview) as RecyclerView
         allLeaugeFixtureRecyclerView.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         allLeaugeFixtureRecyclerView.layoutManager = LinearLayoutManager(context)
-
-
+        val dividerItemDecoration = DividerItemDecoration(ContextCompat.getDrawable(requireContext(), R.drawable.recyclerview_divider)!!)
+        allLeaugeFixtureRecyclerView.addItemDecoration(dividerItemDecoration)
         return view
     }
 

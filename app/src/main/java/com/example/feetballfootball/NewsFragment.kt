@@ -27,10 +27,10 @@ class NewsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_news, container, false)
         initView(view)
 
-        // 상단바 색상 및 아이콘 색상 조절
-        val window: Window = requireActivity().window
-        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = true
-        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.white)
+//        // 상단바 색상 및 아이콘 색상 조절
+//        val window: Window = requireActivity().window
+//        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = true
+//        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.white)
 
         return view
     }
