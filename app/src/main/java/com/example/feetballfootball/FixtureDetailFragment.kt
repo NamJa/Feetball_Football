@@ -131,7 +131,7 @@ class FixtureDetailFragment : Fragment() {
                 // 득점 기록 처리
                 it.get(0).events?.let {
                     it.forEach{
-                        if (it.type == "Goal") {
+                        if (it.type == "Goal" && it.detail != "Missed Penalty") {
                             goalIcon.visibility = View.VISIBLE
                             val extraTime = it.time.extra.toString() ?: ""
                             if (it.team.id == HomeAwayTeamIDList[0]) {
