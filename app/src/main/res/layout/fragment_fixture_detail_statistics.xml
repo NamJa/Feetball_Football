@@ -26,7 +26,7 @@
             android:text="요약"
             android:textAlignment="center"
 
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="15sp" />
 
         <View
@@ -54,7 +54,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:text="점유율"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="12sp" />
 
         <ProgressBar
@@ -79,7 +79,7 @@
             android:layout_marginTop="15dp"
             android:fontFamily="sans-serif-black"
             android:paddingLeft="40dp"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="30sp"
             tools:text="31%" />
 
@@ -94,7 +94,7 @@
             android:fontFamily="sans-serif-black"
             android:paddingRight="40dp"
             android:textAlignment="textEnd"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="30sp"
             tools:text="69%" />
 
@@ -112,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 tools:text="7" />
@@ -124,7 +124,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="총 슈팅"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="12sp" />
 
             <TextView
@@ -134,7 +134,7 @@
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
                 android:textAlignment="textEnd"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="17sp"
                 tools:text="14" />
         </LinearLayout>
@@ -164,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 tools:text="4" />
@@ -176,7 +176,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="코너킥"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="12sp" />
 
             <TextView
@@ -186,7 +186,7 @@
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
                 android:textAlignment="textEnd"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="17sp"
                 tools:text="6" />
         </LinearLayout>
@@ -224,7 +224,7 @@
             android:text="슈팅"
             android:textAlignment="center"
 
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="15sp" />
 
         <View
@@ -256,7 +256,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:text="슈팅 정확도"
-                android:textColor="@color/black" />
+                android:textColor="?attr/colorPrimaryVariant" />
 
             <TextView
                 android:id="@+id/shoot_accur_string_2"
@@ -265,6 +265,7 @@
                 android:layout_below="@id/shoot_accur_string_1"
                 android:layout_centerHorizontal="true"
                 android:text="패스 성공 / 전체"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="11sp" />
 
             <TextView
@@ -277,7 +278,7 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="sans-serif-black"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="30sp"
                 tools:text="29%" />
 
@@ -291,7 +292,7 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="sans-serif-black"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="30sp"
                 tools:text="43%" />
 
@@ -304,7 +305,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 tools:text="233 / 340" />
 
             <TextView
@@ -316,7 +317,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 tools:text="666 / 757" />
         </RelativeLayout>
         <!--   골 포스트 ui 상단   -->
@@ -499,7 +500,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 tools:text="1" />
@@ -511,7 +512,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="막힌 슈팅"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="12sp" />
 
             <TextView
@@ -521,7 +522,7 @@
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
                 android:textAlignment="textEnd"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="17sp"
                 tools:text="2" />
         </LinearLayout>
@@ -550,7 +551,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 tools:text="1" />
@@ -562,7 +563,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="오프사이드"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="12sp" />
 
             <TextView
@@ -572,7 +573,7 @@
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
                 android:textAlignment="textEnd"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="17sp"
                 tools:text="2" />
         </LinearLayout>
@@ -609,7 +610,7 @@
             android:text="패스"
             android:textAlignment="center"
 
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="15sp" />
 
         <View
@@ -637,7 +638,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:text="패스 성공률"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorPrimaryVariant" />
 
         <TextView
             android:id="@+id/pass_accur_string_2"
@@ -646,6 +647,7 @@
             android:layout_below="@id/pass_accur_string_1"
             android:layout_centerHorizontal="true"
             android:text="패스 성공 / 전체"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="11sp" />
 
         <TextView
@@ -658,7 +660,7 @@
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif-black"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="30sp"
             tools:text="69%" />
 
@@ -672,7 +674,7 @@
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif-black"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="30sp"
             tools:text="88%" />
 
@@ -685,7 +687,7 @@
             android:layout_alignParentStart="true"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             tools:text="233 / 340" />
 
         <TextView
@@ -697,7 +699,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             tools:text="666 / 757" />
 
     </RelativeLayout>
@@ -721,7 +723,7 @@
             android:layout_weight="1"
             android:text="반칙"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="15sp" />
 
         <View
@@ -745,7 +747,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="sans-serif-black"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="17sp"
             android:textStyle="bold"
             tools:text="1" />
@@ -757,7 +759,7 @@
             android:fontFamily="sans-serif-black"
             android:text="파울"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="12sp" />
 
         <TextView
@@ -767,7 +769,7 @@
             android:layout_weight="1"
             android:fontFamily="sans-serif-black"
             android:textAlignment="textEnd"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="17sp"
             tools:text="2" />
     </LinearLayout>
@@ -795,7 +797,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="sans-serif-black"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="17sp"
             android:textStyle="bold"
             tools:text="1" />
@@ -807,7 +809,7 @@
             android:fontFamily="sans-serif-black"
             android:text="경고"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="12sp" />
 
         <TextView
@@ -817,7 +819,7 @@
             android:layout_weight="1"
             android:fontFamily="sans-serif-black"
             android:textAlignment="textEnd"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="17sp"
             tools:text="2" />
     </LinearLayout>
@@ -845,7 +847,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="sans-serif-black"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="17sp"
             android:textStyle="bold"
             tools:text="1" />
@@ -857,7 +859,7 @@
             android:fontFamily="sans-serif-black"
             android:text="퇴장"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="12sp" />
 
         <TextView
@@ -867,7 +869,7 @@
             android:layout_weight="1"
             android:fontFamily="sans-serif-black"
             android:textAlignment="textEnd"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorPrimaryVariant"
             android:textSize="17sp"
             tools:text="2" />
     </LinearLayout>
