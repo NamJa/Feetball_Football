@@ -6,25 +6,25 @@
 
 ## 경기 일정 및 상세 정보 - Light & Dark mode
 ### - 경기 일정
-<img src="./images/0205pic/lightmode/fixture_light_1.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/fixture_dark_1.jpg" width="210" height="466">
+<img src="./images/0205pic/lightmode/fixture_light_1.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/fixture_dark_1.jpg" width="220" height="489">
 
 ### - 경기 상세 정보 - Light Mode
-<img src="./images/0205pic/lightmode/fixturedetail_light_events.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_lineups_1.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_lineups_2.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_lineups_3.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_stat_1.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_stat_2.jpg" width="210" height="466">
+<img src="./images/0205pic/lightmode/fixturedetail_light_events.jpg" width="220" height="489"> <img src="./images/0205pic/lightmode/fixturedetail_light_lineups_1.jpg" width="220" height="489"> <img src="./images/0205pic/lightmode/fixturedetail_light_lineups_2.jpg" width="220" height="489"> <img src="./images/0205pic/lightmode/fixturedetail_light_lineups_3.jpg" width="220" height="489"> <img src="./images/0205pic/lightmode/fixturedetail_light_stat_1.jpg" width="220" height="489"> <img src="./images/0205pic/lightmode/fixturedetail_light_stat_2.jpg" width="220" height="489">
 
 ### - 경기 상세 정보 - Dark Mode
-<img src="./images/0205pic/darkmode/fixturedetail_dark_events.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/fixturedetail_dark_lineups_1.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/fixturedetail_dark_lineups_2.jpg" width="210" height="466">
+<img src="./images/0205pic/darkmode/fixturedetail_dark_events.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/fixturedetail_dark_lineups_1.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/fixturedetail_dark_lineups_2.jpg" width="220" height="489">
 
-<img src="./images/0205pic/darkmode/fixturedetail_dark_stat_1.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/fixturedetail_dark_stat_2.jpg" width="210" height="466">
+<img src="./images/0205pic/darkmode/fixturedetail_dark_stat_1.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/fixturedetail_dark_stat_2.jpg" width="220" height="489">
 
 ### 리그 클럽 및 선수 순위 - Light Mode
-<img src="./images/0205pic/lightmode/league_light.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/league_light_epl_clubstanding.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/league_light_epl_playerstanding_1.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/league_light_epl_playerstanding_2.jpg" width="210" height="466">
+<img src="./images/0205pic/lightmode/league_light.jpg" width="220" height="489"> <img src="./images/0205pic/lightmode/league_light_epl_clubstanding.jpg" width="220" height="489"> <img src="./images/0205pic/lightmode/league_light_epl_playerstanding_1.jpg" width="220" height="489"> <img src="./images/0205pic/lightmode/league_light_epl_playerstanding_2.jpg" width="220" height="489">
 
 ### 리그 클럽 및 선수 순위 - Dark Mode
-<img src="./images/0205pic/darkmode/league_dark.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/league_dark_epl_clubstanding.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/league_dark_epl_playerstanding_1.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/league_dark_epl_playerstanding_2.jpg" width="210" height="466">
+<img src="./images/0205pic/darkmode/league_dark.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/league_dark_epl_clubstanding.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/league_dark_epl_playerstanding_1.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/league_dark_epl_playerstanding_2.jpg" width="220" height="489">
 
 
 ### 뉴스 소식
-<img src="./images/0205pic/lightmode/newsfragment.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/newsfragment.jpg" width="210" height="466">
+<img src="./images/0205pic/lightmode/newsfragment.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/newsfragment.jpg" width="220" height="489">
 
 - 네이버 스포츠의 해외 축구 기사를 웹뷰로 출력하거나 Retrofit의 html response로 받아올 예정
 
