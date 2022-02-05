@@ -3,22 +3,33 @@
 ## USED API
 - [API-Sports](https://api-sports.io/documentation/football/v3)
 
-## Screentshots
-### 경기 일정
-<img src="./images/fixture_0107_1.jpg" width="180" height="380"> <img src="./images/fixture_0107_2.jpg" width="180" height="380">
 
-### 리그 순위
-<img src="https://github.com/NamJa/Feetball_Football/blob/master/images/leagues.jpg?raw=true" width="180" height="380"> <img src="./images/standing_0107_1.jpg" width="180" height="380"> <img src="./images/standing_0107_3.jpg" width="180" height="380"> <img src="./images/standing_0107_2.jpg" width="180" height="380">
+## 경기 일정 및 상세 정보 - Light & Dark mode
+### - 경기 일정
+<img src="./images/0205pic/lightmode/fixture_light_1.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/fixture_dark_1.jpg" width="210" height="466">
+
+### - 경기 상세 정보 - Light Mode
+<img src="./images/0205pic/lightmode/fixturedetail_light_events.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_lineups_1.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_lineups_2.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_lineups_3.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_stat_1.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/fixturedetail_light_stat_2.jpg" width="210" height="466">
+
+### - 경기 상세 정보 - Dark Mode
+<img src="./images/0205pic/darkmode/fixturedetail_dark_events.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/fixturedetail_dark_lineups_1.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/fixturedetail_dark_lineups_2.jpg" width="210" height="466">
+
+<img src="./images/0205pic/darkmode/fixturedetail_dark_stat_1.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/fixturedetail_dark_stat_2.jpg" width="210" height="466">
+
+### 리그 클럽 및 선수 순위 - Light Mode
+<img src="./images/0205pic/lightmode/league_light.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/league_light_epl_clubstanding.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/league_light_epl_playerstanding_1.jpg" width="210" height="466"> <img src="./images/0205pic/lightmode/league_light_epl_playerstanding_2.jpg" width="210" height="466">
+
+### 리그 클럽 및 선수 순위 - Dark Mode
+<img src="./images/0205pic/darkmode/league_dark.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/league_dark_epl_clubstanding.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/league_dark_epl_playerstanding_1.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/league_dark_epl_playerstanding_2.jpg" width="210" height="466">
+
 
 ### 뉴스 소식
-<img src="https://github.com/NamJa/Feetball_Football/blob/master/images/newsFragment.jpg?raw=true" width="180" height="380">
+<img src="./images/0205pic/lightmode/newsfragment.jpg" width="210" height="466"> <img src="./images/0205pic/darkmode/newsfragment.jpg" width="210" height="466">
 
-ㅜㅜ
+- 네이버 스포츠의 해외 축구 기사를 웹뷰로 출력하거나 Retrofit의 html response로 받아올 예정
 
 
 ## 소개
-축구에 관심이 많아 제작하게 되었습니다.
-
 
 지원하는 리그는 하단에 표기되어있습니다.
 
@@ -49,7 +60,7 @@ FixtureFragment에서 출력할 구성하는게 제일 골치아팠는데, API �
 - [Coroutine](https://developer.android.com/kotlin/coroutines?hl=ko)
 - [ThreeTenbp](https://www.threeten.org/threetenbp/)
 - [Picasso](https://square.github.io/picasso/)
-- [Material UI](https://material.io/)
+- [Material UI](https://material.io/) - CoorinatorLayout
 
 ## RoadMap
 - 경기 일정
@@ -64,12 +75,14 @@ FixtureFragment에서 출력할 구성하는게 제일 골치아팠는데, API �
     ~~- 평점~~
 - 리그 순위
 
-    - 득점 및 어시스트, 이를 종합한 공격포인트 순위
+    ~~- 득점 및 어시스트, 이를 종합한 공격포인트 순위~~
 
 - 뉴스 수신
 
-    - 언론사 선정 작업중...
+    ~~- 언론사 선정 작업중...~~
+    - 뉴스 페이지 구현 예정
 - 디자인 개선
-    - 다크모드까지 적용 예정
+    
+    ~~- 다크모드까지 적용 예정~~
 
 [상세 로드맵](https://github.com/NamJa/Feetball_Football/projects/2)
