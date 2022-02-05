@@ -3,6 +3,8 @@
 ## USED API
 - [API-Sports](https://api-sports.io/documentation/football/v3)
 
+## Short usage shot
+<img src="./images/0205pic/shortUsed.gif" width="220" height="489">
 
 ## 경기 일정 및 상세 정보 - Light & Dark mode
 ### - 경기 일정
