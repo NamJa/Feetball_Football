@@ -80,13 +80,13 @@ class FixtureDetailEventsFragment : Fragment() {
             when(event.type) {
                 "Goal" -> {
                     if(event.detail == "Normal Goal") {
-                        setEventsOfPlayer(event, home, 1)
+                        setEventsOfPlayer(event, home, 1, isSubstitute = false)
                     } else if(event.detail == "Own Goal") {
-                        setEventsOfPlayer(event, home, 1)
+                        setEventsOfPlayer(event, home, 1, isSubstitute = false)
                     } else if(event.detail == "Penalty") {
-                        setEventsOfPlayer(event, home, 2)
+                        setEventsOfPlayer(event, home, 2, isSubstitute = false)
                     } else if(event.detail == "Missed Penalty") {
-                        setEventsOfPlayer(event, home, 3)
+                        setEventsOfPlayer(event, home, 3, isSubstitute = false)
                     }
                 }
                 "subst" -> {
@@ -94,34 +94,41 @@ class FixtureDetailEventsFragment : Fragment() {
                     awayMainPlayer.setTextColor(resources.getColor(R.color.events_subst_player_in, null))
                     homeAssistPlayer.setTextColor(resources.getColor(R.color.events_subst_player_out, null))
                     awayAssistPlayer.setTextColor(resources.getColor(R.color.events_subst_player_out, null))
-                    setEventsOfPlayer(event, home, 0)
+                    setEventsOfPlayer(event, home, 0, true)
                 }
                 "Card" -> {
                     if (event.detail == "Yellow Card") {
-                        setEventsOfPlayer(event, home, 4)
+                        setEventsOfPlayer(event, home, 4, isSubstitute = false)
                     } else if (event.detail == "Second Yellow Card") {
-                        setEventsOfPlayer(event, home, 4)
+                        setEventsOfPlayer(event, home, 4, isSubstitute = false)
                     } else { // Red Card
-                        setEventsOfPlayer(event, home, 5)
+                        setEventsOfPlayer(event, home, 5, isSubstitute = false)
                     }
                 }
                 "Var" -> {
                     if(event.detail == "Penalty awarded") {
-                        setEventsOfPlayer(event, home, 6)
+                        setEventsOfPlayer(event, home, 6, isSubstitute = false)
                     } else { // VAR check Goal Cancelled
-                        setEventsOfPlayer(event, home, 7)
+                        setEventsOfPlayer(event, home, 7, isSubstitute = false)
                     }
                 }
             }
         }
-        fun setEventsOfPlayer(event: Events, home: Int, visibleViewIndex: Int) {
+        fun setEventsOfPlayer(event: Events, home: Int, visibleViewIndex: Int, isSubstitute: Boolean) {
             val elapsed = if(event.team.id == home) { homeElapsed } else { awayElapsed }
             val mainPlayer = if(event.team.id == home) { homeMainPlayer } else { awayMainPlayer }
             val assistPlayer = if(event.team.id == home) { homeAssistPlayer } else { awayAssistPlayer }
             val extra = if(event.time.extra != null) { "+${event.time.extra}" } else { "" }
             elapsed.text = event.time.elapsed.toString()+extra+"'"
-            mainPlayer.text = event.player.name
-            assistPlayer.text = if(event.assist.name != "null") { event.assist.name } else { "" }
+            if (isSubstitute == false) {
+                mainPlayer.text = event.player.name
+                assistPlayer.text = if (event.assist.name != "null") { event.assist.name } else { "" }
+            } else {
+                // 선수 교체 이벤트의 경우에는 assist가 교체 대상 선수이므로 mainPlayer 자리에 assist.name을 할당한다.
+                // 즉, mainPlayer와 assistPlayer에 할당하는 데이터를 바꾸는것
+                mainPlayer.text = if (event.assist.name != "null") { event.assist.name } else { "" }
+                assistPlayer.text = event.player.name
+            }
             eventSignVisible(visibleViewIndex)
         }
         fun eventSignVisible(signIndex: Int) {
