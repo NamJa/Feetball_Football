@@ -74,25 +74,21 @@ class FixtureDetailFragment : Fragment() {
         initAppbarLayoutAnimation()
         Log.d(TAG, fixtureID.toString())
 
-        val adapter = ThreePagerAdapter(requireActivity(), 3, fixtureID)
-        viewPager.adapter = adapter
+
+        viewPager.adapter = ThreePagerAdapter (requireActivity(), 3, fixtureID)
+        viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         TabLayoutMediator(tabs, viewPager) { tabs, position ->
             tabs.text = tabTexts[position]
         }.attach()
 
-        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                viewPager.setCurrentItem(tab!!.position)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
+        viewPager.registerOnPageChangeCallback (object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                appBarLayout.setExpanded (true)
             }
         })
-
 
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
