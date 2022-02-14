@@ -3,7 +3,6 @@ package com.example.feetballfootball
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import com.jakewharton.threetenabp.AndroidThreeTen
 
@@ -65,21 +64,18 @@ class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks, FixtureRecy
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragment_container, FixtureFragment.newInstance())
-                    .addToBackStack(null)
                     .commit()
             }
             1 -> {
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragment_container, LeaguesFragment.newInstance())
-                    .addToBackStack(null)
                     .commit()
             }
             else -> {
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragment_container, NewsFragment.newInstance())
-                    .addToBackStack(null)
                     .commit()
             }
         }
