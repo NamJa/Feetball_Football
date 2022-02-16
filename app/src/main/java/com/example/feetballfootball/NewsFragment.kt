@@ -5,13 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.webkit.WebView
+import android.webkit.WebViewClient
 
 
 private const val TAG = "NewsFragment"
 class NewsFragment : Fragment() {
 
-    private lateinit var mainContainer: ConstraintLayout
+    private lateinit var webView: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,17 +25,20 @@ class NewsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_news, container, false)
         initView(view)
 
-//        // 상단바 색상 및 아이콘 색상 조절
-//        val window: Window = requireActivity().window
-//        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = true
-//        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.white)
+        webView.apply {
+            settings.javaScriptEnabled = true
+            webViewClient = WebViewClient()
+        }
+        webView.loadUrl("https://sports.news.naver.com/wfootball/index")
 
         return view
     }
 
     private fun initView(view: View) {
-        mainContainer = view.findViewById(R.id.news_fragment_main_container)
+        webView = view.findViewById(R.id.webview)
     }
+
+
 
     companion object {
         @JvmStatic
