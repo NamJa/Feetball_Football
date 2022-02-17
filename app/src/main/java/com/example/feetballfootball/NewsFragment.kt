@@ -7,8 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.OnBackPressedCallback
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebSettingsCompat.FORCE_DARK_OFF
 import androidx.webkit.WebSettingsCompat.FORCE_DARK_ON
@@ -18,7 +20,21 @@ import androidx.webkit.WebViewFeature
 private const val TAG = "NewsFragment"
 class NewsFragment : Fragment() {
 
+    private lateinit var callback: OnBackPressedCallback
     private lateinit var webView: WebView
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(webView.canGoBack())
+                    webView.goBack()
+                else
+                    requireActivity().finish()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +48,9 @@ class NewsFragment : Fragment() {
         initView(view)
 
         webView.apply {
-            settings.javaScriptEnabled = true
+            true.also { settings.javaScriptEnabled = it }
             webViewClient = WebViewClient()
+            webChromeClient = WebChromeClient()
         }
         webView.loadUrl("https://sports.news.naver.com/wfootball/index")
 

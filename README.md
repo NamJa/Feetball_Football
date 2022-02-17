@@ -26,7 +26,7 @@
 
 
 ### 뉴스 소식
-<img src="./images/0205pic/lightmode/newsfragment.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/newsfragment.jpg" width="220" height="489">
+<img src="./images/0205pic/lightmode/news_light.jpg" width="220" height="489"> <img src="./images/0205pic/darkmode/news_dark.jpg" width="220" height="489">
 
 - 네이버 스포츠의 해외 축구 기사를 웹뷰로 출력하거나 Retrofit의 html response로 받아올 예정
 
