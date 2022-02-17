@@ -16,4 +16,5 @@
         <item name="android:windowBackground">@color/white</item>
         <item name="appBarLayoutStyle">@color/white</item>
     </style>
+
 </resources>
