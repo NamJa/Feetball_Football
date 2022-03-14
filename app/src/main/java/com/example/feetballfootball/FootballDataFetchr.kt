@@ -217,9 +217,13 @@ class FootballDataFetchr {
                     val standingResponse: PlayerStandingResponse? = response.body()
                     val playerStandingResponse: List<PlayerStandingStatistics>? = standingResponse?.response
                     playerStandingResponse?.let {
-                        Log.d("playerData", it[1].player.name)
-                        Log.d("playerData", it[1].statistics[0].goals.total.toString())
-                        playerScorerLiveData.value = it
+                        try {
+                            Log.d("playerData", it[1].player.name)
+                            Log.d("playerData", it[1].statistics[0].goals.total.toString())
+                            playerScorerLiveData.value = it
+                        } catch (e: IndexOutOfBoundsException) {
+                            Log.d("playerData", "리그 득점 데이터 로딩중...")
+                        }
                     }
                 }
             }
@@ -242,9 +246,13 @@ class FootballDataFetchr {
                     val standingResponse: PlayerStandingResponse? = response.body()
                     val playerStandingResponse: List<PlayerStandingStatistics>? = standingResponse?.response
                     playerStandingResponse?.let {
-                        Log.d("playerData", it[1].player.name)
-                        Log.d("playerData", it[1].statistics[0].goals.total.toString())
-                        playerAssistLiveData.value = it
+                        try {
+                            Log.d("playerData", it[1].player.name)
+                            Log.d("playerData", it[1].statistics[0].goals.total.toString())
+                            playerAssistLiveData.value = it
+                        } catch (e: IndexOutOfBoundsException) {
+                            Log.d("playerData", "리그 어시스트 데이터 로딩중...")
+                        }
                     }
                 }
             }
