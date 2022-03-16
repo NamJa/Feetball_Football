@@ -32,7 +32,7 @@ private const val API_KEY = "b4be97da4d76733e9ca2391bb8794e5c"
 
 class FootballDataFetchr {
     val leagueCodeList: List<Int> =
-        mutableListOf(39, 140, 135, 78, 61, 45, 48, 528, 143, 81, 137, 66, 2, 3, 531, 848)
+        mutableListOf(39, 140, 135, 78, 61, 45, 48, 528, 143, 81, 137, 66, 553, 2, 3, 531, 848)
     private var fixtureResultLiveData: MutableLiveData<Int> = MutableLiveData()
 
     private val footballApi: FootballApi
