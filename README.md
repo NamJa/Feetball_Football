@@ -48,9 +48,10 @@ FixtureFragment에서 출력할 구성하는게 제일 골치아팠는데, API �
     LA LIGA (Spain)         League Cup (England)        UEFA Europa League
     SERIE A (Italy)         Community Shield (England)  UEFA Super Cup
     BUNDESLIGA (Germany)    Copa del Rey (Spain)        UEFA Europa Conference league
-    LIGUE 1 (France)        DFB Pokal (Germany)
+    LIGUE 1 (France)        DFB Pokal (Germany)         World Cup - Qualification
                             Coppa Italia (Italy)
                             Couppe de France (France)
+                            Spain Super CUP(Spain)
 
 ## Libraries
 - [Retrofit2](https://square.github.io/retrofit/)
