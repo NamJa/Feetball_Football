@@ -31,6 +31,19 @@ private const val FETCHDETAILDATA = "fetchFixtureDetailData"
 private const val API_KEY = "b4be97da4d76733e9ca2391bb8794e5c"
 
 class FootballDataFetchr {
+    /**
+     *  * ***************  League  ******************
+     * 39: EPL, 140: LA LIGA,
+     * 135: SERIE A, 78: BUNDESLIGA,
+     * 61: LIGUE 1,
+     * ****************  Cup  ********************
+     * 45: FA CUP, 48: League CUP,
+     * 528: Community Shield, 143: Copa del Rey,
+     * 81: DFB Pokal, 137: Coppa Italia,
+     * 66: Couppe de France,
+     * **********  UEFA LEAGUE & CUP  ************
+     * 2: UEFA Champions League, 3: UEFA Europa League, 531: Super Cup, 848: UEFA Europa Conference League
+     * */
     val leagueCodeList: List<Int> =
         mutableListOf(39, 140, 135, 78, 61, 45, 48, 528, 143, 81, 137, 66, 553, 2, 3, 531, 848)
     private var fixtureResultLiveData: MutableLiveData<Int> = MutableLiveData()
