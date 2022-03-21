@@ -29,6 +29,6 @@ class FeetballFootballViewModel: ViewModel() {
 
     fun fetchFixtureData(date: String) : Array<MutableList<FixtureResponse>?> {
         currentDate = date
-        return footballDataFetchr.fetchFootballFixturesExecute(date, currentSeason)
+        return footballDataFetchr.fetchFootballFixturesExecute(date)
     }
 }

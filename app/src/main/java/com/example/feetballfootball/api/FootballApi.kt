@@ -31,7 +31,6 @@ interface FootballApi {
     @GET("fixtures")
     fun fetchAllFixtures(
         @Query("date") date: String,
-        @Query("season") season: Int,
         @Query("timezone") timezone: String
     ): Call<FootballResponse>
 

@@ -43,9 +43,11 @@ class FootballDataFetchr {
      * 66: Couppe de France,
      * **********  UEFA LEAGUE & CUP  ************
      * 2: UEFA Champions League, 3: UEFA Europa League, 531: Super Cup, 848: UEFA Europa Conference League
+     * **********  A-Match  ************
+     * 30: World Cup-Qualification Asia, 31: World Cup-Qualification CONCACAF, 32: World Cup-Qualification Europe, 33: World Cup Qualification Oceania, 34: World Cup - Qualification South America
      * */
     val leagueCodeList: List<Int> =
-        mutableListOf(39, 140, 135, 78, 61, 45, 48, 528, 143, 81, 137, 66, 553, 2, 3, 531, 848)
+        mutableListOf(39, 140, 135, 78, 61, 45, 48, 528, 143, 81, 137, 66, 2, 3, 531, 848, 30, 32, 34, 33)
     private var fixtureResultLiveData: MutableLiveData<Int> = MutableLiveData()
 
     private val footballApi: FootballApi
@@ -73,7 +75,7 @@ class FootballDataFetchr {
     }
 
     // /* async 함수 */
-//    fun fetchFootballFixtures(date: String, season: Int) : MutableLiveData<Array<MutableList<FixtureResponse>?>> {
+//    fun fetchFootballFixturesExecute(date: String, season: Int) : MutableLiveData<Array<MutableList<FixtureResponse>?>> {
 ////        var footballDataByLeague: MutableList<List<FixtureResponse>> = mutableListOf(listOf<FixtureResponse>())
 //        var footballDataByLeague = arrayOfNulls<MutableList<FixtureResponse>>(leagueCodeList.size)
 //
@@ -116,14 +118,13 @@ class FootballDataFetchr {
     /*동기 실행 함수*/
     /* 리그 일정 데이터(전 리그)*/
     fun fetchFootballFixturesExecute(
-        date: String,
-        season: Int
+        date: String
     ): Array<MutableList<FixtureResponse>?> {
         var footballDataByLeague = arrayOfNulls<MutableList<FixtureResponse>>(leagueCodeList.size)
 
         thread {
             var data: List<FixtureResponse> = emptyList()
-            val response = footballApi.fetchAllFixtures(date, season, timezone = "Asia/Seoul").execute()
+            val response = footballApi.fetchAllFixtures(date, timezone = "Asia/Seoul").execute()
             CoroutineScope(Dispatchers.Main).launch {
                 if(response.isSuccessful) {
                     val footballResponse: FootballResponse? = response.body()
