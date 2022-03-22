@@ -29,6 +29,7 @@ private const val ARG_FIXTURE_ID = "fixture_id"
 
 class FixtureDetailFragment : Fragment() {
     private var fixtureID: Int = 0
+    private var tabCount: Int = 3
     private lateinit var fixtureDetailViewModel: FixtureDetailViewModel
     private lateinit var fixtureDetailLiveData: LiveData<List<FixtureDetailResponse>>
 
@@ -74,13 +75,6 @@ class FixtureDetailFragment : Fragment() {
         initAppbarLayoutAnimation()
         Log.d(TAG, fixtureID.toString())
 
-
-        viewPager.adapter = ThreePagerAdapter (requireActivity(), 3, fixtureID)
-        viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-
-        TabLayoutMediator(tabs, viewPager) { tabs, position ->
-            tabs.text = tabTexts[position]
-        }.attach()
 
         viewPager.registerOnPageChangeCallback (object :
             ViewPager2.OnPageChangeCallback() {
@@ -141,6 +135,19 @@ class FixtureDetailFragment : Fragment() {
 
                 homeTeamScorerTextView.text = WriteWhoScoredOnTextView(homeTeamScorer)
                 awayTeamScorerTextView.text = WriteWhoScoredOnTextView(awayTeamScorer)
+
+                // 간혹가다 라인업 및 통계 데이터가 제공되지 않는 경우가 있다.
+                if (it.get(0).lineups.isEmpty())
+                    tabCount -= 1
+                if (it.get(0).statistics.isEmpty())
+                    tabCount -= 1
+
+                viewPager.adapter = ThreePagerAdapter (requireActivity(), tabCount, fixtureID)
+                viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+
+                TabLayoutMediator(tabs, viewPager) { tabs, position ->
+                    tabs.text = tabTexts[position]
+                }.attach()
 
             }
         )
