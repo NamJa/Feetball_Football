@@ -19,6 +19,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
+import com.example.feetballfootball.view_model.FixtureDetailViewModel
 
 private const val ARG_FIXTURE_ID = "fixture_id"
 private const val TAG = "FixtureDetailStatisticsFragment"

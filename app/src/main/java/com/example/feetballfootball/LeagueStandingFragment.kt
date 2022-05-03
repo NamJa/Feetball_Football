@@ -1,19 +1,15 @@
 package com.example.feetballfootball
 
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.feetballfootball.view_model.StandingViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -33,7 +29,6 @@ class LeagueStandingFragment : Fragment() {
 
     private lateinit var standingViewModel: StandingViewModel
 
-    private var footballDataFetchr = FootballDataFetchr()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         leagueId = arguments?.getInt(ARG_LEAGUE_ID)

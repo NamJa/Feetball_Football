@@ -14,7 +14,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.feetballfootball.adapter.FixtureRecyclerViewAdapter
 import com.example.feetballfootball.api.FixtureResponse
+import com.example.feetballfootball.view_model.FeetballFootballViewModel
 import org.threeten.bp.LocalDate
 
 private const val TAG = "FixtureFragment"
@@ -76,7 +78,12 @@ class FixtureFragment : Fragment() {
         allLeaugeFixtureRecyclerView = view.findViewById(R.id.league_fixture_recyclerview) as RecyclerView
         allLeaugeFixtureRecyclerView.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         allLeaugeFixtureRecyclerView.layoutManager = LinearLayoutManager(context)
-        val dividerItemDecoration = DividerItemDecoration(ContextCompat.getDrawable(requireContext(), R.drawable.recyclerview_divider)!!)
+        val dividerItemDecoration = com.example.feetballfootball.view_model.DividerItemDecoration(
+            ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.recyclerview_divider
+            )!!
+        )
         allLeaugeFixtureRecyclerView.addItemDecoration(dividerItemDecoration)
         return view
     }

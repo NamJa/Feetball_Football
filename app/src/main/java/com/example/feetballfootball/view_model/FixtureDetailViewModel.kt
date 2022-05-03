@@ -1,8 +1,9 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.view_model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
+import com.example.feetballfootball.util.FootballDataFetchr
 
 class FixtureDetailViewModel: ViewModel() {
     val fixtureDetailLiveData: LiveData<List<FixtureDetailResponse>>

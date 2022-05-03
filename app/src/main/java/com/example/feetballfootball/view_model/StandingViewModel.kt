@@ -1,9 +1,10 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.view_model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.feetballfootball.api.leaguestanding.Standings
 import com.example.feetballfootball.api.playerstanding.PlayerStandingStatistics
+import com.example.feetballfootball.util.FootballDataFetchr
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Year
 

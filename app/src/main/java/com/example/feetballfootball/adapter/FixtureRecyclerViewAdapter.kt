@@ -1,7 +1,6 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.Dimension
 import androidx.recyclerview.widget.RecyclerView
+import com.example.feetballfootball.R
 import com.example.feetballfootball.api.Fixture
 import com.example.feetballfootball.api.FixtureResponse
 import com.example.feetballfootball.api.Teams

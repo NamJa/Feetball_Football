@@ -7,16 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.feetballfootball.adapter.PlayerLineupAdapter
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
 import com.example.feetballfootball.api.fixturedetail.PlayerData
 import com.example.feetballfootball.api.fixturedetail.PlayersByTeamData
+import com.example.feetballfootball.view_model.FixtureDetailViewModel
 import com.squareup.picasso.Picasso
 
 private const val ARG_FIXTURE_ID = "fixture_id"

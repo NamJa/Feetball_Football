@@ -1,7 +1,6 @@
 package com.example.feetballfootball
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.fixturedetail.Events
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
+import com.example.feetballfootball.view_model.FixtureDetailViewModel
 
 private const val TAG = "FixtureDetailEventsFragment"
 private const val ARG_FIXTURE_ID = "fixture_id"

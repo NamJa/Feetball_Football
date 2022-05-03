@@ -2,7 +2,7 @@ package com.example.feetballfootball
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import com.example.feetballfootball.adapter.FixtureRecyclerViewAdapter
 import com.google.android.material.tabs.TabLayout
 import com.jakewharton.threetenabp.AndroidThreeTen
 

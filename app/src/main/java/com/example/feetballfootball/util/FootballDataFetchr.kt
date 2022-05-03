@@ -1,4 +1,4 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.util
 
 import android.util.Log
 import androidx.lifecycle.LiveData

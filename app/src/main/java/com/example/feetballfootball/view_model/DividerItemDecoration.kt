@@ -1,4 +1,4 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.view_model
 
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable

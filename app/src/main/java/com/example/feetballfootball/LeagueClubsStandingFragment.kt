@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.api.leaguestanding.Standings
 import com.example.feetballfootball.api.leaguestanding.Team
+import com.example.feetballfootball.view_model.StandingViewModel
 import com.squareup.picasso.Picasso
 
 private const val ARG_LEAGUE_ID = "LEAGUE_ID"

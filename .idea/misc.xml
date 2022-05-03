@@ -52,6 +52,18 @@
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/lineup_substitute_player_recycler_item.xml" value="0.33515625" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/scorer_recycler_item.xml" value="0.2" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/FeetballFootball/app/src/main/res/layout/standing_item.xml" value="0.2" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/drawable/fixture_recycler_item_bg.xml" value="0.154" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/drawable/player_face_bg_circle.xml" value="0.1185" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/activity_main.xml" value="0.15" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/fixture.xml" value="0.1" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/fragment_fixture.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/fragment_fixture_detail.xml" value="0.14074074074074075" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/fragment_fixture_detail_lineup.xml" value="0.4" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/fragment_league_standing.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/fragment_leagues.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/fragment_news.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/league_fixture.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/lineup_player_recycler_item.xml" value="0.1" />
       </map>
     </option>
   </component>

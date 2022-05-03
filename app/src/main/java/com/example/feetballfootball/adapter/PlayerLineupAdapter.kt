@@ -1,8 +1,7 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.adapter
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
+import com.example.feetballfootball.R
 import com.example.feetballfootball.api.fixturedetail.PlayerData
 import com.example.feetballfootball.api.fixturedetail.PlayersByTeamData
 import com.squareup.picasso.Picasso
@@ -35,7 +35,9 @@ class PlayerLineupAdapter(
             Picasso.get()
                 .load("https://media.api-sports.io/football/players/${id}.png")
                 .into(playerImage)
-            playerImage.background = AppCompatResources.getDrawable(context, R.drawable.player_face_bg_circle)
+            playerImage.background = AppCompatResources.getDrawable(context,
+                R.drawable.player_face_bg_circle
+            )
             playerImage.clipToOutline = true
         }
         fun bindPlayerRating(id: Int) {
