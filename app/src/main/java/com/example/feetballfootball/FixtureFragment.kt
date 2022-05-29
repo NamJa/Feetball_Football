@@ -30,6 +30,7 @@ class FixtureFragment : Fragment() {
     private lateinit var mainContainer: RelativeLayout
 
     private lateinit var fixtureDateTextView: TextView
+    private lateinit var noFixtureTextView: TextView
     private lateinit var prevButton: ImageView
     private lateinit var nextButton: ImageView
     private lateinit var allLeaugeFixtureRecyclerView: RecyclerView
@@ -54,8 +55,6 @@ class FixtureFragment : Fragment() {
 //        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = true
 //        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.white)
 
-        Log.d(TAG, currentDate.toString())
-
         fixtureDateTextView.text = currentDate.toString()
 
 
@@ -75,7 +74,6 @@ class FixtureFragment : Fragment() {
         fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
         resultData = feetballfootballViewModel.resultData
 
-        allLeaugeFixtureRecyclerView = view.findViewById(R.id.league_fixture_recyclerview) as RecyclerView
         allLeaugeFixtureRecyclerView.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         allLeaugeFixtureRecyclerView.layoutManager = LinearLayoutManager(context)
         val dividerItemDecoration = com.example.feetballfootball.view_model.DividerItemDecoration(
@@ -119,7 +117,14 @@ class FixtureFragment : Fragment() {
                         fixtureFinalData.add(fixtureDataExecute[i]!!)
                     }
                 }
-                updateUI(fixtureFinalData)
+                if (fixtureFinalData.size != 0) {
+                    noFixtureTextView.visibility = View.GONE
+                    allLeaugeFixtureRecyclerView.visibility = View.VISIBLE
+                    updateUI(fixtureFinalData)
+                } else {
+                    noFixtureTextView.visibility = View.VISIBLE
+                    allLeaugeFixtureRecyclerView.visibility = View.GONE
+                }
             }
         )
     }
@@ -127,8 +132,10 @@ class FixtureFragment : Fragment() {
     private fun initView(view: View) {
         mainContainer = view.findViewById(R.id.fixture_fragment_main_container)
         fixtureDateTextView = view.findViewById(R.id.fixture_date)
+        noFixtureTextView = view.findViewById(R.id.no_fixtures_TextView)
         prevButton = view.findViewById(R.id.prev_fixture_button)
         nextButton = view.findViewById(R.id.next_fixture_button)
+        allLeaugeFixtureRecyclerView = view.findViewById(R.id.league_fixture_recyclerview)
     }
 
     private fun updateUI(fixtureData: MutableList<MutableList<FixtureResponse>>) {
