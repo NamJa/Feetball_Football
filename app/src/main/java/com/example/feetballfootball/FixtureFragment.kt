@@ -76,7 +76,7 @@ class FixtureFragment : Fragment() {
 
         allLeaugeFixtureRecyclerView.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         allLeaugeFixtureRecyclerView.layoutManager = LinearLayoutManager(context)
-        val dividerItemDecoration = com.example.feetballfootball.view_model.DividerItemDecoration(
+        val dividerItemDecoration = com.example.feetballfootball.util.DividerItemDecoration(
             ContextCompat.getDrawable(
                 requireContext(),
                 R.drawable.recyclerview_divider
