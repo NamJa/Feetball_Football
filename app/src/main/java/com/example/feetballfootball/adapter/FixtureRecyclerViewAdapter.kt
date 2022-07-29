@@ -21,6 +21,7 @@ class FixtureRecyclerViewAdapter(var context: Context, var fixtureData: MutableL
     interface Callbacks{
         fun onFixtureSelected(fixtureID: Int)
     }
+                                        //activity에서 구현하는 경우에만 context대입한다.
     private var callbacks: Callbacks = context as Callbacks
     // 여기에서 생성한 Callbacks 인터페이스를 FixtureFragment를 호스팅하는 MainActivity에서 구현한다.
     // FixtureFragment에서 인터페이스를 선언하는 편이 좀 더 좋았겠지만, 중첩 RecyclerView를 구현한 관계로 가독성을 위해서 여기에 선언함.
