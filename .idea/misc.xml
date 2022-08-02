@@ -65,6 +65,10 @@
         <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/league_fixture.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/ddori/AndroidStudioProjects/Feetball_Football/app/src/main/res/layout/lineup_player_recycler_item.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_arrow_back.xml" value="0.1305" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25317028985507245" />
+        <entry key="app/src/main/res/layout/assist_recycler_item.xml" value="0.25317028985507245" />
+        <entry key="app/src/main/res/layout/fixture.xml" value="0.25317028985507245" />
+        <entry key="app/src/main/res/layout/fragment_fixture.xml" value="0.25317028985507245" />
       </map>
     </option>
   </component>
