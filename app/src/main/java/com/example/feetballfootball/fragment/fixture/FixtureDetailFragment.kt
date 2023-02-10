@@ -1,4 +1,4 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.fragment.fixture
 
 import android.os.Bundle
 import android.util.Log
@@ -17,8 +17,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.feetballfootball.R
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
-import com.example.feetballfootball.view_model.FixtureDetailViewModel
+import com.example.feetballfootball.viewModel.FixtureDetailViewModel
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator

@@ -1,4 +1,4 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.fragment.fixture
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -13,9 +13,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.feetballfootball.R
 import com.example.feetballfootball.api.fixturedetail.Events
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
-import com.example.feetballfootball.view_model.FixtureDetailViewModel
+import com.example.feetballfootball.viewModel.FixtureDetailViewModel
 
 private const val TAG = "FixtureDetailEventsFragment"
 private const val ARG_FIXTURE_ID = "fixture_id"

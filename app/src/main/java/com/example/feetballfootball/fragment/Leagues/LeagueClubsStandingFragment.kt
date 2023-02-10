@@ -1,4 +1,4 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.fragment.Leagues
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -13,9 +13,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.feetballfootball.R
 import com.example.feetballfootball.api.leaguestanding.Standings
 import com.example.feetballfootball.api.leaguestanding.Team
-import com.example.feetballfootball.view_model.StandingViewModel
+import com.example.feetballfootball.viewModel.StandingViewModel
 import com.squareup.picasso.Picasso
 
 private const val ARG_LEAGUE_ID = "LEAGUE_ID"
@@ -108,15 +109,23 @@ class LeagueClubsStandingFragment : Fragment() {
             data.get(position).description?.let { description ->
                 if(description.startsWith('P')){
                     if(description.contains("Champ")) {
-                        holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.teal_200))
+                        holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(),
+                            R.color.teal_200
+                        ))
                     } else if (description.contains("Europa")) {
-                        holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.indigo_500))
+                        holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(),
+                            R.color.indigo_500
+                        ))
                     } else {
-                        holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_300))
+                        holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(),
+                            R.color.green_300
+                        ))
                     }
                 } else {
                     // 강등 시 색 지정
-                    holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red_600))
+                    holder.posColor.setBackgroundColor(ContextCompat.getColor(requireContext(),
+                        R.color.red_600
+                    ))
                 }
             }
             holder.rank.text =      data.get(position).rank.toString()

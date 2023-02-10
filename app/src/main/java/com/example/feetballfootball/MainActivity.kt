@@ -3,6 +3,11 @@ package com.example.feetballfootball
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.feetballfootball.adapter.FixtureRecyclerViewAdapter
+import com.example.feetballfootball.fragment.Leagues.LeagueStandingFragment
+import com.example.feetballfootball.fragment.Leagues.LeaguesFragment
+import com.example.feetballfootball.fragment.fixture.FixtureDetailFragment
+import com.example.feetballfootball.fragment.fixture.FixtureFragment
+import com.example.feetballfootball.fragment.news.NewsFragment
 import com.google.android.material.tabs.TabLayout
 import com.jakewharton.threetenabp.AndroidThreeTen
 

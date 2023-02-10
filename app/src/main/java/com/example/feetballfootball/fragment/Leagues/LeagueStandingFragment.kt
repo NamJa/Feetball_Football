@@ -1,4 +1,4 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.fragment.Leagues
 
 import android.os.Bundle
 import android.view.*
@@ -9,7 +9,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.feetballfootball.view_model.StandingViewModel
+import com.example.feetballfootball.R
+import com.example.feetballfootball.viewModel.StandingViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 

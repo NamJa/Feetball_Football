@@ -1,4 +1,4 @@
-package com.example.feetballfootball.view_model
+package com.example.feetballfootball.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel

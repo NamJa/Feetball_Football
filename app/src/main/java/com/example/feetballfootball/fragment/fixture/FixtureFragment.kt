@@ -1,4 +1,4 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.fragment.fixture
 
 import android.os.Bundle
 import android.util.Log
@@ -14,9 +14,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.feetballfootball.R
 import com.example.feetballfootball.adapter.FixtureRecyclerViewAdapter
 import com.example.feetballfootball.api.FixtureResponse
-import com.example.feetballfootball.view_model.FeetballFootballViewModel
+import com.example.feetballfootball.viewModel.FeetballFootballViewModel
 import org.threeten.bp.LocalDate
 
 private const val TAG = "FixtureFragment"

@@ -1,4 +1,4 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.fragment.fixture
 
 import android.os.Bundle
 import android.util.Log
@@ -13,11 +13,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.feetballfootball.R
 import com.example.feetballfootball.adapter.PlayerLineupAdapter
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
 import com.example.feetballfootball.api.fixturedetail.PlayerData
 import com.example.feetballfootball.api.fixturedetail.PlayersByTeamData
-import com.example.feetballfootball.view_model.FixtureDetailViewModel
+import com.example.feetballfootball.viewModel.FixtureDetailViewModel
 import com.squareup.picasso.Picasso
 
 private const val ARG_FIXTURE_ID = "fixture_id"

@@ -1,13 +1,13 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.fragment.Leagues
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.feetballfootball.R
 
 private const val TAG = "LeaguesFragment"
 private const val EPL = 39

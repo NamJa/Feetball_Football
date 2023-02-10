@@ -1,4 +1,4 @@
-package com.example.feetballfootball
+package com.example.feetballfootball.fragment.Leagues
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,8 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.feetballfootball.R
 import com.example.feetballfootball.api.playerstanding.PlayerStandingStatistics
-import com.example.feetballfootball.view_model.StandingViewModel
+import com.example.feetballfootball.viewModel.StandingViewModel
 import com.squareup.picasso.Picasso
 
 private const val ARG_LEAGUE_ID = "LEAGUE_ID"
