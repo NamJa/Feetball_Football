@@ -1,6 +1,8 @@
 # Gradle files
+*.DS_Store
 .gradle/
 build/
+release/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -32,3 +34,9 @@ app/google-services.json
 
 # Android Profiling
 *.hprof
+
+# release key info file
+*.zshrc
+
+# kotlin 2.0
+.kotlin/
