@@ -1,0 +1,10 @@
+package com.chase1st.feetballfootball.api
+
+data class Fixture (
+    var id: Int = 0,
+    var referee: String = "",
+    var date: String = "",
+    var timestamp: Int = 0,
+    var venue: FixtureVenue,
+    var status: FixtureStatus
+)

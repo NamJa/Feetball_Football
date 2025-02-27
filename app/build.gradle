@@ -8,7 +8,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.feetballfootball"
+        applicationId "com.chase1st.feetballfootball"
         minSdk 26
         targetSdk 34
         versionCode 1
@@ -33,7 +33,7 @@ android {
     dataBinding {
         enabled = true
     }
-    namespace 'com.example.feetballfootball'
+    namespace 'com.chase1st.feetballfootball'
 }
 
 dependencies {

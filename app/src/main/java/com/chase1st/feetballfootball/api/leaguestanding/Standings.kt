@@ -1,0 +1,11 @@
+package com.chase1st.feetballfootball.api.leaguestanding
+
+data class Standings (
+    var rank: Int,
+    var team: Team,
+    var points: Int,
+    var goalsDiff: Int,
+    var form: String,
+    var description: String?,
+    var all: All
+)
