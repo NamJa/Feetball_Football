@@ -3,6 +3,7 @@ package com.example.feetballfootball
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.feetballfootball.adapter.FixtureRecyclerViewAdapter
+import com.example.feetballfootball.databinding.ActivityMainBinding
 import com.example.feetballfootball.fragment.Leagues.LeagueStandingFragment
 import com.example.feetballfootball.fragment.Leagues.LeaguesFragment
 import com.example.feetballfootball.fragment.fixture.FixtureDetailFragment
@@ -14,7 +15,7 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks, FixtureRecyclerViewAdapter.Callbacks {
-    private lateinit var tabLayout: TabLayout
+    private lateinit var binding: ActivityMainBinding
 
     private var selectedTabPosition = 0
 
@@ -25,19 +26,18 @@ class MainActivity : AppCompatActivity(), LeaguesFragment.Callbacks, FixtureRecy
             // onCreate()를 호출하는 동작을 하게 되면 0번째 인덱스의 탭을 선택하는 문제 해결
             selectedTabPosition = it.getInt("selectedTabPos")
         }
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         AndroidThreeTen.init(this)
-
-        tabLayout = findViewById(R.id.bottom_tab_layout)
 
         val isFragmentContainerEmpty = savedInstanceState == null
         if (isFragmentContainerEmpty) {
             showFragment(tabPos = 0)
         }
 
-        val tab: TabLayout.Tab = tabLayout.getTabAt(selectedTabPosition)!!
+        val tab: TabLayout.Tab = binding.bottomTabLayout.getTabAt(selectedTabPosition)!!
         tab.select()
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        binding.bottomTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
                     showFragment(tab.position)
