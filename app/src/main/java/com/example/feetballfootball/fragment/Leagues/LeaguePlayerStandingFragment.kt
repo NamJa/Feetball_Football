@@ -5,8 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.R
 import com.example.feetballfootball.api.playerstanding.PlayerStandingStatistics
+import com.example.feetballfootball.databinding.FragmentLeaguePlayerStandingBinding
+import com.example.feetballfootball.databinding.ScorerRecyclerItemBinding
 import com.example.feetballfootball.viewModel.StandingViewModel
 import com.squareup.picasso.Picasso
 
@@ -22,8 +22,8 @@ private const val ARG_LEAGUE_ID = "LEAGUE_ID"
 class LeaguePlayerStandingFragment : Fragment() {
     private var leagueID: Int = 0
 
-    private lateinit var scorerRecyclerView: RecyclerView
-    private lateinit var assistRecyclerView: RecyclerView
+    private var _binding: FragmentLeaguePlayerStandingBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var standingViewModel: StandingViewModel
 
@@ -42,32 +42,31 @@ class LeaguePlayerStandingFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_league_player_standing, container, false)
-        initView(view)
+    ): View {
+        _binding = FragmentLeaguePlayerStandingBinding.inflate(inflater, container, false)
 
         playerTopScorerLiveData.observe(
             viewLifecycleOwner,
             Observer { topScorer ->
-                scorerRecyclerView.adapter = PlayerStandingRecyclerViewAdapter(calculateRanking(topScorer, false), topScorer, false)
-                scorerRecyclerView.layoutManager = LinearLayoutManager(context)
+                binding.scorerRecyclerview.adapter = PlayerStandingRecyclerViewAdapter(calculateRanking(topScorer, false), topScorer, false)
+                binding.scorerRecyclerview.layoutManager = LinearLayoutManager(context)
             }
         )
 
         playerTopAssistLiveData.observe(
             viewLifecycleOwner,
             Observer { topAssist ->
-                assistRecyclerView.adapter = PlayerStandingRecyclerViewAdapter(calculateRanking(topAssist, true), topAssist, true)
-                assistRecyclerView.layoutManager = LinearLayoutManager(context)
+                binding.assistRecyclerview.adapter = PlayerStandingRecyclerViewAdapter(calculateRanking(topAssist, true), topAssist, true)
+                binding.assistRecyclerview.layoutManager = LinearLayoutManager(context)
             }
         )
 
-        return view
+        return binding.root
     }
 
-    fun initView(view: View){
-        scorerRecyclerView = view.findViewById(R.id.scorer_recyclerview)
-        assistRecyclerView = view.findViewById(R.id.assist_recyclerview)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     fun calculateRanking(playerData: List<PlayerStandingStatistics>, isAssist: Boolean): List<String> {
@@ -121,48 +120,30 @@ class LeaguePlayerStandingFragment : Fragment() {
         val playerData: List<PlayerStandingStatistics>,
         val isAssist: Boolean): RecyclerView.Adapter<PlayerStandingRecyclerViewAdapter.ViewHolder>() {
 
-        private inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val rank: TextView
-            val teamLogo: ImageView
-            val playerName: TextView
-            val playerGoals: TextView
-            val playerAssist: TextView
-            val totalShots: TextView
-            val onShots: TextView
-            val pk: TextView
-
-            init {
-                rank = view.findViewById(R.id.rank_textview)
-                teamLogo = view.findViewById(R.id.team_logo_imageview)
-                playerName = view.findViewById(R.id.player_name_textview)
-                playerGoals = view.findViewById(R.id.player_goals_textview)
-                playerAssist = view.findViewById(R.id.player_assist_textview)
-                totalShots = view.findViewById(R.id.total_shots_textview)
-                onShots = view.findViewById(R.id.on_shots_textview)
-                pk = view.findViewById(R.id.pk_textview)
-            }
+        private inner class ViewHolder(val binding: ScorerRecyclerItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
             fun bind(position: Int) {
-                rank.text = rankList[position]
-                playerName.text = playerData[position].player.name
-                playerGoals.text = playerData[position].statistics[0].goals.total.toString()
-                playerAssist.text = playerData[position].statistics[0].goals.assists.toString()
-                totalShots.text = playerData[position].statistics[0].shots.total.toString()
-                onShots.text = playerData[position].statistics[0].shots.on.toString()
-                pk.text = playerData[position].statistics[0].penalty.scored.toString()
+                binding.rankTextview.text = rankList[position]
+                binding.playerNameTextview.text = playerData[position].player.name
+                binding.playerGoalsTextview.text = playerData[position].statistics[0].goals.total.toString()
+                binding.playerAssistTextview.text = playerData[position].statistics[0].goals.assists.toString()
+                binding.totalShotsTextview.text = playerData[position].statistics[0].shots.total.toString()
+                binding.onShotsTextview.text = playerData[position].statistics[0].shots.on.toString()
+                binding.pkTextview.text = playerData[position].statistics[0].penalty.scored.toString()
 
                 Picasso.get()
                     .load(playerData[position].statistics[0].team.logo)
-                    .into(teamLogo)
+                    .into(binding.teamLogoImageview)
             }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            if(isAssist) {
-                return ViewHolder(layoutInflater.inflate(R.layout.assist_recycler_item, parent, false))
+            val view = if(isAssist) {
+                layoutInflater.inflate(R.layout.assist_recycler_item, parent, false)
             } else {
-                return ViewHolder(layoutInflater.inflate(R.layout.scorer_recycler_item, parent, false))
+                layoutInflater.inflate(R.layout.scorer_recycler_item, parent, false)
             }
+            return ViewHolder(ScorerRecyclerItemBinding.bind(view))
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
