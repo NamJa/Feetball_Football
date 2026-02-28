@@ -44,6 +44,7 @@ class FixtureDetailEventsFragment : Fragment() {
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
             Observer {
+                if (it.isEmpty()) return@Observer
                 val eventList = it[0].events
                 binding.eventsRecyclerview.adapter = EventsRecyclerViewAdapter(eventList, it[0].teams.home.id, it[0].teams.away.id)
                 binding.eventsRecyclerview.layoutManager = LinearLayoutManager(context)

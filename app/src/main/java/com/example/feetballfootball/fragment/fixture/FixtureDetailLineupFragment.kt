@@ -49,6 +49,7 @@ class FixtureDetailLineupFragment : Fragment() {
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
             Observer {
+                if (it.isEmpty()) return@Observer
                 var lineupData = it[0].lineups[0]
 
                 for (teamIndex in 0..1) {

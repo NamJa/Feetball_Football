@@ -65,6 +65,7 @@ class FixtureDetailStatisticsFragment : Fragment() {
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
             Observer {
+                if (it.isEmpty()) return@Observer
                 /** statisticsUI() 함수로 들어가야 할 내용들 **/
                 val homeStatistics = it[0].statistics[0].statistics
                 val awayStatistics = it[0].statistics[1].statistics

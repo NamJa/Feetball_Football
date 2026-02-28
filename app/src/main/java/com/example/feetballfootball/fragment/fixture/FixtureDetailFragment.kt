@@ -74,6 +74,7 @@ class FixtureDetailFragment : Fragment() {
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
             Observer {
+                if (it.isEmpty()) return@Observer
 
                 /** appbarUpdateUI() 함수로 들어가야 할 내용들 **/
                 // index 0: home, index 1: away
