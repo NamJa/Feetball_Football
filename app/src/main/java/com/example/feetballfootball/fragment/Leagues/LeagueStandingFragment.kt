@@ -2,14 +2,11 @@ package com.example.feetballfootball.fragment.Leagues
 
 import android.os.Bundle
 import android.view.*
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
-import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
-import com.example.feetballfootball.R
+import com.example.feetballfootball.databinding.FragmentLeagueStandingBinding
 import com.example.feetballfootball.viewModel.StandingViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -22,11 +19,8 @@ class LeagueStandingFragment : Fragment() {
     private var leagueCodeMap = mapOf(39 to "Premier League", 140 to "LA LIGA", 135 to "SERIE A", 78 to "BUNDESLIGA", 61 to "LIGUE 1")
     private val tabTexts: List<String> = listOf("팀 순위", "개인 순위")
 
-    private lateinit var mainContainer: LinearLayout
-
-    private lateinit var leagueTitle : TextView
-    private lateinit var tabs: TabLayout
-    private lateinit var viewPager: ViewPager2
+    private var _binding: FragmentLeagueStandingBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var standingViewModel: StandingViewModel
 
@@ -40,26 +34,25 @@ class LeagueStandingFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_league_standing, container, false)
-        initView(view)
+    ): View {
+        _binding = FragmentLeagueStandingBinding.inflate(inflater, container, false)
 
 //        val window: Window = requireActivity().window
-//        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = false
+//        WindowInsetsControllerCompat(window, binding.leagueStandingContainer).isAppearanceLightStatusBars = false
 //        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.black)
 
 
-        leagueTitle.text = leagueCodeMap[leagueId]
+        binding.leagueTitleTextview.text = leagueCodeMap[leagueId]
 
         val adapter = TwoPagerAdapter(requireActivity(), 2, leagueId!!)
-        viewPager.adapter = adapter
-        TabLayoutMediator(tabs, viewPager) {tabs, position ->
+        binding.viewPager.adapter = adapter
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) {tabs, position ->
             tabs.text = tabTexts[position]
         }.attach()
 
-        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                viewPager.setCurrentItem(tab!!.position)
+                binding.viewPager.setCurrentItem(tab!!.position)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -69,13 +62,12 @@ class LeagueStandingFragment : Fragment() {
             }
         })
 
-        return view
+        return binding.root
     }
-    fun initView(view: View) {
-        mainContainer = view.findViewById(R.id.league_standing_container)
-        leagueTitle = view.findViewById(R.id.league_title_textview)
-        tabs = view.findViewById(R.id.tabLayout)
-        viewPager = view.findViewById(R.id.viewPager)
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 

@@ -6,8 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import com.example.feetballfootball.R
+import com.example.feetballfootball.databinding.FragmentLeaguesBinding
 
 private const val TAG = "LeaguesFragment"
 private const val EPL = 39
@@ -18,11 +17,8 @@ private const val LIGUE1 = 61
 
 class LeaguesFragment : Fragment() {
 
-    private lateinit var eplTextView : TextView
-    private lateinit var laligaTextView : TextView
-    private lateinit var serieaTextView : TextView
-    private lateinit var bundesligaTextView : TextView
-    private lateinit var ligue1TextView : TextView
+    private var _binding: FragmentLeaguesBinding? = null
+    private val binding get() = _binding!!
 
     interface Callbacks {
         fun onLeagueSelected(leagueId: Int)
@@ -42,10 +38,15 @@ class LeaguesFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_leagues, container, false)
-        setOnClickListener(view)
-        return view
+    ): View {
+        _binding = FragmentLeaguesBinding.inflate(inflater, container, false)
+        setOnClickListener()
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onDetach() {
@@ -53,26 +54,20 @@ class LeaguesFragment : Fragment() {
         callbacks = null
     }
 
-    fun setOnClickListener(view: View) {
-        eplTextView = view.findViewById(R.id.epl_textview)
-        laligaTextView = view.findViewById(R.id.laliga_textview)
-        serieaTextView = view.findViewById(R.id.serie_a_textview)
-        bundesligaTextView = view.findViewById(R.id.bundesliga_textview)
-        ligue1TextView = view.findViewById(R.id.ligue1_textview)
-
-        eplTextView.setOnClickListener {
+    private fun setOnClickListener() {
+        binding.eplTextview.setOnClickListener {
             callbacks?.onLeagueSelected(EPL)
         }
-        laligaTextView.setOnClickListener {
+        binding.laligaTextview.setOnClickListener {
             callbacks?.onLeagueSelected(LALIGA)
         }
-        serieaTextView.setOnClickListener {
+        binding.serieATextview.setOnClickListener {
             callbacks?.onLeagueSelected(SERIEA)
         }
-        bundesligaTextView.setOnClickListener {
+        binding.bundesligaTextview.setOnClickListener {
             callbacks?.onLeagueSelected(BUNDES)
         }
-        ligue1TextView.setOnClickListener {
+        binding.ligue1Textview.setOnClickListener {
             callbacks?.onLeagueSelected(LIGUE1)
         }
     }
