@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -17,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.R
 import com.example.feetballfootball.adapter.FixtureRecyclerViewAdapter
 import com.example.feetballfootball.api.FixtureResponse
+import com.example.feetballfootball.databinding.FragmentFixtureBinding
+import com.example.feetballfootball.databinding.LeagueFixtureBinding
 import com.example.feetballfootball.viewModel.FeetballFootballViewModel
 import org.threeten.bp.LocalDate
 
@@ -28,13 +29,8 @@ class FixtureFragment : Fragment() {
     private lateinit var fixtureDataExecute: Array<MutableList<FixtureResponse>?>
     private lateinit var resultData: MutableLiveData<Int>
 
-    private lateinit var mainContainer: RelativeLayout
-
-    private lateinit var fixtureDateTextView: TextView
-    private lateinit var noFixtureTextView: TextView
-    private lateinit var prevButton: ImageView
-    private lateinit var nextButton: ImageView
-    private lateinit var allLeaugeFixtureRecyclerView: RecyclerView
+    private var _binding: FragmentFixtureBinding? = null
+    private val binding get() = _binding!!
 
     var currentDate = LocalDate.now()
 
@@ -47,27 +43,26 @@ class FixtureFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_fixture, container, false)
-        initView(view)
+    ): View {
+        _binding = FragmentFixtureBinding.inflate(inflater, container, false)
 
 //        // 상단바 색상 및 아이콘 색상 조절
 //        val window: Window = requireActivity().window
-//        WindowInsetsControllerCompat(window, mainContainer).isAppearanceLightStatusBars = true
+//        WindowInsetsControllerCompat(window, binding.fixtureFragmentMainContainer).isAppearanceLightStatusBars = true
 //        window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.white)
 
-        fixtureDateTextView.text = currentDate.toString()
+        binding.fixtureDate.text = currentDate.toString()
 
 
-        prevButton.setOnClickListener {
+        binding.prevFixtureButton.setOnClickListener {
             currentDate = currentDate.minusDays(1)
-            fixtureDateTextView.text = currentDate.toString()
+            binding.fixtureDate.text = currentDate.toString()
             fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
             resultData = feetballfootballViewModel.resultData
         }
-        nextButton.setOnClickListener {
+        binding.nextFixtureButton.setOnClickListener {
             currentDate = currentDate.plusDays(1)
-            fixtureDateTextView.text = currentDate.toString()
+            binding.fixtureDate.text = currentDate.toString()
             fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
             resultData = feetballfootballViewModel.resultData
         }
@@ -75,16 +70,16 @@ class FixtureFragment : Fragment() {
         fixtureDataExecute = feetballfootballViewModel.fetchFixtureData(currentDate.toString())
         resultData = feetballfootballViewModel.resultData
 
-        allLeaugeFixtureRecyclerView.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
-        allLeaugeFixtureRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.leagueFixtureRecyclerview.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+        binding.leagueFixtureRecyclerview.layoutManager = LinearLayoutManager(context)
         val dividerItemDecoration = com.example.feetballfootball.util.DividerItemDecoration(
             ContextCompat.getDrawable(
                 requireContext(),
                 R.drawable.recyclerview_divider
             )!!
         )
-        allLeaugeFixtureRecyclerView.addItemDecoration(dividerItemDecoration)
-        return view
+        binding.leagueFixtureRecyclerview.addItemDecoration(dividerItemDecoration)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -119,61 +114,43 @@ class FixtureFragment : Fragment() {
                     }
                 }
                 if (fixtureFinalData.size != 0) {
-                    noFixtureTextView.visibility = View.GONE
-                    allLeaugeFixtureRecyclerView.visibility = View.VISIBLE
+                    binding.noFixturesTextView.visibility = View.GONE
+                    binding.leagueFixtureRecyclerview.visibility = View.VISIBLE
                     updateUI(fixtureFinalData)
                 } else {
-                    noFixtureTextView.visibility = View.VISIBLE
-                    allLeaugeFixtureRecyclerView.visibility = View.GONE
+                    binding.noFixturesTextView.visibility = View.VISIBLE
+                    binding.leagueFixtureRecyclerview.visibility = View.GONE
                 }
             }
         )
     }
 
-    private fun initView(view: View) {
-        mainContainer = view.findViewById(R.id.fixture_fragment_main_container)
-        fixtureDateTextView = view.findViewById(R.id.fixture_date)
-        noFixtureTextView = view.findViewById(R.id.no_fixtures_TextView)
-        prevButton = view.findViewById(R.id.prev_fixture_button)
-        nextButton = view.findViewById(R.id.next_fixture_button)
-        allLeaugeFixtureRecyclerView = view.findViewById(R.id.league_fixture_recyclerview)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun updateUI(fixtureData: MutableList<MutableList<FixtureResponse>>) {
         val adapter = AllFixtureRecyclerViewAdapter(fixtureData)
-        allLeaugeFixtureRecyclerView.adapter = adapter
-        allLeaugeFixtureRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.leagueFixtureRecyclerview.adapter = adapter
+        binding.leagueFixtureRecyclerview.layoutManager = LinearLayoutManager(context)
     }
 
+    private class LeagueFixtureHolder(val binding: LeagueFixtureBinding) : RecyclerView.ViewHolder(binding.root)
 
-
-    private class LeagueFixtureHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val leagueTitleTextView: TextView
-        val allFixturesRecyclerView: RecyclerView
-
-        init {
-            leagueTitleTextView = itemView.findViewById(R.id.league_title)
-            allFixturesRecyclerView = itemView.findViewById(R.id.fixture_recyclerview)
-        }
-
-        fun bind() {
-
-        }
-    }
     private inner class AllFixtureRecyclerViewAdapter(
         var allFixtureData: MutableList<MutableList<FixtureResponse>>
     ) : RecyclerView.Adapter<LeagueFixtureHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeagueFixtureHolder {
-            val layoutInflater =
-                LayoutInflater.from(requireContext()).inflate(R.layout.league_fixture, parent, false)
-            return LeagueFixtureHolder(layoutInflater)
+            val binding = LeagueFixtureBinding.inflate(LayoutInflater.from(requireContext()), parent, false)
+            return LeagueFixtureHolder(binding)
         }
 
         override fun onBindViewHolder(holder: LeagueFixtureHolder, position: Int) {
-            holder.leagueTitleTextView.text = allFixtureData.get(position).get(0).league.name
-            holder.allFixturesRecyclerView.adapter = FixtureRecyclerViewAdapter(requireContext(), allFixtureData[position])
-            holder.allFixturesRecyclerView.layoutManager = LinearLayoutManager(context)
+            holder.binding.leagueTitle.text = allFixtureData.get(position).get(0).league.name
+            holder.binding.fixtureRecyclerview.adapter = FixtureRecyclerViewAdapter(requireContext(), allFixtureData[position])
+            holder.binding.fixtureRecyclerview.layoutManager = LinearLayoutManager(context)
         }
 
         override fun getItemCount(): Int {
