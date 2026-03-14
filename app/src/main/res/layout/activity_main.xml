@@ -26,14 +26,12 @@
         app:tabTextColor="@color/gray_500">
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/fixture_tab"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:icon="@drawable/ic_fixture"
             android:text="경기 일정" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/league_tab"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:icon="@drawable/ic_league"
@@ -41,7 +39,6 @@
             android:text="리그" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/news_tab"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:icon="@drawable/ic_news"

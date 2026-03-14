@@ -7,10 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.Dimension
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -19,9 +16,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.feetballfootball.R
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
+import com.example.feetballfootball.databinding.FragmentFixtureDetailBinding
 import com.example.feetballfootball.viewModel.FixtureDetailViewModel
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import kotlin.math.abs
@@ -35,18 +32,8 @@ class FixtureDetailFragment : Fragment() {
     private lateinit var fixtureDetailViewModel: FixtureDetailViewModel
     private lateinit var fixtureDetailLiveData: LiveData<List<FixtureDetailResponse>>
 
-    private lateinit var homeTeamTextView: TextView
-    private lateinit var awayTeamTextView: TextView
-    private lateinit var matchScoreTextView: TextView
-    private lateinit var matchStatusTextView: TextView
-    private lateinit var homeTeamScorerTextView: TextView
-    private lateinit var awayTeamScorerTextView: TextView
-    private lateinit var homeTeamImageView: ImageView
-    private lateinit var awayTeamImageView: ImageView
-    private lateinit var goalIcon: ImageView
-    private lateinit var toolbar: Toolbar
-    private lateinit var tabs: TabLayout
-    private lateinit var appBarLayout: AppBarLayout
+    private var _binding: FragmentFixtureDetailBinding? = null
+    private val binding get() = _binding!!
 
     private val tabTexts: List<String> = listOf("이벤트", "라인업", "통계")
 
@@ -56,7 +43,6 @@ class FixtureDetailFragment : Fragment() {
     private val fadeOut by lazy {
         AnimationUtils.loadAnimation(context, R.anim.fade_out)
     }
-    private lateinit var viewPager: ViewPager2
 
     private var getAppBarYMax = 0
 
@@ -70,25 +56,25 @@ class FixtureDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_fixture_detail, container, false)
+    ): View {
+        _binding = FragmentFixtureDetailBinding.inflate(inflater, container, false)
 
-        initView(view)
         initAppbarLayoutAnimation()
         Log.d(TAG, fixtureID.toString())
 
 
-        viewPager.registerOnPageChangeCallback (object :
+        binding.viewPager.registerOnPageChangeCallback (object :
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                appBarLayout.setExpanded (true)
+                binding.appBarLayout.setExpanded (true)
             }
         })
 
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
             Observer {
+                if (it.isEmpty()) return@Observer
 
                 /** appbarUpdateUI() 함수로 들어가야 할 내용들 **/
                 // index 0: home, index 1: away
@@ -96,35 +82,35 @@ class FixtureDetailFragment : Fragment() {
 
                 var homeTeamScorer = mutableMapOf<String, MutableList<String>>()
                 var awayTeamScorer = mutableMapOf<String, MutableList<String>>()
-                getAppBarYMax = appBarLayout.height - toolbar.height
+                getAppBarYMax = binding.appBarLayout.height - binding.toolbar.height
                 Picasso.get()
                     .load(it.get(0).teams.home.logoUrl)
                     .resize(100, 100)
-                    .into(homeTeamImageView)
+                    .into(binding.hometeamImageview)
 
                 Picasso.get()
                     .load(it.get(0).teams.away.logoUrl)
                     .resize(100, 100)
-                    .into(awayTeamImageView)
+                    .into(binding.awayteamImageview)
 
                 HomeAwayTeamIDList.add(it.get(0).teams.home.id)
                 HomeAwayTeamIDList.add(it.get(0).teams.away.id)
 
-                homeTeamTextView.text = it.get(0).teams.home.name
-                awayTeamTextView.text = it.get(0).teams.away.name
-                matchStatusTextView.text =
+                binding.hometeamTextview.text = it.get(0).teams.home.name
+                binding.awayteamTextview.text = it.get(0).teams.away.name
+                binding.matchStatus.text =
                     if(it.get(0).fixture.status.short == "FT") { "종료됨" }
                     else {
-                        matchStatusTextView.setTextSize(Dimension.SP, 20f)
+                        binding.matchStatus.setTextSize(Dimension.SP, 20f)
                         "${it.get(0).fixture.status.elapsed}'"
                     }
-                matchScoreTextView.text = (it.get(0).goals.home.toString() + " - " + it.get(0).goals.away.toString())
+                binding.scoreTextview.text = (it.get(0).goals.home.toString() + " - " + it.get(0).goals.away.toString())
 
                 // 득점 기록 처리
                 it.get(0).events?.let {
                     it.forEach{
                         if (it.type == "Goal" && it.detail != "Missed Penalty") {
-                            goalIcon.visibility = View.VISIBLE
+                            binding.goalIcon.visibility = View.VISIBLE
                             val extraTime = it.time.extra.toString() ?: ""
                             if (it.team.id == HomeAwayTeamIDList[0]) {
                                 homeTeamScorer = WhoScoredByTeam(it.player.name, homeTeamScorer, it.time.elapsed, extraTime)
@@ -135,8 +121,8 @@ class FixtureDetailFragment : Fragment() {
                     }
                 }
 
-                homeTeamScorerTextView.text = WriteWhoScoredOnTextView(homeTeamScorer)
-                awayTeamScorerTextView.text = WriteWhoScoredOnTextView(awayTeamScorer)
+                binding.hometeamScorerTextview.text = WriteWhoScoredOnTextView(homeTeamScorer)
+                binding.awayteamScorerTextview.text = WriteWhoScoredOnTextView(awayTeamScorer)
 
                 // 간혹가다 라인업 및 통계 데이터가 제공되지 않는 경우가 있다.
                 if (it.get(0).lineups.isEmpty())
@@ -144,34 +130,21 @@ class FixtureDetailFragment : Fragment() {
                 if (it.get(0).statistics.isEmpty())
                     tabCount -= 1
 
-                viewPager.adapter = ThreePagerAdapter (requireActivity(), tabCount, fixtureID)
-                viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+                binding.viewPager.adapter = ThreePagerAdapter (requireActivity(), tabCount, fixtureID)
+                binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
-                TabLayoutMediator(tabs, viewPager) { tabs, position ->
+                TabLayoutMediator(binding.fixtureDetailTabLayout, binding.viewPager) { tabs, position ->
                     tabs.text = tabTexts[position]
                 }.attach()
 
             }
         )
-        return view
+        return binding.root
     }
 
-
-    fun initView(view: View) {
-        /*************** Appbar Layout *******************/
-        homeTeamTextView = view.findViewById(R.id.hometeam_textview)
-        awayTeamTextView = view.findViewById(R.id.awayteam_textview)
-        matchScoreTextView = view.findViewById(R.id.score_textview)
-        matchStatusTextView = view.findViewById(R.id.match_status)
-        homeTeamScorerTextView = view.findViewById(R.id.hometeam_scorer_textview)
-        awayTeamScorerTextView = view.findViewById(R.id.awayteam_scorer_textview)
-        homeTeamImageView = view.findViewById(R.id.hometeam_imageview)
-        awayTeamImageView = view.findViewById(R.id.awayteam_imageview)
-        goalIcon = view.findViewById(R.id.goal_icon)
-        toolbar = view.findViewById(R.id.toolbar)
-        tabs = view.findViewById(R.id.fixture_detail_tab_layout)
-        appBarLayout = view.findViewById(R.id.appBarLayout)
-        viewPager = view.findViewById(R.id.view_pager)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     fun WhoScoredByTeam(
@@ -209,40 +182,40 @@ class FixtureDetailFragment : Fragment() {
     }
 
     fun initAppbarLayoutAnimation() {
-        appBarLayout.addOnOffsetChangedListener(
+        binding.appBarLayout.addOnOffsetChangedListener(
             AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
                 if(abs(verticalOffset) >= getAppBarYMax / 2) {
-                    if (homeTeamTextView.visibility != View.INVISIBLE) {
-                        homeTeamTextView.startAnimation(fadeOut)
-                        awayTeamTextView.startAnimation(fadeOut)
-                        matchStatusTextView.startAnimation(fadeOut)
-                        homeTeamScorerTextView.startAnimation(fadeOut)
-                        awayTeamScorerTextView.startAnimation(fadeOut)
-                        goalIcon.startAnimation(fadeOut)
+                    if (binding.hometeamTextview.visibility != View.INVISIBLE) {
+                        binding.hometeamTextview.startAnimation(fadeOut)
+                        binding.awayteamTextview.startAnimation(fadeOut)
+                        binding.matchStatus.startAnimation(fadeOut)
+                        binding.hometeamScorerTextview.startAnimation(fadeOut)
+                        binding.awayteamScorerTextview.startAnimation(fadeOut)
+                        binding.goalIcon.startAnimation(fadeOut)
 
-                        homeTeamTextView.visibility = View.INVISIBLE
-                        awayTeamTextView.visibility = View.INVISIBLE
-                        matchStatusTextView.visibility = View.INVISIBLE
-                        homeTeamScorerTextView.visibility = View.INVISIBLE
-                        awayTeamScorerTextView.visibility = View.INVISIBLE
-                        goalIcon.visibility = View.INVISIBLE
+                        binding.hometeamTextview.visibility = View.INVISIBLE
+                        binding.awayteamTextview.visibility = View.INVISIBLE
+                        binding.matchStatus.visibility = View.INVISIBLE
+                        binding.hometeamScorerTextview.visibility = View.INVISIBLE
+                        binding.awayteamScorerTextview.visibility = View.INVISIBLE
+                        binding.goalIcon.visibility = View.INVISIBLE
                     }
 
                 } else {
-                    if(homeTeamTextView.visibility != View.VISIBLE) {
-                        homeTeamTextView.startAnimation(fadeIn)
-                        awayTeamTextView.startAnimation(fadeIn)
-                        matchStatusTextView.startAnimation(fadeIn)
-                        homeTeamScorerTextView.startAnimation(fadeIn)
-                        awayTeamScorerTextView.startAnimation(fadeIn)
-                        goalIcon.startAnimation(fadeIn)
+                    if(binding.hometeamTextview.visibility != View.VISIBLE) {
+                        binding.hometeamTextview.startAnimation(fadeIn)
+                        binding.awayteamTextview.startAnimation(fadeIn)
+                        binding.matchStatus.startAnimation(fadeIn)
+                        binding.hometeamScorerTextview.startAnimation(fadeIn)
+                        binding.awayteamScorerTextview.startAnimation(fadeIn)
+                        binding.goalIcon.startAnimation(fadeIn)
 
-                        homeTeamTextView.visibility = View.VISIBLE
-                        awayTeamTextView.visibility = View.VISIBLE
-                        matchStatusTextView.visibility = View.VISIBLE
-                        homeTeamScorerTextView.visibility = View.VISIBLE
-                        awayTeamScorerTextView.visibility = View.VISIBLE
-                        goalIcon.visibility = View.VISIBLE
+                        binding.hometeamTextview.visibility = View.VISIBLE
+                        binding.awayteamTextview.visibility = View.VISIBLE
+                        binding.matchStatus.visibility = View.VISIBLE
+                        binding.hometeamScorerTextview.visibility = View.VISIBLE
+                        binding.awayteamScorerTextview.visibility = View.VISIBLE
+                        binding.goalIcon.visibility = View.VISIBLE
                     }
                 }
             }

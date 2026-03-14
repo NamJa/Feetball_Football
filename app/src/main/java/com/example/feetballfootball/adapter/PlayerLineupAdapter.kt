@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.R
 import com.example.feetballfootball.api.fixturedetail.PlayerData
 import com.example.feetballfootball.api.fixturedetail.PlayersByTeamData
+import com.example.feetballfootball.databinding.LineupPlayerRecyclerItemBinding
+import com.example.feetballfootball.databinding.LineupSubstitutePlayerRecyclerItemBinding
 import com.squareup.picasso.Picasso
 
 class PlayerLineupAdapter(
@@ -20,25 +22,21 @@ class PlayerLineupAdapter(
     val teamRating: PlayersByTeamData,
     val isSubsitute: Boolean
 ): RecyclerView.Adapter<PlayerLineupAdapter.ColHolder>() {
-    inner class ColHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val playerImage: ImageView
-        val playerName: TextView
-        val playerRating: TextView
-        val playerNumber: TextView
-        init {
-            playerImage = itemView.findViewById(R.id.player_imageview)
-            playerName = itemView.findViewById(R.id.player_name_textview)
-            playerRating = itemView.findViewById(R.id.player_rating)
-            playerNumber = itemView.findViewById(R.id.player_number_textview)
-        }
+    inner class ColHolder(
+        itemView: View,
+        val playerImageview: ImageView,
+        val playerNameTextview: TextView,
+        val playerRating: TextView,
+        val playerNumberTextview: TextView
+    ) : RecyclerView.ViewHolder(itemView) {
         fun bindPlayerImage(id: Int) {
             Picasso.get()
                 .load("https://media.api-sports.io/football/players/${id}.png")
-                .into(playerImage)
-            playerImage.background = AppCompatResources.getDrawable(context,
+                .into(playerImageview)
+            playerImageview.background = AppCompatResources.getDrawable(context,
                 R.drawable.player_face_bg_circle
             )
-            playerImage.clipToOutline = true
+            playerImageview.clipToOutline = true
         }
         fun bindPlayerRating(id: Int) {
             for(i in 0 until teamRating.players.size) {
@@ -63,17 +61,20 @@ class PlayerLineupAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColHolder {
-        if (isSubsitute) { // 교체 라인업을 출력하는 경우엔 lineup_substitute_xxx를 inflate한다. 추후에 리팩토링 대상
-            return ColHolder(LayoutInflater.from(context).inflate(R.layout.lineup_substitute_player_recycler_item, parent, false))
+        val inflater = LayoutInflater.from(context)
+        return if (isSubsitute) {
+            val binding = LineupSubstitutePlayerRecyclerItemBinding.inflate(inflater, parent, false)
+            ColHolder(binding.root, binding.playerImageview, binding.playerNameTextview, binding.playerRating, binding.playerNumberTextview)
         } else {
-            return ColHolder(LayoutInflater.from(context).inflate(R.layout.lineup_player_recycler_item, parent, false))
+            val binding = LineupPlayerRecyclerItemBinding.inflate(inflater, parent, false)
+            ColHolder(binding.root, binding.playerImageview, binding.playerNameTextview, binding.playerRating, binding.playerNumberTextview)
         }
     }
 
     override fun onBindViewHolder(holder: ColHolder, position: Int) {
-        holder.playerName.text = rowLineup[position].player.name
+        holder.playerNameTextview.text = rowLineup[position].player.name
         holder.bindPlayerImage(rowLineup[position].player.id)
-        holder.playerNumber.text = rowLineup[position].player.number.toString()
+        holder.playerNumberTextview.text = rowLineup[position].player.number.toString()
         holder.bindPlayerRating(rowLineup[position].player.id)
     }
 

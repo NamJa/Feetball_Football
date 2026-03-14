@@ -28,7 +28,7 @@ import kotlin.concurrent.thread
 private const val TAG = "FootballDataFetchr"
 private const val FETCHSTANDING = "fetchLeagueStandings"
 private const val FETCHDETAILDATA = "fetchFixtureDetailData"
-private const val API_KEY = "b4be97da4d76733e9ca2391bb8794e5c"
+private const val API_KEY = "a5346cb0fd8cfe11421bdbdfc579c60d"
 
 class FootballDataFetchr {
     /**
@@ -57,9 +57,7 @@ class FootballDataFetchr {
             override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
                 val original = chain.request()
                 val request = original.newBuilder()
-                    .header("x-rapidapi-key", API_KEY)
-                    .header("x-rapidapi-host", "v3.football.api-sports.io")
-                    .header("Authorization", "Basic Og==")
+                    .header("x-apisports-key", API_KEY)
                     .build()
                 return chain.proceed(request)
             }

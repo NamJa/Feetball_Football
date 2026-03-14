@@ -14,12 +14,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.feetballfootball.R
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
+import com.example.feetballfootball.databinding.FragmentFixtureDetailStatisticsBinding
 import com.example.feetballfootball.viewModel.FixtureDetailViewModel
 
 private const val ARG_FIXTURE_ID = "fixture_id"
@@ -31,46 +31,23 @@ class FixtureDetailStatisticsFragment : Fragment() {
     private lateinit var fixtureDetailViewModel: FixtureDetailViewModel
     private lateinit var fixtureDetailLiveData: LiveData<List<FixtureDetailResponse>>
 
-    private lateinit var homeBallPossession: TextView
-    private lateinit var awayBallPossession: TextView
-    private lateinit var homeTotalShooting: TextView
-    private lateinit var awayTotalShooting: TextView
-    private lateinit var homeCornerKicks: TextView
-    private lateinit var awayCornerKicks: TextView
-    private lateinit var homeShotOff: TextView
-    private lateinit var awayShotOff: TextView
-    private lateinit var homeShotOn: TextView
-    private lateinit var awayShotOn: TextView
-    private lateinit var homeAccuracy: TextView
-    private lateinit var awayAccuracy: TextView
-    private lateinit var homeShotAccuracy: TextView
-    private lateinit var awayShotAccuracy: TextView
-    private lateinit var homeShotsAccurByTotal: TextView
-    private lateinit var awayShotsAccurByTotal: TextView
-    private lateinit var homePass: TextView
-    private lateinit var awayPass: TextView
-    private lateinit var homeBlockedShot: TextView
-    private lateinit var awayBlockedShot: TextView
-    private lateinit var homeOffside: TextView
-    private lateinit var awayOffside: TextView
-    private lateinit var homeFoul: TextView
-    private lateinit var awayFoul: TextView
-    private lateinit var homeYellowcard: TextView
-    private lateinit var awayYellowcard: TextView
-    private lateinit var homeRedcard: TextView
-    private lateinit var awayRedcard: TextView
+    private var _binding: FragmentFixtureDetailStatisticsBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var ballPossessionProgressBar: ProgressBar
-    private lateinit var totalshootingProgressBar: ProgressBar
-    private lateinit var cornerkickProgressBar: ProgressBar
-    private lateinit var blockedShotProgressBar: ProgressBar
-    private lateinit var offsideProgressBar: ProgressBar
-    private lateinit var foulProgressBar: ProgressBar
-    private lateinit var yellowcardProgressBar: ProgressBar
-    private lateinit var redcardProgressBar: ProgressBar
-
-    private var homeGoalPost: MutableList<LinearLayout> = mutableListOf()
-    private  var awayGoalPost: MutableList<LinearLayout> = mutableListOf()
+    private val homeGoalPost: List<LinearLayout> by lazy {
+        listOf(
+            binding.homeGoalpostShotoff1,
+            binding.homeGoalpostShotoff2,
+            binding.homeGoalpostShoton
+        )
+    }
+    private val awayGoalPost: List<LinearLayout> by lazy {
+        listOf(
+            binding.awayGoalpostShotoff1,
+            binding.awayGoalpostShotoff2,
+            binding.awayGoalpostShoton
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,13 +59,13 @@ class FixtureDetailStatisticsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_fixture_detail_statistics, container, false)
-        initView(view)
+    ): View {
+        _binding = FragmentFixtureDetailStatisticsBinding.inflate(inflater, container, false)
 
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
             Observer {
+                if (it.isEmpty()) return@Observer
                 /** statisticsUI() 함수로 들어가야 할 내용들 **/
                 val homeStatistics = it[0].statistics[0].statistics
                 val awayStatistics = it[0].statistics[1].statistics
@@ -118,77 +95,77 @@ class FixtureDetailStatisticsFragment : Fragment() {
 
                     when(homeStatistics[i].type) {
                         "Shots on Goal" -> {
-                            homeShotOn.text = homeTypeValue.toString()
-                            awayShotOn.text = awayTypeValue.toString()
+                            binding.homeShoton.text = homeTypeValue.toString()
+                            binding.awayShoton.text = awayTypeValue.toString()
                             homeShotOnNum = homeTypeValue.toString()
                             awayShotOnNum = awayTypeValue.toString()
                         }
                         "Shots off Goal" -> {
-                            homeShotOff.text = homeTypeValue.toString()
-                            awayShotOff.text = awayTypeValue.toString()
+                            binding.homeShotoff.text = homeTypeValue.toString()
+                            binding.awayShotoff.text = awayTypeValue.toString()
                         }
                         "Total Shots" -> {
                             val homeProgress = homeTypeValue.toString().toInt()
                             val awayProgress = awayTypeValue.toString().toInt()
                             val maxProgress = homeProgress + awayTypeValue.toString().toInt()
-                            homeTotalShooting.text = homeTypeValue.toString()
-                            awayTotalShooting.text = awayTypeValue.toString()
-                            setChangeProgressbarColor(totalshootingProgressBar, hometeamColor, awayteamColor, homeProgress, maxProgress)
+                            binding.homeTotalShooting.text = homeTypeValue.toString()
+                            binding.awayTotalShooting.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(binding.totalShootingProgressbar, hometeamColor, awayteamColor, homeProgress, maxProgress)
                             homeShotTotal = homeProgress.toString()
                             awayShotTotal = awayProgress.toString()
                         }
                         "Blocked Shots" -> {
                             val homeBlocked = homeTypeValue.toString().toInt()
                             val awayBlocked = awayTypeValue.toString().toInt()
-                            homeBlockedShot.text = homeTypeValue.toString()
-                            awayBlockedShot.text = awayTypeValue.toString()
-                            setChangeProgressbarColor(blockedShotProgressBar, hometeamColor, awayteamColor, homeBlocked, homeBlocked+awayBlocked)
+                            binding.homeBlockedShots.text = homeTypeValue.toString()
+                            binding.awayBlockedShots.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(binding.blockedShotsProgressbar, hometeamColor, awayteamColor, homeBlocked, homeBlocked+awayBlocked)
                         }
                         "Corner Kicks" -> {
                             val homeProgress = homeTypeValue.toString().toInt()
                             val maxProgress = homeProgress + awayTypeValue.toString().toInt()
-                            homeCornerKicks.text = homeTypeValue.toString()
-                            awayCornerKicks.text = awayTypeValue.toString()
-                            setChangeProgressbarColor(cornerkickProgressBar, hometeamColor, awayteamColor, homeProgress, maxProgress)
+                            binding.homeCornerkicks.text = homeTypeValue.toString()
+                            binding.awayCornerkicks.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(binding.cornerkicksProgressbar, hometeamColor, awayteamColor, homeProgress, maxProgress)
                         }
                         "Offsides" -> {
                             val offsideHome = homeTypeValue.toString().toInt()
                             val offsideAway = awayTypeValue.toString().toInt()
-                            homeOffside.text = homeTypeValue.toString()
-                            awayOffside.text = awayTypeValue.toString()
-                            setChangeProgressbarColor(offsideProgressBar, hometeamColor, awayteamColor, offsideHome, offsideHome+offsideAway)
+                            binding.homeOffside.text = homeTypeValue.toString()
+                            binding.awayOffside.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(binding.offsideProgressbar, hometeamColor, awayteamColor, offsideHome, offsideHome+offsideAway)
                         }
                         "Ball Possession" -> {
-                            homeBallPossession.text = homeTypeValue.toString()
-                            awayBallPossession.text = awayTypeValue.toString()
+                            binding.homeBallPossession.text = homeTypeValue.toString()
+                            binding.awayBallPossession.text = awayTypeValue.toString()
                             // background를 home으로 놓고 progress를 away의 수치로 설정하면 좌,우 배치에 맞게된다.
                             val awayProgress = awayTypeValue.toString().split("%")[0].toInt()
-                            setChangeProgressbarColor(ballPossessionProgressBar, hometeamColor, awayteamColor, awayProgress, maxProgress = 100)
+                            setChangeProgressbarColor(binding.ballPossessionProgressbar, hometeamColor, awayteamColor, awayProgress, maxProgress = 100)
                         }
                         "Fouls" -> {
                             val foulHome = homeTypeValue.toString().toInt()
                             val foulAway = awayTypeValue.toString().toInt()
-                            homeFoul.text = homeTypeValue.toString()
-                            awayFoul.text = awayTypeValue.toString()
-                            setChangeProgressbarColor(foulProgressBar, hometeamColor, awayteamColor, foulHome, foulHome+foulAway)
+                            binding.homeFoul.text = homeTypeValue.toString()
+                            binding.awayFoul.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(binding.foulProgressbar, hometeamColor, awayteamColor, foulHome, foulHome+foulAway)
                         }
                         "Yellow Cards" -> {
                             val yellowHome = homeTypeValue.toString().toInt()
                             val yellowAway = awayTypeValue.toString().toInt()
-                            homeYellowcard.text = homeTypeValue.toString()
-                            awayYellowcard.text = awayTypeValue.toString()
-                            setChangeProgressbarColor(yellowcardProgressBar, hometeamColor, awayteamColor, yellowHome, yellowHome+yellowAway)
+                            binding.homeYellowcard.text = homeTypeValue.toString()
+                            binding.awayYellowcard.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(binding.yellowcardProgressbar, hometeamColor, awayteamColor, yellowHome, yellowHome+yellowAway)
                         }
                         "Red Cards" -> {
                             val redHome = homeTypeValue.toString().toInt()
                             val redAway = awayTypeValue.toString().toInt()
-                            homeRedcard.text = homeTypeValue.toString()
-                            awayRedcard.text = awayTypeValue.toString()
-                            setChangeProgressbarColor(redcardProgressBar, hometeamColor, awayteamColor, redHome, redHome+redAway)
+                            binding.homeRedcard.text = homeTypeValue.toString()
+                            binding.awayRedcard.text = awayTypeValue.toString()
+                            setChangeProgressbarColor(binding.redcardProgressbar, hometeamColor, awayteamColor, redHome, redHome+redAway)
                         }
                         "Passes %" -> {
-                            homeAccuracy.text = homeTypeValue.toString()
-                            awayAccuracy.text = awayTypeValue.toString()
+                            binding.homeAccuracy.text = homeTypeValue.toString()
+                            binding.awayAccuracy.text = awayTypeValue.toString()
                         }
                         "Total passes" -> {
                             homeTotalPasses = homeTypeValue.toString()
@@ -200,68 +177,25 @@ class FixtureDetailStatisticsFragment : Fragment() {
                         }
                     }
                 }
-                homePass.text = getString(R.string.accurpass_by_total, homePassesAccurate, homeTotalPasses)
-                awayPass.text = getString(R.string.accurpass_by_total, awayPassesAccurate, awayTotalPasses)
+                binding.homePassAccurByTotal.text = getString(R.string.accurpass_by_total, homePassesAccurate, homeTotalPasses)
+                binding.awayPassAccurByTotal.text = getString(R.string.accurpass_by_total, awayPassesAccurate, awayTotalPasses)
                 val homeShotAccurPercent = ((homeShotOnNum.toDouble() / homeShotTotal.toDouble())*100).toInt().toString()
                 val awayShotAccurPercent = ((awayShotOnNum.toDouble() / awayShotTotal.toDouble())*100).toInt().toString()
-                homeShotAccuracy.text = homeShotAccurPercent + "%"
-                awayShotAccuracy.text = awayShotAccurPercent + "%"
-                homeShotsAccurByTotal.text = getString(R.string.accurshot_by_total, homeShotOnNum, homeShotTotal)
-                awayShotsAccurByTotal.text = getString(R.string.accurshot_by_total, awayShotOnNum, awayShotTotal)
+                binding.homeShotAccuracy.text = homeShotAccurPercent + "%"
+                binding.awayShotAccuracy.text = awayShotAccurPercent + "%"
+                binding.homeShotsAccurByTotal.text = getString(R.string.accurshot_by_total, homeShotOnNum, homeShotTotal)
+                binding.awayShotsAccurByTotal.text = getString(R.string.accurshot_by_total, awayShotOnNum, awayShotTotal)
                 setGoalPostColor(homeGoalPost, hometeamColor)
                 setGoalPostColor(awayGoalPost, awayteamColor)
             }
         )
 
-        return view
+        return binding.root
     }
 
-
-    fun initView(view: View){
-        homeBallPossession = view.findViewById(R.id.home_ball_possession)
-        awayBallPossession = view.findViewById(R.id.away_ball_possession)
-        homeTotalShooting = view.findViewById(R.id.home_total_shooting)
-        awayTotalShooting = view.findViewById(R.id.away_total_shooting)
-        homeCornerKicks = view.findViewById(R.id.home_cornerkicks)
-        awayCornerKicks = view.findViewById(R.id.away_cornerkicks)
-        homeShotOff = view.findViewById(R.id.home_shotoff)
-        awayShotOff = view.findViewById(R.id.away_shotoff)
-        homeShotOn = view.findViewById(R.id.home_shoton)
-        awayShotOn = view.findViewById(R.id.away_shoton)
-        homeAccuracy = view.findViewById(R.id.home_accuracy)
-        awayAccuracy = view.findViewById(R.id.away_accuracy)
-        homePass = view.findViewById(R.id.home_pass_accur_by_total)
-        awayPass = view.findViewById(R.id.away_pass_accur_by_total)
-        homeShotAccuracy = view.findViewById(R.id.home_shot_accuracy)
-        awayShotAccuracy = view.findViewById(R.id.away_shot_accuracy)
-        homeShotsAccurByTotal = view.findViewById(R.id.home_shots_accur_by_total)
-        awayShotsAccurByTotal = view.findViewById(R.id.away_shots_accur_by_total)
-        homeBlockedShot = view.findViewById(R.id.home_blocked_shots)
-        awayBlockedShot = view.findViewById(R.id.away_blocked_shots)
-        homeOffside = view.findViewById(R.id.home_offside)
-        awayOffside = view.findViewById(R.id.away_offside)
-        homeFoul = view.findViewById(R.id.home_foul)
-        awayFoul = view.findViewById(R.id.away_foul)
-        homeYellowcard = view.findViewById(R.id.home_yellowcard)
-        awayYellowcard = view.findViewById(R.id.away_yellowcard)
-        homeRedcard = view.findViewById(R.id.home_redcard)
-        awayRedcard = view.findViewById(R.id.away_redcard)
-
-        ballPossessionProgressBar = view.findViewById(R.id.ball_possession_progressbar)
-        totalshootingProgressBar = view.findViewById(R.id.total_shooting_progressbar)
-        cornerkickProgressBar = view.findViewById(R.id.cornerkicks_progressbar)
-        blockedShotProgressBar = view.findViewById(R.id.blocked_shots_progressbar)
-        offsideProgressBar = view.findViewById(R.id.offside_progressbar)
-        foulProgressBar = view.findViewById(R.id.foul_progressbar)
-        yellowcardProgressBar = view.findViewById(R.id.yellowcard_progressbar)
-        redcardProgressBar = view.findViewById(R.id.redcard_progressbar)
-
-        homeGoalPost.add(view.findViewById(R.id.home_goalpost_shotoff_1))
-        homeGoalPost.add(view.findViewById(R.id.home_goalpost_shotoff_2))
-        homeGoalPost.add(view.findViewById(R.id.home_goalpost_shoton))
-        awayGoalPost.add(view.findViewById(R.id.away_goalpost_shotoff_1))
-        awayGoalPost.add(view.findViewById(R.id.away_goalpost_shotoff_2))
-        awayGoalPost.add(view.findViewById(R.id.away_goalpost_shoton))
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 

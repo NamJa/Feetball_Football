@@ -5,9 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.feetballfootball.R
 import com.example.feetballfootball.api.fixturedetail.Events
 import com.example.feetballfootball.api.fixturedetail.FixtureDetailResponse
+import com.example.feetballfootball.databinding.EventsRecyclerItemBinding
+import com.example.feetballfootball.databinding.FragmentFixtureDetailEventsBinding
 import com.example.feetballfootball.viewModel.FixtureDetailViewModel
 
 private const val TAG = "FixtureDetailEventsFragment"
@@ -26,7 +25,8 @@ class FixtureDetailEventsFragment : Fragment() {
     private lateinit var fixtureDetailViewModel: FixtureDetailViewModel
     private lateinit var fixtureDetailLiveData: LiveData<List<FixtureDetailResponse>>
 
-    private lateinit var eventsRecyclerView: RecyclerView
+    private var _binding: FragmentFixtureDetailEventsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,44 +38,34 @@ class FixtureDetailEventsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_fixture_detail_events, container, false)
-        initView(view)
+    ): View {
+        _binding = FragmentFixtureDetailEventsBinding.inflate(inflater, container, false)
 
         fixtureDetailLiveData.observe(
             viewLifecycleOwner,
             Observer {
+                if (it.isEmpty()) return@Observer
                 val eventList = it[0].events
-                eventsRecyclerView.adapter = EventsRecyclerViewAdapter(eventList, it[0].teams.home.id, it[0].teams.away.id)
-                eventsRecyclerView.layoutManager = LinearLayoutManager(context)
+                binding.eventsRecyclerview.adapter = EventsRecyclerViewAdapter(eventList, it[0].teams.home.id, it[0].teams.away.id)
+                binding.eventsRecyclerview.layoutManager = LinearLayoutManager(context)
             }
         )
 
-        return view
+        return binding.root
     }
 
-    fun initView(view: View) {
-        eventsRecyclerView = view.findViewById(R.id.events_recyclerview)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
-    private inner class EventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val homeElapsed: TextView = view.findViewById(R.id.home_elapsed)
-        val homeMainPlayer: TextView = view.findViewById(R.id.home_main_player)
-        val homeAssistPlayer: TextView = view.findViewById(R.id.home_assist_player)
-        val awayElapsed: TextView = view.findViewById(R.id.away_elapsed)
-        val awayMainPlayer: TextView = view.findViewById(R.id.away_main_player)
-        val awayAssistPlayer: TextView = view.findViewById(R.id.away_assist_player)
+    private inner class EventViewHolder(val binding: EventsRecyclerItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        val substitutionICON: LinearLayout = view.findViewById(R.id.substitutionICON)
-        val goalSign: ImageView = view.findViewById(R.id.goal_sign_imageview)
-        val penaltySign: ImageView = view.findViewById(R.id.penaltykick_imageview)
-        val penaltyMissedSign: ImageView = view.findViewById(R.id.penaltykick_missed_imageview)
-        val yellowCard: ImageView = view.findViewById(R.id.yellowcard_imageview)
-        val redCard: ImageView = view.findViewById(R.id.redcard_imageview)
-        val varAwardedSign: ImageView = view.findViewById(R.id.var_awarded_sign_imageview)
-        val varCancelled: ImageView = view.findViewById(R.id.var_cancelled_imageview)
-
-        val eventSignList: List<View> = listOf(substitutionICON, goalSign, penaltySign, penaltyMissedSign, yellowCard, redCard, varAwardedSign, varCancelled)
+        val eventSignList: List<View> = listOf(
+            binding.substitutionICON, binding.goalSignImageview, binding.penaltykickImageview,
+            binding.penaltykickMissedImageview, binding.yellowcardImageview, binding.redcardImageview,
+            binding.varAwardedSignImageview, binding.varCancelledImageview
+        )
 
         fun bind(event: Events, home: Int, away: Int) {
             when(event.type) {
@@ -91,10 +81,10 @@ class FixtureDetailEventsFragment : Fragment() {
                     }
                 }
                 "subst" -> {
-                    homeMainPlayer.setTextColor(resources.getColor(R.color.events_subst_player_in, null))
-                    awayMainPlayer.setTextColor(resources.getColor(R.color.events_subst_player_in, null))
-                    homeAssistPlayer.setTextColor(resources.getColor(R.color.events_subst_player_out, null))
-                    awayAssistPlayer.setTextColor(resources.getColor(R.color.events_subst_player_out, null))
+                    binding.homeMainPlayer.setTextColor(resources.getColor(R.color.events_subst_player_in, null))
+                    binding.awayMainPlayer.setTextColor(resources.getColor(R.color.events_subst_player_in, null))
+                    binding.homeAssistPlayer.setTextColor(resources.getColor(R.color.events_subst_player_out, null))
+                    binding.awayAssistPlayer.setTextColor(resources.getColor(R.color.events_subst_player_out, null))
                     setEventsOfPlayer(event, home, 0, true)
                 }
                 "Card" -> {
@@ -116,9 +106,9 @@ class FixtureDetailEventsFragment : Fragment() {
             }
         }
         fun setEventsOfPlayer(event: Events, home: Int, visibleViewIndex: Int, isSubstitute: Boolean) {
-            val elapsed = if(event.team.id == home) { homeElapsed } else { awayElapsed }
-            val mainPlayer = if(event.team.id == home) { homeMainPlayer } else { awayMainPlayer }
-            val assistPlayer = if(event.team.id == home) { homeAssistPlayer } else { awayAssistPlayer }
+            val elapsed = if(event.team.id == home) { binding.homeElapsed } else { binding.awayElapsed }
+            val mainPlayer = if(event.team.id == home) { binding.homeMainPlayer } else { binding.awayMainPlayer }
+            val assistPlayer = if(event.team.id == home) { binding.homeAssistPlayer } else { binding.awayAssistPlayer }
             val extra = if(event.time.extra != null) { "+${event.time.extra}" } else { "" }
             elapsed.text = event.time.elapsed.toString()+extra+"'"
             if (isSubstitute == false) {
@@ -151,8 +141,8 @@ class FixtureDetailEventsFragment : Fragment() {
     ): RecyclerView.Adapter<EventViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
-            val view = layoutInflater.inflate(R.layout.events_recycler_item, parent, false)
-            return EventViewHolder(view)
+            val binding = EventsRecyclerItemBinding.inflate(layoutInflater, parent, false)
+            return EventViewHolder(binding)
         }
 
         override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
