@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feetball Football - Renewal Codelabs</title>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="stylesheet" href="assets/css/gamification.css">
+</head>
+<body>
+  <div id="app">Loading...</div>
+  <script>
+    window.$docsify = {
+      name: 'Feetball Codelabs',
+      repo: 'NamJa/Feetball_Football',
+      loadSidebar: true,
+      subMaxLevel: 2,
+      auto2top: true,
+      search: {
+        placeholder: '검색...',
+        noData: '결과 없음',
+        depth: 3,
+      },
+      plugins: [
+        function gamificationPlugin(hook, vm) {
+          // --- LocalStorage 기반 진행률 관리 ---
+          const STORAGE_KEY = 'feetball_codelab_progress';
+          const XP_KEY = 'feetball_xp';
+          const BADGES_KEY = 'feetball_badges';
+          const STREAK_KEY = 'feetball_streak';
+
+          const CODELABS = [
+            { id: 'stage-1-setup', title: 'Stage 1 — 프로젝트 셋업', steps: 12, xp: 200, difficulty: 2, hours: 4, stage: 1 },
+            { id: 'stage-2-slice-1-league', title: 'Slice 1 — 리그 선택', steps: 6, xp: 80, difficulty: 1, hours: 1, stage: 2 },
+            { id: 'stage-2-slice-2-standing', title: 'Slice 2 — 리그 순위', steps: 8, xp: 180, difficulty: 2, hours: 3, stage: 2 },
+            { id: 'stage-2-slice-3-fixture', title: 'Slice 3 — 경기 일정', steps: 8, xp: 180, difficulty: 2, hours: 3, stage: 2 },
+            { id: 'stage-2-slice-4-news', title: 'Slice 4 — 뉴스', steps: 6, xp: 80, difficulty: 1, hours: 1, stage: 2 },
+            { id: 'stage-2-slice-5-detail', title: 'Slice 5 — 경기 상세', steps: 17, xp: 400, difficulty: 3, hours: 8, stage: 2 },
+            { id: 'stage-2-navigation', title: 'Navigation 3 통합', steps: 6, xp: 150, difficulty: 2, hours: 3, stage: 2 },
+            { id: 'stage-2-cleanup', title: 'Cleanup — 레거시 제거', steps: 11, xp: 100, difficulty: 1, hours: 2, stage: 2 },
+            { id: 'stage-3-testing', title: 'Stage 3 — 테스트', steps: 7, xp: 350, difficulty: 3, hours: 8, stage: 3 },
+            { id: 'stage-3-optimization', title: 'Stage 3 — 최적화', steps: 7, xp: 400, difficulty: 3, hours: 10, stage: 3 },
+            { id: 'stage-3-kmp', title: 'Stage 3 — KMP', steps: 10, xp: 600, difficulty: 5, hours: 20, stage: 3 },
+          ];
+
+          const TOTAL_STEPS = CODELABS.reduce((s, c) => s + c.steps, 0);
+          const TOTAL_XP = CODELABS.reduce((s, c) => s + c.xp, 0);
+
+          const BADGES = [
+            { id: 'first_step', name: '첫 발걸음', icon: '👶', desc: '첫 번째 스텝 완료', condition: (p) => getTotalCompleted(p) >= 1 },
+            { id: 'stage1_clear', name: '기반 완성', icon: '🏗️', desc: 'Stage 1 완료', condition: (p) => isCodelabDone(p, 'stage-1-setup') },
+            { id: 'first_api', name: 'API 개척자', icon: '🌐', desc: 'Slice 2 완료 (첫 API 연동)', condition: (p) => isCodelabDone(p, 'stage-2-slice-2-standing') },
+            { id: 'five_codelabs', name: '중급 개발자', icon: '⚡', desc: '5개 Codelab 완료', condition: (p) => getCompletedCodelabs(p) >= 5 },
+            { id: 'stage2_clear', name: 'Feature 마스터', icon: '🎯', desc: 'Stage 2 전체 완료', condition: (p) => CODELABS.filter(c => c.stage === 2).every(c => isCodelabDone(p, c.id)) },
+            { id: 'test_master', name: '테스트 장인', icon: '🧪', desc: 'Testing Codelab 완료', condition: (p) => isCodelabDone(p, 'stage-3-testing') },
+            { id: 'perfectionist', name: '완벽주의자', icon: '💎', desc: 'Optimization 완료', condition: (p) => isCodelabDone(p, 'stage-3-optimization') },
+            { id: 'kmp_pioneer', name: 'KMP 선구자', icon: '🚀', desc: 'KMP Codelab 완료', condition: (p) => isCodelabDone(p, 'stage-3-kmp') },
+            { id: 'all_clear', name: '아키텍트', icon: '👑', desc: '모든 Codelab 완료', condition: (p) => getCompletedCodelabs(p) === CODELABS.length },
+            { id: 'xp_500', name: 'XP 헌터', icon: '🔥', desc: '500 XP 달성', condition: (p) => getXP() >= 500 },
+            { id: 'xp_1500', name: 'XP 마스터', icon: '💫', desc: '1500 XP 달성', condition: (p) => getXP() >= 1500 },
+          ];
+
+          const LEVELS = [
+            { name: 'Rookie', minXP: 0, icon: '🌱' },
+            { name: 'Junior', minXP: 200, icon: '🌿' },
+            { name: 'Developer', minXP: 500, icon: '⚙️' },
+            { name: 'Senior', minXP: 1000, icon: '🔧' },
+            { name: 'Lead', minXP: 1800, icon: '⭐' },
+            { name: 'Architect', minXP: 2500, icon: '👑' },
+            { name: 'Legend', minXP: 3020, icon: '🏆' },
+          ];
+
+          function getProgress() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+          }
+          function saveProgress(p) { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }
+          function getXP() { return parseInt(localStorage.getItem(XP_KEY) || '0', 10); }
+          function setXP(v) { localStorage.setItem(XP_KEY, String(v)); }
+          function getUnlockedBadges() { try { return JSON.parse(localStorage.getItem(BADGES_KEY) || '[]'); } catch { return []; } }
+          function saveUnlockedBadges(b) { localStorage.setItem(BADGES_KEY, JSON.stringify(b)); }
+
+          function getStreak() {
+            try { return JSON.parse(localStorage.getItem(STREAK_KEY) || '{"count":0,"lastDate":""}'); } catch { return {count:0,lastDate:''}; }
+          }
+          function updateStreak() {
+            const s = getStreak();
+            const today = new Date().toISOString().slice(0, 10);
+            if (s.lastDate === today) return s;
+            const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+            s.count = (s.lastDate === yesterday) ? s.count + 1 : 1;
+            s.lastDate = today;
+            localStorage.setItem(STREAK_KEY, JSON.stringify(s));
+            return s;
+          }
+
+          function getTotalCompleted(p) { return Object.values(p).reduce((s, arr) => s + arr.length, 0); }
+          function isCodelabDone(p, id) {
+            const lab = CODELABS.find(c => c.id === id);
+            return lab && (p[id] || []).length >= lab.steps;
+          }
+          function getCompletedCodelabs(p) { return CODELABS.filter(c => isCodelabDone(p, c.id)).length; }
+          function getLevel(xp) { return [...LEVELS].reverse().find(l => xp >= l.minXP) || LEVELS[0]; }
+          function getNextLevel(xp) { return LEVELS.find(l => l.minXP > xp); }
+
+          function recalcXP(progress) {
+            let xp = 0;
+            CODELABS.forEach(lab => {
+              const done = (progress[lab.id] || []).length;
+              const perStep = lab.xp / lab.steps;
+              xp += Math.floor(perStep * done);
+              if (done >= lab.steps) xp += Math.floor(lab.xp * 0.1);
+            });
+            setXP(xp);
+            return xp;
+          }
+
+          function checkBadges(progress) {
+            const unlocked = getUnlockedBadges();
+            const newBadges = [];
+            BADGES.forEach(b => {
+              if (!unlocked.includes(b.id) && b.condition(progress)) {
+                unlocked.push(b.id);
+                newBadges.push(b);
+              }
+            });
+            if (newBadges.length) {
+              saveUnlockedBadges(unlocked);
+              newBadges.forEach(b => showBadgeToast(b));
+            }
+            return unlocked;
+          }
+
+          function showBadgeToast(badge) {
+            const toast = document.createElement('div');
+            toast.className = 'badge-toast';
+            toast.innerHTML = `<span class="badge-toast-icon">${badge.icon}</span><div><strong>배지 획득!</strong><br>${badge.name}</div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 50);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
+          }
+
+          // --- 체크박스 주입 (각 Step에 완료 체크) ---
+          hook.afterEach(function(html, next) {
+            const path = vm.route.file || '';
+            const match = path.match(/codelabs\/(stage-[^.]+)\.md/);
+            if (!match) { next(html); return; }
+
+            const codelabId = match[1];
+            const lab = CODELABS.find(c => c.id === codelabId);
+            if (!lab) { next(html); return; }
+
+            const progress = getProgress();
+            const completed = progress[codelabId] || [];
+            const pct = Math.round((completed.length / lab.steps) * 100);
+
+            // 상단 진행 바 삽입
+            const header = `
+              <div class="codelab-header">
+                <div class="codelab-meta">
+                  <span class="codelab-difficulty">${'★'.repeat(lab.difficulty)}${'☆'.repeat(5 - lab.difficulty)}</span>
+                  <span class="codelab-time">⏱ ${lab.hours}시간</span>
+                  <span class="codelab-xp">💰 ${lab.xp} XP</span>
+                </div>
+                <div class="codelab-progress-wrap">
+                  <div class="codelab-progress-bar">
+                    <div class="codelab-progress-fill" style="width:${pct}%"></div>
+                  </div>
+                  <span class="codelab-progress-text">${completed.length}/${lab.steps} (${pct}%)</span>
+                </div>
+              </div>`;
+
+            // Step h2 위치 수집
+            const h2Regex = /<h2([^>]*)>(.*?Step\s*\d+.*?)<\/h2>/gi;
+            const stepPositions = [];
+            let m;
+            while ((m = h2Regex.exec(html)) !== null) {
+              stepPositions.push({ index: m.index, full: m[0], attrs: m[1], content: m[2], end: m.index + m[0].length });
+            }
+
+            // 각 Step 단락 끝에 완료 버튼 삽입, h2에는 상태 아이콘만 표시
+            let modified = '';
+            let lastIdx = 0;
+            for (let i = 0; i < stepPositions.length; i++) {
+              const pos = stepPositions[i];
+              const stepNum = i + 1;
+              const checked = completed.includes(stepNum);
+              const nextStart = stepPositions[i + 1] ? stepPositions[i + 1].index : html.length;
+
+              // h2 이전 내용
+              modified += html.slice(lastIdx, pos.index);
+              // h2에 상태 표시
+              modified += `<h2${pos.attrs}><span class="step-status-icon">${checked ? '✅' : '⬜'}</span> ${pos.content}</h2>`;
+              // h2 ~ 다음 h2 사이 본문
+              const body = html.slice(pos.end, nextStart);
+              // 본문 끝에서 <hr> 앞에 완료 버튼 삽입
+              const hrMatch = body.match(/^([\s\S]*?)(\s*<hr\s*\/?>[\s\S]*)$/i);
+              const btn = `
+                <div class="step-complete-block">
+                  <button class="step-complete-btn ${checked ? 'checked' : ''}" type="button"
+                    data-codelab="${codelabId}" data-step="${stepNum}">
+                    <span class="step-complete-icon">${checked ? '✅' : '⬜'}</span>
+                    <span>${checked ? 'Step ' + stepNum + ' 완료!' : 'Step ' + stepNum + ' 완료하기'}</span>
+                  </button>
+                </div>`;
+              if (hrMatch) {
+                modified += hrMatch[1] + btn + hrMatch[2];
+              } else {
+                modified += body + btn;
+              }
+              lastIdx = nextStart;
+            }
+            modified += html.slice(lastIdx);
+
+            next(header + modified);
+          });
+
+          // 완료 버튼 이벤트 핸들링
+          hook.doneEach(function() {
+            document.querySelectorAll('.step-complete-btn').forEach(btn => {
+              btn.addEventListener('click', function() {
+                const codelabId = this.dataset.codelab;
+                const step = parseInt(this.dataset.step, 10);
+                const progress = getProgress();
+                if (!progress[codelabId]) progress[codelabId] = [];
+
+                const wasChecked = progress[codelabId].includes(step);
+                if (wasChecked) {
+                  progress[codelabId] = progress[codelabId].filter(s => s !== step);
+                } else {
+                  progress[codelabId].push(step);
+                  updateStreak();
+                }
+                const isNowChecked = !wasChecked;
+
+                saveProgress(progress);
+                recalcXP(progress);
+                checkBadges(progress);
+
+                // 버튼 상태 업데이트
+                this.classList.toggle('checked', isNowChecked);
+                this.querySelector('.step-complete-icon').textContent = isNowChecked ? '✅' : '⬜';
+                this.querySelector('span:last-child').textContent = isNowChecked ? 'Step ' + step + ' 완료!' : 'Step ' + step + ' 완료하기';
+
+                // h2 상태 아이콘 업데이트
+                const icons = document.querySelectorAll('.step-status-icon');
+                if (icons[step - 1]) icons[step - 1].textContent = isNowChecked ? '✅' : '⬜';
+
+                // 진행바 업데이트
+                const lab = CODELABS.find(c => c.id === codelabId);
+                const pct = Math.round((progress[codelabId].length / lab.steps) * 100);
+                const fill = document.querySelector('.codelab-progress-fill');
+                const text = document.querySelector('.codelab-progress-text');
+                if (fill) fill.style.width = pct + '%';
+                if (text) text.textContent = `${progress[codelabId].length}/${lab.steps} (${pct}%)`;
+
+                // 완료 시 축하 효과
+                if (pct === 100) showCompletionCelebration(lab);
+              });
+            });
+          });
+
+          function showCompletionCelebration(lab) {
+            const overlay = document.createElement('div');
+            overlay.className = 'celebration-overlay';
+            overlay.innerHTML = `
+              <div class="celebration-card">
+                <div class="celebration-icon">🎉</div>
+                <h2>Codelab 완료!</h2>
+                <p><strong>${lab.title}</strong></p>
+                <p>+${lab.xp} XP 획득!</p>
+                <button onclick="this.closest('.celebration-overlay').remove()">확인</button>
+              </div>`;
+            document.body.appendChild(overlay);
+          }
+
+          // --- README (대시보드) 렌더링 후 동적 데이터 주입 ---
+          hook.doneEach(function() {
+            const dashboard = document.getElementById('dashboard-mount');
+            if (!dashboard) return;
+
+            const progress = getProgress();
+            const xp = recalcXP(progress);
+            const level = getLevel(xp);
+            const nextLvl = getNextLevel(xp);
+            const unlocked = checkBadges(progress);
+            const streak = getStreak();
+            const totalDone = getTotalCompleted(progress);
+            const totalPct = Math.round((totalDone / TOTAL_STEPS) * 100);
+
+            dashboard.innerHTML = `
+              <div class="dash-grid">
+                <div class="dash-card dash-level">
+                  <div class="dash-level-icon">${level.icon}</div>
+                  <div class="dash-level-info">
+                    <div class="dash-level-name">${level.name}</div>
+                    <div class="dash-xp-bar">
+                      <div class="dash-xp-fill" style="width:${nextLvl ? Math.round(((xp - level.minXP) / (nextLvl.minXP - level.minXP)) * 100) : 100}%"></div>
+                    </div>
+                    <div class="dash-xp-text">${xp} / ${nextLvl ? nextLvl.minXP : TOTAL_XP} XP</div>
+                  </div>
+                  ${streak.count > 0 ? `<div class="dash-streak">🔥 ${streak.count}일 연속</div>` : ''}
+                </div>
+
+                <div class="dash-card dash-overall">
+                  <h3>전체 진행률</h3>
+                  <div class="dash-circle-wrap">
+                    <svg class="dash-circle" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="52" fill="none" stroke="#e9ecef" stroke-width="10"/>
+                      <circle cx="60" cy="60" r="52" fill="none" stroke="#4caf50" stroke-width="10"
+                        stroke-dasharray="${Math.round(326.7 * totalPct / 100)} 326.7"
+                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                    </svg>
+                    <div class="dash-circle-text">${totalPct}%</div>
+                  </div>
+                  <div class="dash-overall-sub">${totalDone} / ${TOTAL_STEPS} steps</div>
+                </div>
+
+                <div class="dash-card dash-badges">
+                  <h3>배지 (${unlocked.length}/${BADGES.length})</h3>
+                  <div class="dash-badge-grid">
+                    ${BADGES.map(b => `
+                      <div class="dash-badge ${unlocked.includes(b.id) ? 'unlocked' : 'locked'}" title="${b.desc}">
+                        <span class="dash-badge-icon">${b.icon}</span>
+                        <span class="dash-badge-name">${b.name}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+
+              <h2>📚 Codelabs</h2>
+              <div class="codelab-grid">
+                ${[1, 2, 3].map(stage => `
+                  <div class="stage-section">
+                    <h3>Stage ${stage}</h3>
+                    ${CODELABS.filter(c => c.stage === stage).map(lab => {
+                      const done = (progress[lab.id] || []).length;
+                      const pct = Math.round((done / lab.steps) * 100);
+                      const isDone = done >= lab.steps;
+                      return `
+                        <a href="#/codelabs/${lab.id}" class="codelab-card ${isDone ? 'completed' : ''}">
+                          <div class="codelab-card-top">
+                            <span class="codelab-card-status">${isDone ? '✅' : pct > 0 ? '🔄' : '⬜'}</span>
+                            <span class="codelab-card-title">${lab.title}</span>
+                          </div>
+                          <div class="codelab-card-bar">
+                            <div class="codelab-card-fill" style="width:${pct}%"></div>
+                          </div>
+                          <div class="codelab-card-meta">
+                            <span>${'★'.repeat(lab.difficulty)}${'☆'.repeat(5 - lab.difficulty)}</span>
+                            <span>⏱ ${lab.hours}h</span>
+                            <span>💰 ${lab.xp} XP</span>
+                            <span>${done}/${lab.steps}</span>
+                          </div>
+                        </a>`;
+                    }).join('')}
+                  </div>
+                `).join('')}
+              </div>
+
+              <div class="dash-reset">
+                <button onclick="if(confirm('모든 진행률을 초기화할까요?')){localStorage.clear();location.reload();}">🗑️ 진행률 초기화</button>
+              </div>
+            `;
+          });
+        }
+      ]
+    };
+  </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-kotlin.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-groovy.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-toml.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+</body>
+</html>
