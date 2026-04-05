@@ -6,29 +6,27 @@
 
 ## 이 Codelab에서 배우는 것
 
-- **Cloudflare Turnstile 인증**: invisible WebView + JavaScript Interface로 봇 방지 챌린지 통과
-- **OkHttp Interceptor**로 인증 쿠키 자동 주입
+- **SofaScore 다중 API 호출**: 하나의 화면에 여러 엔드포인트를 병렬 호출하여 데이터 조합
 - **API 응답 → DTO → Domain Model** 전체 레이어 매핑 (가장 복잡한 Mapper 구현)
 - **`kotlinx.serialization`** 으로 중첩 JSON 구조 역직렬화 (이벤트, 라인업, 통계, 선수 레이팅)
 - **Compose `HorizontalPager` + `TabRow`** 로 3개 서브탭 구현
 - **`LargeTopAppBar` + `exitUntilCollapsedScrollBehavior`** 로 접히는 헤더 구현
 - **Hilt `SavedStateHandle`** 을 통한 Navigation argument 주입
-- **포메이션 그리드** 파싱 (grid "row:col" → 시각적 배치)
+- **포메이션 배치**: formation 문자열 기반 시각적 배치
 - **`LinearProgressIndicator`** 로 홈/어웨이 통계 비교 UI
 - **조건부 탭 표시**: 데이터 유무에 따라 탭을 동적으로 구성
-- **LiveData → Flow 변환**: 비동기 검증 대기 패턴
+- **`coroutineScope { async {} }`**: 여러 API를 병렬로 호출하는 패턴
 
 ---
 
 ## 완성 후 결과물
 
-- 앱 시작 시 invisible WebView로 Cloudflare Turnstile 인증이 자동 수행됩니다.
-- FotMob matchDetails API 호출 시 인증 쿠키가 자동 주입되어 200 OK를 반환합니다.
+- SofaScore의 여러 API 엔드포인트(event, incidents, lineups, statistics)를 병렬 호출하여 경기 상세 데이터를 조합합니다.
 - 경기 목록에서 경기를 선택하면 상세 화면으로 이동합니다.
 - 매치 헤더에 팀 로고, 이름, 스코어, 골 스코어러가 표시됩니다.
 - 이벤트 탭: 골/카드/교체/VAR 등 경기 이벤트가 타임라인으로 표시됩니다.
 - 라인업 탭: 포메이션 그리드, 선수 카드(번호/이름/레이팅), 감독, 교체 선수가 표시됩니다.
-- 통계 탭: 15개 항목이 ProgressBar로 홈/어웨이 비교 표시됩니다.
+- 통계 탭: 그룹별 통계 항목이 ProgressBar로 홈/어웨이 비교 표시됩니다.
 - 데이터가 없는 탭(연기/취소된 경기)은 자동으로 숨겨집니다.
 - TopAppBar가 스크롤에 따라 접히고 펼쳐집니다.
 
@@ -36,14 +34,9 @@
 
 ## 실행 전략
 
-이 Slice는 프로젝트에서 가장 복잡한 화면입니다. 내부적으로 세 Phase로 나눠서 진행합니다:
+이 Slice는 프로젝트에서 가장 복잡한 화면입니다. 내부적으로 두 Phase로 나눠서 진행합니다:
 
 ```
-Phase 5-0: Turnstile 인증 통합 (matchDetails 접근 전제 조건)
-  ├── TurnstileManager 구현
-  ├── TurnstileBridge JavaScript 인터페이스
-  └── OkHttp Interceptor에 쿠키 주입
-
 Phase 5-A: 하위 탭 3개 독립 구현 (병렬 가능)
   ├── EventsTab    (Step 11)
   ├── StatisticsTab (Step 12)
@@ -52,68 +45,19 @@ Phase 5-A: 하위 탭 3개 독립 구현 (병렬 가능)
 Phase 5-B: FixtureDetailScreen에서 조립 (Step 14)
 ```
 
-Step 1~4는 DTO (예상 구조), Step 4.5는 Turnstile 인증, Step 5~10은 하위 레이어(API 엔드포인트, Domain Model, Mapper, UseCase, ViewModel)를 순서대로 구축합니다.
+Step 1~4는 SofaScore 다중 엔드포인트별 DTO, Step 5는 API 엔드포인트(4개 suspend 함수), Step 6~10은 하위 레이어(Domain Model, Mapper, UseCase, ViewModel)를 순서대로 구축합니다.
 
 ---
 
-## Step 1 — core-network: FixtureDetailDto 작성
+## Step 1 — core-network: SofaScore 경기 상세 DTO 작성
 
 ### 목표
 
-> FotMob `/api/matchDetails?matchId=...` 엔드포인트의 상세 응답을 역직렬화하기 위한 DTO를 정의합니다. 이 DTO는 경기 정보, 이벤트, 라인업, 통계, 선수 레이팅을 모두 포함하는 최상위 응답 모델입니다.
-
-> **참고:** FotMob matchDetails API는 Cloudflare Turnstile 보호로 인해 직접 API 테스트가 불가합니다.
-> 아래 DTO는 FotMob 웹사이트의 실제 matchDetails 데이터를 기반으로 한 **예상 구조**입니다.
-> 실제 구현 시 Turnstile 인증 통합 후 응답을 확인하여 DTO를 조정해야 합니다.
+> SofaScore의 여러 경기 상세 엔드포인트(`/api/v1/event/{eventId}`, `/api/v1/event/{eventId}/incidents`, `/api/v1/event/{eventId}/lineups`, `/api/v1/event/{eventId}/statistics`)의 응답을 역직렬화하기 위한 DTO를 정의합니다. SofaScore는 경기 상세 데이터를 **여러 엔드포인트로 분리**하여 제공하므로, 각 엔드포인트별로 별도의 응답 DTO가 필요합니다.
 
 ### 작업 내용
 
 **파일:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/FixtureDetailDto.kt`
-
-이 파일을 새로 생성합니다. 기존 `FixtureDto`, `FixtureLeagueDto`, `FixtureTeamsDto`, `FixtureGoalsDto`는 Slice 3에서 이미 정의되어 있으므로 재사용합니다.
-
-```kotlin
-package com.chase1st.feetballfootball.core.network.model
-
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-// 주의: FotMob matchDetails 응답 예상 구조 — Turnstile 인증 후 실제 응답으로 검증 필요
-@Serializable
-data class FixtureDetailResponseDto(
-    @SerialName("fixture") val fixture: FixtureDto,
-    @SerialName("league") val league: FixtureLeagueDto,
-    @SerialName("teams") val teams: FixtureTeamsDto,
-    @SerialName("goals") val goals: FixtureGoalsDto,
-    @SerialName("events") val events: List<EventDto> = emptyList(),
-    @SerialName("lineups") val lineups: List<LineupDto> = emptyList(),
-    @SerialName("statistics") val statistics: List<TeamStatisticsDto> = emptyList(),
-    @SerialName("players") val players: List<TeamPlayersDto> = emptyList(),
-)
-```
-
-**WHY:** FotMob `/api/matchDetails` 엔드포인트는 기본 경기 정보(fixture, league, teams, goals)에 더해 이벤트, 라인업, 통계, 선수 데이터를 모두 포함합니다. Slice 3에서는 기본 정보만 사용했지만, 상세 화면에서는 전체 데이터가 필요합니다.
-
-**HOW:** `emptyList()` 기본값을 사용하여, 경기가 시작 전이거나 데이터가 없는 경우에도 역직렬화가 실패하지 않도록 합니다.
-
-> 💡 **Tip:** `FixtureDetailResponseDto`는 기존 `FixtureResponseDto`의 확장판입니다. 기존 DTO 타입들(`FixtureDto`, `FixtureLeagueDto` 등)을 재사용하여 중복을 줄입니다.
-
-### ✅ 검증
-
-- [ ] 기존 `FixtureDto`, `FixtureLeagueDto`, `FixtureTeamsDto`, `FixtureGoalsDto`를 정상 참조한다
-- [ ] 빌드 오류 없이 컴파일된다
-
----
-
-## Step 2 — core-network: EventDto 작성
-
-### 목표
-
-> 경기 이벤트(골, 카드, 교체, VAR 등) 데이터를 역직렬화하기 위한 DTO를 정의합니다.
-
-### 작업 내용
-
-**파일:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/EventDto.kt`
 
 이 파일을 새로 생성합니다.
 
@@ -123,56 +67,167 @@ package com.chase1st.feetballfootball.core.network.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+// SofaScore GET api/v1/event/{eventId} 응답
 @Serializable
-data class EventDto(
-    @SerialName("time") val time: EventTimeDto,
-    @SerialName("team") val team: StandingTeamDto,
-    @SerialName("player") val player: EventPlayerDto,
-    @SerialName("assist") val assist: EventAssistDto? = null,
-    @SerialName("type") val type: String,
-    @SerialName("detail") val detail: String,
+data class EventResponseDto(
+    @SerialName("event") val event: SofaEventDto,
 )
 
 @Serializable
-data class EventTimeDto(
-    @SerialName("elapsed") val elapsed: Int,
-    @SerialName("extra") val extra: Int? = null,
+data class SofaEventDto(
+    @SerialName("id") val id: Int,
+    @SerialName("tournament") val tournament: SofaTournamentDto? = null,
+    @SerialName("homeTeam") val homeTeam: SofaTeamDto,
+    @SerialName("awayTeam") val awayTeam: SofaTeamDto,
+    @SerialName("homeScore") val homeScore: SofaScoreDto? = null,
+    @SerialName("awayScore") val awayScore: SofaScoreDto? = null,
+    @SerialName("status") val status: SofaStatusDto? = null,
+    @SerialName("startTimestamp") val startTimestamp: Long? = null,
+    @SerialName("venue") val venue: SofaVenueDto? = null,
 )
 
 @Serializable
-data class EventPlayerDto(
-    @SerialName("id") val id: Int? = null,
+data class SofaTournamentDto(
+    @SerialName("uniqueTournament") val uniqueTournament: SofaUniqueTournamentDto? = null,
+)
+
+@Serializable
+data class SofaUniqueTournamentDto(
+    @SerialName("id") val id: Int,
     @SerialName("name") val name: String? = null,
 )
 
 @Serializable
-data class EventAssistDto(
-    @SerialName("id") val id: Int? = null,
+data class SofaTeamDto(
+    @SerialName("id") val id: Int,
+    @SerialName("name") val name: String? = null,
+)
+
+@Serializable
+data class SofaScoreDto(
+    @SerialName("current") val current: Int? = null,
+)
+
+@Serializable
+data class SofaStatusDto(
+    @SerialName("code") val code: Int? = null,
+    @SerialName("description") val description: String? = null,
+    @SerialName("type") val type: String? = null,
+)
+
+@Serializable
+data class SofaVenueDto(
+    @SerialName("city") val city: SofaCityDto? = null,
+    @SerialName("stadium") val stadium: SofaStadiumDto? = null,
+)
+
+@Serializable
+data class SofaCityDto(
+    @SerialName("name") val name: String? = null,
+)
+
+@Serializable
+data class SofaStadiumDto(
     @SerialName("name") val name: String? = null,
 )
 ```
 
-**WHY:** API 응답의 `events` 배열은 각 이벤트에 대해 시간(`time`), 팀(`team`), 선수(`player`), 어시스트(`assist`), 유형(`type`), 상세(`detail`) 정보를 포함합니다.
+**WHY:** SofaScore는 하나의 API로 모든 경기 상세 데이터를 반환하지 않습니다. 대신 `event`, `incidents`, `lineups`, `statistics` 등 **여러 엔드포인트로 분리**하여 제공합니다. 따라서 각 엔드포인트별로 별도의 응답 DTO를 정의해야 합니다.
 
-**HOW:**
-- `team` 필드는 기존 `StandingTeamDto`(id, name, logo)를 재사용합니다.
-- `assist`는 nullable입니다. 카드, VAR 등 어시스트가 없는 이벤트가 있기 때문입니다.
-- `extra`는 추가 시간(예: 90+3분의 3)을 나타냅니다. 정규 시간에는 `null`입니다.
+**HOW:** nullable 필드와 기본값 `null`을 적극 사용하여, 경기 상태에 따라 일부 데이터가 없는 경우에도 역직렬화가 실패하지 않도록 합니다. 팀 로고 URL은 DTO에 포함되지 않고, `https://img.sofascore.com/api/v1/team/{id}/image` 패턴으로 별도 구성합니다.
 
-> ⚠️ **주의:** `type`과 `detail` 필드의 조합으로 이벤트 유형을 구분합니다. 예를 들어 `type="Goal"` + `detail="Own Goal"`이면 자책골입니다. 이 매핑은 Step 5의 Domain Model(`EventType.from()`)에서 처리합니다.
+> 💡 **Tip:** SofaScore 이미지 URL 패턴:
+> - 팀 로고: `https://img.sofascore.com/api/v1/team/{id}/image`
+> - 리그 로고: `https://img.sofascore.com/api/v1/unique-tournament/{id}/image`
+> - 선수 사진: `https://img.sofascore.com/api/v1/player/{id}/image`
 
 ### ✅ 검증
 
-- [ ] `StandingTeamDto` 참조가 정상 resolve 된다
+- [ ] 모든 DTO 클래스에 `@Serializable` 어노테이션이 있다
+- [ ] nullable 필드에 기본값 `null`이 설정되어 있다
 - [ ] 빌드 오류 없이 컴파일된다
 
 ---
 
-## Step 3 — core-network: LineupDto 작성
+## Step 2 — core-network: IncidentDto 작성 (SofaScore Incidents)
 
 ### 목표
 
-> 경기 라인업(포메이션, 선발/교체 선수, 감독, 팀 컬러) 데이터를 역직렬화하기 위한 DTO를 정의합니다.
+> SofaScore `/api/v1/event/{eventId}/incidents` 엔드포인트의 응답을 역직렬화하기 위한 DTO를 정의합니다. SofaScore는 골, 카드, 교체, 기간(전반/후반) 등을 `incidents` 배열로 통합하여 제공합니다.
+
+### 작업 내용
+
+**파일:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/IncidentDto.kt`
+
+이 파일을 새로 생성합니다.
+
+```kotlin
+package com.chase1st.feetballfootball.core.network.model
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+// SofaScore GET api/v1/event/{eventId}/incidents 응답
+@Serializable
+data class IncidentsResponseDto(
+    @SerialName("incidents") val incidents: List<IncidentDto> = emptyList(),
+)
+
+@Serializable
+data class IncidentDto(
+    @SerialName("incidentType") val incidentType: String,        // "goal", "card", "substitution", "period", "injuryTime", "var"
+    @SerialName("time") val time: Int? = null,
+    @SerialName("addedTime") val addedTime: Int? = null,
+    @SerialName("player") val player: IncidentPlayerDto? = null,
+    @SerialName("assist1") val assist1: IncidentPlayerDto? = null,
+    @SerialName("playerIn") val playerIn: IncidentPlayerDto? = null,   // 교체 들어온 선수
+    @SerialName("playerOut") val playerOut: IncidentPlayerDto? = null,  // 교체 나간 선수
+    @SerialName("isHome") val isHome: Boolean? = null,
+    @SerialName("homeScore") val homeScore: Int? = null,
+    @SerialName("awayScore") val awayScore: Int? = null,
+    @SerialName("incidentClass") val incidentClass: String? = null,    // "regular", "yellow", "red", "yellowRed", "ownGoal", "penalty", "missedPenalty"
+    @SerialName("text") val text: String? = null,                      // "HT", "FT" 등 period 이벤트에서 사용
+)
+
+@Serializable
+data class IncidentPlayerDto(
+    @SerialName("id") val id: Int? = null,
+    @SerialName("name") val name: String? = null,
+    @SerialName("shortName") val shortName: String? = null,
+)
+```
+
+**WHY:** SofaScore의 incidents 응답은 모든 경기 이벤트를 하나의 배열에 통합합니다. `incidentType`으로 이벤트 종류를 구분하고, `incidentClass`로 세부 유형(일반골/자책골/페널티, 옐로/레드 카드 등)을 구분합니다.
+
+**HOW:**
+- `incidentType` + `incidentClass` 조합으로 이벤트 유형을 구분합니다. 예: `incidentType="goal"` + `incidentClass="ownGoal"` → 자책골
+- `player`는 골/카드 이벤트의 주체 선수입니다.
+- `assist1`은 어시스트 선수입니다. 어시스트가 없는 이벤트에서는 `null`입니다.
+- `playerIn`/`playerOut`은 교체 이벤트(`incidentType="substitution"`)에서만 사용됩니다.
+- `addedTime`은 추가 시간(예: 90+3분의 3)을 나타냅니다. 정규 시간에는 `null`입니다.
+- `isHome`이 `null`인 경우는 `period` 이벤트(전반/후반 구분선) 등입니다.
+
+> ⚠️ **주의:** SofaScore의 `incidentType` + `incidentClass` 매핑은 Step 6의 Domain Model(`EventType.from()`)에서 처리합니다. 주요 매핑:
+> - `incidentType="goal"` + `incidentClass="regular"` → 일반 골
+> - `incidentType="goal"` + `incidentClass="ownGoal"` → 자책골
+> - `incidentType="goal"` + `incidentClass="penalty"` → 페널티 골
+> - `incidentType="card"` + `incidentClass="yellow"` → 옐로 카드
+> - `incidentType="card"` + `incidentClass="red"` → 레드 카드
+> - `incidentType="card"` + `incidentClass="yellowRed"` → 경고 누적 퇴장
+
+### ✅ 검증
+
+- [ ] 모든 DTO 클래스에 `@Serializable` 어노테이션이 있다
+- [ ] nullable 필드에 기본값 `null`이 설정되어 있다
+- [ ] 빌드 오류 없이 컴파일된다
+
+---
+
+## Step 3 — core-network: LineupsDto 작성 (SofaScore Lineups)
+
+### 목표
+
+> SofaScore `/api/v1/event/{eventId}/lineups` 엔드포인트의 응답을 역직렬화하기 위한 DTO를 정의합니다. SofaScore의 라인업은 `home`/`away` 객체로 분리되며, 각 팀의 `players` 배열에서 `substitute: boolean`으로 선발/교체를 구분합니다.
 
 ### 작업 내용
 
@@ -186,62 +241,64 @@ package com.chase1st.feetballfootball.core.network.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+// SofaScore GET api/v1/event/{eventId}/lineups 응답
 @Serializable
-data class LineupDto(
-    @SerialName("team") val team: LineupTeamDto,
-    @SerialName("coach") val coach: CoachDto? = null,
+data class LineupsResponseDto(
+    @SerialName("home") val home: TeamLineupDto? = null,
+    @SerialName("away") val away: TeamLineupDto? = null,
+    @SerialName("confirmed") val confirmed: Boolean? = null,
+)
+
+@Serializable
+data class TeamLineupDto(
+    @SerialName("players") val players: List<LineupPlayerEntryDto> = emptyList(),
     @SerialName("formation") val formation: String? = null,
-    @SerialName("startXI") val startXI: List<LineupPlayerWrapperDto> = emptyList(),
-    @SerialName("substitutes") val substitutes: List<LineupPlayerWrapperDto> = emptyList(),
+    @SerialName("playerColor") val playerColor: LineupColorDto? = null,
+    @SerialName("goalkeeperColor") val goalkeeperColor: LineupColorDto? = null,
 )
 
 @Serializable
-data class LineupTeamDto(
-    @SerialName("id") val id: Int,
-    @SerialName("name") val name: String,
-    @SerialName("logo") val logo: String,
-    @SerialName("colors") val colors: TeamColorsDto? = null,
-)
-
-@Serializable
-data class TeamColorsDto(
-    @SerialName("player") val player: ColorCodeDto? = null,
-)
-
-@Serializable
-data class ColorCodeDto(
+data class LineupColorDto(
     @SerialName("primary") val primary: String? = null,
+    @SerialName("number") val number: String? = null,
 )
 
 @Serializable
-data class CoachDto(
-    @SerialName("name") val name: String? = null,
-    @SerialName("photo") val photo: String? = null,
+data class LineupPlayerEntryDto(
+    @SerialName("player") val player: LineupPlayerInfoDto,
+    @SerialName("shirtNumber") val shirtNumber: Int? = null,
+    @SerialName("jerseyNumber") val jerseyNumber: String? = null,
+    @SerialName("position") val position: String? = null,    // "G", "D", "M", "F"
+    @SerialName("substitute") val substitute: Boolean = false,
+    @SerialName("statistics") val statistics: LineupPlayerStatDto? = null,
+    @SerialName("captain") val captain: Boolean? = null,
 )
 
 @Serializable
-data class LineupPlayerWrapperDto(
-    @SerialName("player") val player: LineupPlayerDto,
-)
-
-@Serializable
-data class LineupPlayerDto(
+data class LineupPlayerInfoDto(
     @SerialName("id") val id: Int,
-    @SerialName("name") val name: String,
-    @SerialName("number") val number: Int,
-    @SerialName("pos") val pos: String? = null,
-    @SerialName("grid") val grid: String? = null,
+    @SerialName("name") val name: String? = null,
+    @SerialName("shortName") val shortName: String? = null,
+    @SerialName("position") val position: String? = null,    // "G", "D", "M", "F"
+)
+
+@Serializable
+data class LineupPlayerStatDto(
+    @SerialName("rating") val rating: Double? = null,
+    @SerialName("minutesPlayed") val minutesPlayed: Int? = null,
 )
 ```
 
-**WHY:** 라인업 데이터는 이 Slice에서 가장 깊은 중첩 구조를 가집니다. API 응답에서 선수 데이터가 `{ "player": { ... } }` 형태의 wrapper로 감싸져 있어 `LineupPlayerWrapperDto`가 필요합니다.
+**WHY:** SofaScore의 라인업 구조는 `home`/`away`로 팀이 분리되어 있으며, 각 팀의 `players` 배열에 모든 선수가 포함됩니다. `substitute: boolean` 필드로 선발(false)과 교체(true)를 구분합니다. `grid` 필드는 없으며, 포메이션 문자열에서 선수 배치를 유추합니다.
 
 **HOW:**
-- `LineupTeamDto`는 기존 `StandingTeamDto`와 유사하지만 `colors` 필드가 추가되어 있어 별도 DTO로 정의합니다.
-- `grid` 필드는 `"1:1"`, `"2:3"` 형태의 문자열로 포메이션 내 선수 위치를 나타냅니다. 파싱은 Mapper에서 처리합니다.
-- `colors.player.primary`는 팀 유니폼 색상 hex 값입니다 (예: `"1a3263"`). 포메이션 UI의 선수 원형 배경색에 사용합니다.
+- `substitute` 필드가 `false`이면 선발, `true`이면 교체 선수입니다.
+- `position` 필드는 `"G"` (골키퍼), `"D"` (수비수), `"M"` (미드필더), `"F"` (공격수) 중 하나입니다.
+- `playerColor.primary`는 팀 유니폼 색상 hex 값입니다 (예: `"#6CABDD"`). 포메이션 UI의 선수 원형 배경색에 사용합니다.
+- `statistics.rating`은 선수의 경기 레이팅(예: 7.2)입니다. 별도 API 호출 없이 라인업 응답에 포함됩니다.
+- `confirmed`가 `true`이면 라인업이 확정된 상태입니다.
 
-> 💡 **Tip:** `LineupPlayerWrapperDto`는 API 응답의 `startXI: [{ "player": { ... } }]` 구조 때문에 필요한 래퍼입니다. Domain Model에서는 이 래퍼를 벗겨내고 `LineupPlayer`만 사용합니다.
+> 💡 **Tip:** SofaScore는 `grid` 필드를 제공하지 않으므로, 포메이션 문자열(예: `"4-3-3"`)을 파싱하여 각 포지션별 선수 수를 결정하고, `position` 필드와 조합하여 선수 배치를 계산합니다. 이 로직은 Mapper(Step 8)에서 구현합니다.
 
 ### ✅ 검증
 
@@ -251,11 +308,11 @@ data class LineupPlayerDto(
 
 ---
 
-## Step 4 — core-network: StatisticsDto 작성
+## Step 4 — core-network: StatisticsDto 작성 (SofaScore Statistics)
 
 ### 목표
 
-> 경기 통계(팀별 슈팅, 점유율 등)와 선수별 경기 레이팅 데이터를 역직렬화하기 위한 DTO를 정의합니다.
+> SofaScore `/api/v1/event/{eventId}/statistics` 엔드포인트의 응답을 역직렬화하기 위한 DTO를 정의합니다. SofaScore의 통계는 `period`(ALL, 1ST, 2ND)별로 분류되고, 각 period 내에서 `groups`로 그룹핑됩니다.
 
 ### 작업 내용
 
@@ -269,326 +326,136 @@ package com.chase1st.feetballfootball.core.network.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+// SofaScore GET api/v1/event/{eventId}/statistics 응답
 @Serializable
-data class TeamStatisticsDto(
-    @SerialName("team") val team: StandingTeamDto,
-    @SerialName("statistics") val statistics: List<StatItemDto> = emptyList(),
+data class EventStatisticsResponseDto(
+    @SerialName("statistics") val statistics: List<PeriodStatisticsDto> = emptyList(),
+)
+
+@Serializable
+data class PeriodStatisticsDto(
+    @SerialName("period") val period: String,             // "ALL", "1ST", "2ND"
+    @SerialName("groups") val groups: List<StatGroupDto> = emptyList(),
+)
+
+@Serializable
+data class StatGroupDto(
+    @SerialName("groupName") val groupName: String,       // "Possession", "Shots", "TVData", etc.
+    @SerialName("statisticsItems") val statisticsItems: List<StatItemDto> = emptyList(),
 )
 
 @Serializable
 data class StatItemDto(
-    @SerialName("type") val type: String,
-    @SerialName("value") val value: String? = null,
-)
-
-@Serializable
-data class TeamPlayersDto(
-    @SerialName("team") val team: StandingTeamDto,
-    @SerialName("players") val players: List<PlayerRatingDto> = emptyList(),
-)
-
-@Serializable
-data class PlayerRatingDto(
-    @SerialName("player") val player: PlayerRatingInfoDto,
-    @SerialName("statistics") val statistics: List<PlayerGameStatDto> = emptyList(),
-)
-
-@Serializable
-data class PlayerRatingInfoDto(
-    @SerialName("id") val id: Int,
-    @SerialName("name") val name: String,
-)
-
-@Serializable
-data class PlayerGameStatDto(
-    @SerialName("games") val games: PlayerGameDto? = null,
-)
-
-@Serializable
-data class PlayerGameDto(
-    @SerialName("rating") val rating: String? = null,
-    @SerialName("minutes") val minutes: Int? = null,
+    @SerialName("name") val name: String,                 // "Ball possession", "Total shots", etc.
+    @SerialName("home") val home: String? = null,         // "64%", "18"
+    @SerialName("away") val away: String? = null,         // "36%", "8"
+    @SerialName("compareCode") val compareCode: Int? = null, // 1=home우세, 2=away우세, 3=동일
+    @SerialName("statisticsType") val statisticsType: String? = null, // "positive", "negative"
+    @SerialName("valueType") val valueType: String? = null,
+    @SerialName("homeValue") val homeValue: Int? = null,  // 64, 18
+    @SerialName("awayValue") val awayValue: Int? = null,  // 36, 8
 )
 ```
 
-**WHY:** 통계 데이터와 선수 레이팅은 별개의 배열(`statistics`, `players`)로 제공되지만, 라인업 탭에서 선수 레이팅을 표시하려면 두 데이터를 합쳐야 합니다. `TeamPlayersDto`와 `PlayerRatingDto`는 이 목적으로 사용됩니다.
+**WHY:** SofaScore의 통계 구조는 3단계 중첩(`statistics` → `groups` → `statisticsItems`)으로 되어 있습니다. `period="ALL"`이 전체 경기 통계이며, `"1ST"`/`"2ND"`는 전반/후반 통계입니다. 각 그룹(`Possession`, `Shots` 등)에 여러 통계 항목이 포함됩니다.
 
 **HOW:**
-- `StatItemDto`의 `value`는 문자열입니다. 숫자형 통계(예: `"5"`)와 퍼센트형 통계(예: `"64%"`)가 혼재하므로 Domain 레이어에서 파싱합니다.
-- `PlayerGameDto.rating`도 문자열(예: `"7.2"`)입니다. Mapper에서 `Float`로 변환합니다.
+- `home`/`away`는 화면에 표시할 문자열(예: `"64%"`, `"18"`)입니다.
+- `homeValue`/`awayValue`는 비교 계산용 정수값(예: `64`, `18`)입니다. `LinearProgressIndicator`의 비율 계산에 사용합니다.
+- `compareCode`는 어느 팀이 우세한지 나타냅니다 (1=홈 우세, 2=어웨이 우세, 3=동일). UI에서 색상 강조에 활용할 수 있습니다.
+- 선수 레이팅은 별도 API가 아닌 Step 3의 `LineupsResponseDto` 내 `LineupPlayerStatDto.rating`에 포함되어 있습니다.
 
-> ⚠️ **주의:** `StatItemDto.value`가 API에서 `null`로 올 수 있습니다. 예를 들어, 경기가 아직 시작되지 않았거나 해당 통계 항목이 수집되지 않은 경우입니다. nullable 처리가 필수입니다.
+> 💡 **Tip:** 보통 UI에서는 `period="ALL"` 통계만 표시합니다. 전반/후반 통계 토글을 추가하려면 `period` 필터를 구현하면 됩니다.
+
+> ⚠️ **주의:** `StatItemDto.home`/`away`가 `null`일 수 있습니다. 경기 시작 전이거나 해당 통계 항목이 수집되지 않은 경우입니다. nullable 처리가 필수입니다.
 
 ### ✅ 검증
 
-- [ ] `StandingTeamDto` 참조가 정상 resolve 된다
 - [ ] 모든 DTO 클래스에 `@Serializable` 어노테이션이 있다
+- [ ] nullable 필드에 기본값 `null` 또는 `emptyList()`가 설정되어 있다
 - [ ] 빌드 오류 없이 컴파일된다
 
 ---
 
-## Step 4.5 — Turnstile 인증 통합 (matchDetails 전제 조건)
+## Step 4.5 — 인증 참고사항 (SofaScore)
+
+### 배경
+
+> SofaScore API는 복잡한 봇 방지 인증을 사용하지 않습니다. SofaScore의 GET 엔드포인트(`event`, `incidents`, `lineups`, `statistics`)는 **인증 없이 기본 데이터를 조회**할 수 있습니다.
+
+### SofaScore 인증 방식
+
+SofaScore는 Bearer Token 기반 인증을 사용합니다:
+- **토큰 초기화:** `POST api/v1/token/init`
+- **토큰 갱신:** `POST api/v1/token/refresh`
+- OkHttp Interceptor에서 `Authorization: Bearer {token}` 헤더 추가 (non-GET/HEAD 요청)
+- 서버가 `X-Token-Refresh` 응답 헤더로 토큰 갱신을 트리거할 수 있음
+
+그러나 **이 Slice에서 사용하는 GET 엔드포인트들은 인증 없이 동작합니다.** Bearer Token은 POST 작업(투표 등)이나 프리미엄 기능에 주로 필요합니다.
+
+### 결론
+
+- **invisible WebView, JavaScript Interface 등의 복잡한 인증은 필요 없습니다.**
+- 추후 인증이 필요한 기능(예: 투표, 프리미엄 데이터)을 추가할 때 Bearer Token Interceptor를 구현하면 됩니다.
+- 현재는 별도의 인증 코드 없이 바로 API 호출이 가능합니다.
+
+> 💡 **Tip:** SofaScore GET 엔드포인트가 인증 없이 동작하므로, 이 Step은 구현할 코드가 없습니다. 바로 Step 5로 넘어가세요.
+
+---
+
+## Step 5 — core-network: SofaScore API 엔드포인트 추가
 
 ### 목표
 
-> FotMob의 `/api/matchDetails`는 Cloudflare Turnstile 인증이 필요합니다. 단순 API 호출로는 `403 Forbidden`이 반환되므로, 앱에서 invisible WebView를 통해 Turnstile 챌린지를 통과한 후 쿠키를 확보해야 합니다.
-
-### 배경: Turnstile 인증 메커니즘
-
-FotMob은 봇 방지를 위해 Cloudflare Turnstile을 사용합니다:
-- **Turnstile Script:** `https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit`
-- **Site Key:** `0x4AAAAAACOZughTsLoeXwvg`
-- **검증 엔드포인트:** `POST https://www.fotmob.com/api/turnstile/verify`
-- **쿠키:** `turnstile_verified=1.<timestamp>.<hash>` (24시간 유효)
-
-### 인증 플로우
-
-```
-1. Turnstile 스크립트 로드 (invisible WebView)
-2. turnstile.render() → callback(turnstileToken)
-3. POST /api/turnstile/verify { token: turnstileToken }
-4. 서버 응답: Set-Cookie: turnstile_verified=...
-5. matchDetails API 호출 시 쿠키 포함 → 200 OK
-```
-
-### Android 구현 설계
-
-- **TurnstileManager (Singleton):** 앱 시작 시 invisible WebView로 검증
-- **Activity.onCreate()에서 init()** → 1~3초 내 검증 완료
-- matchDetail 진입 시점에 쿠키 준비 완료
-- **OkHttp Interceptor에서 쿠키 자동 주입**
-
-### 작업 내용
-
----
-
-### 4.5-1. TurnstileManager.kt
-
-**파일:** `app/src/main/kotlin/com/chase1st/feetballfootball/turnstile/TurnstileManager.kt`
-
-이 파일을 새로 생성합니다.
-
-```kotlin
-object TurnstileManager {
-    var isVerified: Boolean = false
-        private set
-    var turnstileCookie: String? = null
-        private set
-    var expiresAt: Long = 0L
-        private set
-    val verificationLiveData = MutableLiveData<Boolean>(false)
-    private var webView: WebView? = null
-    private var retryCount = 0
-    private val MAX_RETRY = 3
-
-    fun init(context: Context, parentView: ViewGroup) {
-        if (isVerified && !isExpired()) return
-        retryCount = 0
-        webView = WebView(context).apply {
-            layoutParams = ViewGroup.LayoutParams(0, 0)
-            visibility = View.GONE
-            settings.javaScriptEnabled = true
-            settings.domStorageEnabled = true
-            settings.userAgentString = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
-            addJavascriptInterface(TurnstileBridge(), "AndroidBridge")
-            webViewClient = WebViewClient()
-        }
-        parentView.addView(webView)
-        webView?.loadDataWithBaseURL(
-            "https://www.fotmob.com",
-            buildTurnstileHtml(),
-            "text/html", "UTF-8", null
-        )
-    }
-
-    fun isExpired(): Boolean = System.currentTimeMillis() > expiresAt
-
-    fun refreshIfNeeded(context: Context, parentView: ViewGroup) {
-        if (!isVerified || isExpired()) {
-            init(context, parentView)
-        }
-    }
-
-    private fun buildTurnstileHtml(): String = """
-        <html><head>
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
-        </head><body>
-        <div id="turnstile-container"></div>
-        <script>
-            turnstile.render('#turnstile-container', {
-                sitekey: '0x4AAAAAACOZughTsLoeXwvg',
-                callback: function(token) {
-                    AndroidBridge.onTurnstileToken(token);
-                },
-                'error-callback': function(error) {
-                    AndroidBridge.onTurnstileError(error);
-                }
-            });
-        </script>
-        </body></html>
-    """.trimIndent()
-
-    // TurnstileBridge에서 호출
-    internal fun onTokenReceived(token: String) {
-        // POST /api/turnstile/verify 호출
-        // 성공 시: isVerified = true, turnstileCookie 저장, expiresAt 설정 (24시간)
-        // verificationLiveData.postValue(true)
-    }
-
-    internal fun onVerificationFailed() {
-        if (retryCount < MAX_RETRY) {
-            retryCount++
-            // 3초 후 WebView reload 재시도
-        }
-    }
-}
-```
-
-**WHY:** FotMob의 matchDetails API는 Cloudflare Turnstile 인증 없이 호출하면 `403 Forbidden`을 반환합니다. invisible WebView에서 Turnstile 챌린지를 통과하여 인증 쿠키를 확보해야 합니다.
-
-**HOW:**
-- Singleton 패턴으로 앱 전역에서 인증 상태를 공유합니다.
-- `init()`은 Activity.onCreate()에서 호출하여 앱 시작 시 즉시 검증을 시작합니다.
-- invisible WebView(0x0 크기, GONE)로 사용자에게 보이지 않게 처리합니다.
-- `verificationLiveData`로 검증 완료를 비동기 관찰할 수 있습니다.
-
-> ⚠️ **주의:** WebView에서 `javaScriptEnabled = true` 설정은 보안 경고가 발생할 수 있습니다. Turnstile 검증에 필수이므로 `@SuppressLint("SetJavaScriptEnabled")`를 추가하세요.
-
----
-
-### 4.5-2. TurnstileBridge.kt
-
-**파일:** `app/src/main/kotlin/com/chase1st/feetballfootball/turnstile/TurnstileBridge.kt`
-
-이 파일을 새로 생성합니다.
-
-```kotlin
-class TurnstileBridge {
-    @JavascriptInterface
-    fun onTurnstileToken(token: String) {
-        // POST https://www.fotmob.com/api/turnstile/verify
-        // Body: { "token": token }
-        // 응답의 Set-Cookie에서 turnstile_verified 쿠키 추출
-        TurnstileManager.onTokenReceived(token)
-    }
-
-    @JavascriptInterface
-    fun onTurnstileError(error: String) {
-        TurnstileManager.onVerificationFailed()
-    }
-}
-```
-
-**WHY:** `@JavascriptInterface`를 통해 WebView 내 JavaScript에서 Kotlin 코드를 호출할 수 있습니다. Turnstile 챌린지 완료 시 토큰을 Android 코드로 전달받습니다.
-
-**HOW:** Turnstile의 `callback` 함수에서 `AndroidBridge.onTurnstileToken(token)`을 호출하면, 이 Bridge 클래스의 `onTurnstileToken`이 실행됩니다.
-
----
-
-### 4.5-3. OkHttp Interceptor에서 쿠키 주입
-
-**파일:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/TurnstileCookieInterceptor.kt`
-
-이 파일을 새로 생성합니다.
-
-```kotlin
-class TurnstileCookieInterceptor : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-        // matchDetails 요청에만 쿠키 추가
-        if (request.url.encodedPath.contains("matchDetails")) {
-            val cookie = TurnstileManager.turnstileCookie
-            if (cookie != null) {
-                val newRequest = request.newBuilder()
-                    .addHeader("Cookie", cookie)
-                    .build()
-                return chain.proceed(newRequest)
-            }
-        }
-        return chain.proceed(request)
-    }
-}
-```
-
-**WHY:** FotMob의 matchDetails API는 `turnstile_verified` 쿠키가 없으면 403을 반환합니다. OkHttp Interceptor를 사용하면 모든 matchDetails 요청에 쿠키가 자동으로 주입됩니다.
-
-**HOW:** `encodedPath.contains("matchDetails")`로 matchDetails 요청만 필터링하여 불필요한 쿠키 전송을 방지합니다.
-
-> 💡 **Tip:** OkHttp의 `addInterceptor(TurnstileCookieInterceptor())`를 DI 모듈(NetworkModule)에서 OkHttpClient 빌더에 추가하세요.
-
----
-
-### 4.5-4. 검증 대기 패턴 (ViewModel에서 사용)
-
-```kotlin
-// ViewModel에서 Turnstile 검증 완료를 기다린 후 API 호출
-suspend fun loadMatchDetail(matchId: Int) {
-    if (!TurnstileManager.isVerified || TurnstileManager.isExpired()) {
-        // verificationLiveData를 Flow로 변환하여 검증 완료 대기
-        TurnstileManager.verificationLiveData.asFlow()
-            .first { it == true }
-    }
-    // 검증 완료 → matchDetails API 호출
-    repository.getMatchDetail(matchId)
-}
-```
-
-**WHY:** 사용자가 앱 실행 직후 빠르게 경기 상세로 진입할 수 있습니다. 이때 Turnstile 검증이 아직 완료되지 않았을 수 있으므로, 검증 완료를 기다린 후 API를 호출해야 합니다.
-
-**HOW:** `LiveData.asFlow()`로 LiveData를 Flow로 변환하고, `first { it == true }`로 검증 완료 이벤트를 기다립니다. 검증이 이미 완료된 경우 즉시 통과합니다.
-
-### 엣지 케이스 처리
-
-| 시나리오 | 대응 방안 |
-|----------|----------|
-| Turnstile 검증 실패 | 3초 후 WebView reload 자동 재시도 (최대 3회) |
-| 사용자가 matchDetail에 빠르게 진입 | verificationLiveData 관찰 → 검증 완료 후 자동 호출 |
-| 24시간 후 토큰 만료 | isExpired() 체크 → refreshIfNeeded() 호출 |
-
-### ✅ 검증
-
-- [ ] TurnstileManager.init() 호출 후 1~3초 내 검증 완료
-- [ ] invisible WebView가 사용자에게 보이지 않음
-- [ ] turnstile_verified 쿠키가 OkHttp 요청에 자동 주입됨
-- [ ] matchDetails API가 쿠키 포함 시 200 OK 반환
-- [ ] 검증 실패 시 자동 재시도 (최대 3회) 동작
-- [ ] 24시간 후 토큰 만료 시 자동 갱신
-
----
-
-## Step 5 — core-network: API 엔드포인트 추가
-
-### 목표
-
-> `FootballApiService`에 FotMob 경기 상세 조회 엔드포인트를 추가합니다.
+> `FootballApiService`에 SofaScore 경기 상세 조회를 위한 4개의 엔드포인트를 추가합니다. SofaScore는 경기 상세 데이터를 여러 엔드포인트로 분리하여 제공하므로, 각각에 대한 suspend 함수를 정의합니다.
 
 ### 작업 내용
 
 **파일:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/FootballApiService.kt`
 
-기존 파일에 아래 함수를 추가합니다.
+기존 파일에 아래 함수들을 추가합니다.
 
 ```kotlin
 // FootballApiService.kt에 추가
-// 주의: 이 호출은 Turnstile 쿠키가 있어야 200 반환
-@GET("api/matchDetails")
-suspend fun getMatchDetail(
-    @Query("matchId") matchId: Int,
-): FixtureDetailResponseDto  // FotMob은 ApiResponse 래퍼 없음
+// SofaScore 경기 상세 엔드포인트 (4개)
+
+// 1. 기본 경기 정보 (팀, 스코어, 상태, 경기장 등)
+@GET("api/v1/event/{eventId}")
+suspend fun getEvent(
+    @Path("eventId") eventId: Int,
+): EventResponseDto
+
+// 2. 경기 이벤트 (골, 카드, 교체, VAR 등)
+@GET("api/v1/event/{eventId}/incidents")
+suspend fun getEventIncidents(
+    @Path("eventId") eventId: Int,
+): IncidentsResponseDto
+
+// 3. 라인업 (선발, 교체, 포메이션, 선수 레이팅)
+@GET("api/v1/event/{eventId}/lineups")
+suspend fun getEventLineups(
+    @Path("eventId") eventId: Int,
+): LineupsResponseDto
+
+// 4. 통계 (점유율, 슈팅, 패스 등 그룹별 통계)
+@GET("api/v1/event/{eventId}/statistics")
+suspend fun getEventStatistics(
+    @Path("eventId") eventId: Int,
+): EventStatisticsResponseDto
 ```
 
-**WHY:** FotMob API는 API-Sports와 달리 `ApiResponse` 래퍼 없이 직접 데이터를 반환합니다. `matchId` 파라미터로 특정 경기 하나의 전체 데이터를 가져옵니다.
+**WHY:** SofaScore는 하나의 API로 모든 데이터를 반환하지 않고, 관심사별로 엔드포인트를 분리합니다. 이 설계 덕분에 필요한 데이터만 선택적으로 호출할 수 있고, Repository에서 `coroutineScope { async {} }`로 병렬 호출하여 성능을 최적화할 수 있습니다.
 
-**HOW:** FotMob의 `/api/matchDetails` 엔드포인트를 사용합니다. 이 호출은 반드시 Turnstile 쿠키(Step 4.5)가 포함되어야 200 OK를 반환합니다. 쿠키가 없으면 `403 Forbidden`이 반환됩니다.
+**HOW:** `@Path("eventId")`로 URL 경로에 이벤트 ID를 삽입합니다. 모든 GET 엔드포인트는 인증 없이 호출 가능합니다. Base URL은 `https://api.sofascore.com/`으로 설정되어 있어야 합니다.
 
-> ⚠️ **주의:** 이 엔드포인트는 Turnstile 인증 쿠키 없이 호출하면 `403 Forbidden`을 반환합니다. `TurnstileCookieInterceptor`가 OkHttp에 등록되어 있어야 합니다.
+> 💡 **Tip:** 4개의 API를 순차 호출하면 응답 시간이 누적됩니다. Repository에서 `coroutineScope { async {} }`를 사용하여 4개를 병렬 호출하면 가장 느린 API의 응답 시간만큼만 소요됩니다. 이 패턴은 Step 8의 Repository 구현에서 다룹니다.
 
 ### ✅ 검증
 
-- [ ] `FixtureDetailResponseDto` 반환 타입이 정상 resolve 된다
-- [ ] `FixtureDetailResponseDto` import가 추가되었다
+- [ ] `EventResponseDto`, `IncidentsResponseDto`, `LineupsResponseDto`, `EventStatisticsResponseDto` 반환 타입이 정상 resolve 된다
+- [ ] 해당 DTO import가 모두 추가되었다
 - [ ] 기존 엔드포인트들과 충돌 없이 빌드된다
-- [ ] Turnstile 쿠키 포함 시 200 OK 반환 확인
+- [ ] 각 엔드포인트가 인증 없이 200 OK 반환 확인
 
 ---
 
@@ -596,7 +463,7 @@ suspend fun getMatchDetail(
 
 ### 목표
 
-> 경기 상세 화면에서 사용할 Domain Model을 정의합니다. DTO의 복잡한 중첩 구조를 UI에서 바로 사용하기 쉬운 형태로 설계합니다.
+> 경기 상세 화면에서 사용할 Domain Model을 정의합니다. SofaScore의 다중 엔드포인트 DTO를 UI에서 바로 사용하기 쉬운 형태로 통합 설계합니다.
 
 ### 작업 내용
 
@@ -647,14 +514,17 @@ package com.chase1st.feetballfootball.core.model
 data class MatchEvent(
     val minute: Int,
     val extraMinute: Int?,
-    val team: Team,
+    val isHome: Boolean,
     val playerName: String,
     val assistName: String?,
     val type: EventType,
     val detail: String,
+    // 교체 이벤트 전용
+    val playerInName: String? = null,
+    val playerOutName: String? = null,
 )
 
-// 참조: FixtureDetailEventsFragment.kt의 type+detail 분기
+// SofaScore incidentType + incidentClass 기반 매핑
 enum class EventType {
     GOAL,
     OWN_GOAL,
@@ -665,42 +535,48 @@ enum class EventType {
     SECOND_YELLOW,
     SUBSTITUTION,
     VAR,
+    PERIOD,          // 전반/후반 구분선 (HT, FT)
+    INJURY_TIME,
     ;
 
     companion object {
-        fun from(type: String, detail: String): EventType = when {
-            type == "Goal" && detail == "Normal Goal" -> GOAL
-            type == "Goal" && detail == "Own Goal" -> OWN_GOAL
-            type == "Goal" && detail == "Penalty" -> PENALTY_GOAL
-            type == "Goal" && detail == "Missed Penalty" -> MISSED_PENALTY
-            type == "Card" && detail == "Yellow Card" -> YELLOW_CARD
-            type == "Card" && detail == "Red Card" -> RED_CARD
-            type == "Card" && detail.contains("Yellow") -> SECOND_YELLOW
-            type == "subst" -> SUBSTITUTION
-            type == "Var" -> VAR
+        fun from(incidentType: String, incidentClass: String?): EventType = when {
+            incidentType == "goal" && incidentClass == "regular" -> GOAL
+            incidentType == "goal" && incidentClass == "ownGoal" -> OWN_GOAL
+            incidentType == "goal" && incidentClass == "penalty" -> PENALTY_GOAL
+            incidentType == "goal" && incidentClass == "missedPenalty" -> MISSED_PENALTY
+            incidentType == "card" && incidentClass == "yellow" -> YELLOW_CARD
+            incidentType == "card" && incidentClass == "red" -> RED_CARD
+            incidentType == "card" && incidentClass == "yellowRed" -> SECOND_YELLOW
+            incidentType == "substitution" -> SUBSTITUTION
+            incidentType == "var" -> VAR
+            incidentType == "period" -> PERIOD
+            incidentType == "injuryTime" -> INJURY_TIME
             else -> GOAL
         }
     }
 }
 ```
 
-**WHY:** `EventType` enum은 API 응답의 `type`+`detail` 문자열 조합을 타입 안전한 enum으로 변환합니다. UI에서 이벤트 타입별 아이콘과 색상을 결정할 때 `when (event.type)` 으로 분기하기 편리합니다.
+**WHY:** `EventType` enum은 SofaScore의 `incidentType`+`incidentClass` 문자열 조합을 타입 안전한 enum으로 변환합니다. UI에서 이벤트 타입별 아이콘과 색상을 결정할 때 `when (event.type)` 으로 분기하기 편리합니다.
 
-**HOW:** `EventType.from()` companion object 함수는 기존 `FixtureDetailEventsFragment.kt`의 분기 로직을 그대로 포팅한 것입니다. API에서 오는 문자열 매핑은 다음과 같습니다:
+**HOW:** `EventType.from()` companion object 함수는 SofaScore incidents 응답의 `incidentType`+`incidentClass` 매핑입니다:
 
-| API type | API detail | EventType |
-|----------|-----------|-----------|
-| `"Goal"` | `"Normal Goal"` | `GOAL` |
-| `"Goal"` | `"Own Goal"` | `OWN_GOAL` |
-| `"Goal"` | `"Penalty"` | `PENALTY_GOAL` |
-| `"Goal"` | `"Missed Penalty"` | `MISSED_PENALTY` |
-| `"Card"` | `"Yellow Card"` | `YELLOW_CARD` |
-| `"Card"` | `"Red Card"` | `RED_CARD` |
-| `"Card"` | `"Second Yellow..."` | `SECOND_YELLOW` |
-| `"subst"` | - | `SUBSTITUTION` |
-| `"Var"` | - | `VAR` |
+| incidentType | incidentClass | EventType |
+|-------------|--------------|-----------|
+| `"goal"` | `"regular"` | `GOAL` |
+| `"goal"` | `"ownGoal"` | `OWN_GOAL` |
+| `"goal"` | `"penalty"` | `PENALTY_GOAL` |
+| `"goal"` | `"missedPenalty"` | `MISSED_PENALTY` |
+| `"card"` | `"yellow"` | `YELLOW_CARD` |
+| `"card"` | `"red"` | `RED_CARD` |
+| `"card"` | `"yellowRed"` | `SECOND_YELLOW` |
+| `"substitution"` | - | `SUBSTITUTION` |
+| `"var"` | - | `VAR` |
+| `"period"` | - | `PERIOD` |
+| `"injuryTime"` | - | `INJURY_TIME` |
 
-> ⚠️ **주의:** `else -> GOAL` fallback은 예상하지 못한 이벤트 타입에 대한 안전장치입니다. 실제로는 API 문서에 명시되지 않은 타입이 올 수 있으므로, 로깅을 추가하여 모니터링하는 것이 좋습니다.
+> ⚠️ **주의:** `else -> GOAL` fallback은 예상하지 못한 이벤트 타입에 대한 안전장치입니다. `PERIOD` 타입(HT, FT)은 UI에서 구분선으로 표시합니다. SofaScore는 `isHome` 필드로 홈/어웨이를 직접 구분하므로, 기존의 `team` 객체 대신 `isHome: Boolean`을 사용합니다.
 
 ---
 
@@ -1173,12 +1049,6 @@ class FixtureDetailViewModel @Inject constructor(
 
     val uiState: StateFlow<FixtureDetailUiState> = flow {
         emit(FixtureDetailUiState.Loading)
-        // Turnstile 검증 대기
-        if (!TurnstileManager.isVerified || TurnstileManager.isExpired()) {
-            // 검증 완료 대기 (LiveData → Flow 변환)
-            TurnstileManager.verificationLiveData.asFlow()
-                .first { it == true }
-        }
         try {
             getFixtureDetailUseCase(fixtureId).collect { detail ->
                 emit(FixtureDetailUiState.Success(detail))
@@ -1194,13 +1064,12 @@ class FixtureDetailViewModel @Inject constructor(
 
 **HOW:**
 - `savedStateHandle["fixtureId"]`: Navigation에서 전달된 fixtureId를 꺼냅니다. `FixtureDetailRoute(fixtureId: Int)` Route 클래스의 프로퍼티명과 일치해야 합니다.
-- **Turnstile 검증 대기**: `TurnstileManager.verificationLiveData.asFlow()`로 LiveData를 Flow로 변환하고, `first { it == true }`로 검증 완료를 기다립니다. 이미 검증된 경우 즉시 통과합니다.
 - `SharingStarted.WhileSubscribed(5_000)`: 마지막 구독자가 사라진 후 5초간 데이터를 유지합니다. 화면 회전 시 데이터를 다시 로딩하지 않습니다.
 - `flow { ... }.stateIn(...)`: cold flow를 hot StateFlow로 변환합니다. UI가 구독할 때만 데이터 로딩이 시작됩니다.
 
 > 💡 **Tip:** `fixtureId`가 `0`이면 잘못된 Navigation입니다. 실제 앱에서는 예외를 던지거나 에러 화면을 표시해야 합니다. 추후 Navigation 설정 시 `require(fixtureId > 0)`을 추가하는 것을 고려하세요.
 
-> ⚠️ **주의:** Turnstile 검증 대기 로직이 ViewModel에 포함되어 있습니다. 앱 시작 시 `TurnstileManager.init()`이 Activity.onCreate()에서 호출되어야 하며, 일반적으로 1~3초 내에 검증이 완료됩니다. 사용자가 매우 빠르게 경기 상세로 진입하는 경우에만 대기가 발생합니다.
+> 💡 **Tip:** SofaScore의 GET 엔드포인트는 인증 없이 기본 데이터를 조회할 수 있으므로, 별도의 인증 대기 로직이 필요하지 않습니다. ViewModel은 곧바로 UseCase를 호출합니다.
 
 ### ✅ 검증
 
@@ -1836,8 +1705,7 @@ private fun ScorerText(scorer: GoalScorer) {
 
 | 테스트 항목 | 확인 사항 |
 |------------|----------|
-| Turnstile 인증 | 앱 시작 시 invisible WebView로 1~3초 내 검증 완료 |
-| matchDetails API | Turnstile 쿠키 포함 시 200 OK 반환 |
+| SofaScore API 호출 | `event`, `incidents`, `lineups`, `statistics` 4개 엔드포인트 정상 응답 |
 | 경기 선택 | 경기 목록에서 경기 클릭 → 상세 화면 진입 |
 | 매치 헤더 | 팀 로고, 이름, 스코어, 골 스코어러 표시 |
 | 이벤트 탭 | 골/카드/교체/VAR 타임라인 표시 |
@@ -1849,8 +1717,7 @@ private fun ScorerText(scorer: GoalScorer) {
 
 ### ✅ 검증
 
-- [ ] Turnstile 인증: 앱 시작 시 invisible WebView로 검증 완료
-- [ ] matchDetails API: Turnstile 쿠키 포함 시 200 OK 반환
+- [ ] SofaScore API: `event`, `incidents`, `lineups`, `statistics` 4개 엔드포인트 정상 응답
 - [ ] 경기 선택 → 상세 화면 진입
 - [ ] 매치 헤더: 팀 로고, 이름, 스코어, 골 스코어러 표시
 - [ ] 이벤트 탭: 타임라인 표시 (골/카드/교체/VAR)
@@ -1871,9 +1738,6 @@ private fun ScorerText(scorer: GoalScorer) {
 ### 작업 내용
 
 ```bash
-git add app/src/main/kotlin/com/chase1st/feetballfootball/turnstile/TurnstileManager.kt
-git add app/src/main/kotlin/com/chase1st/feetballfootball/turnstile/TurnstileBridge.kt
-git add core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/TurnstileCookieInterceptor.kt
 git add core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/FixtureDetailDto.kt
 git add core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/EventDto.kt
 git add core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/LineupDto.kt
@@ -1883,7 +1747,7 @@ git add core/core-model/
 git add core/core-domain/
 git add core/core-data/
 git add feature/feature-fixture-detail/
-git commit -m "feat: Slice 5 경기 상세 화면 구현 (Turnstile 인증 + 이벤트/라인업/통계)"
+git commit -m "feat: Slice 5 경기 상세 화면 구현 (SofaScore API 연동 + 이벤트/라인업/통계)"
 ```
 
 ### ✅ 검증
@@ -1901,14 +1765,11 @@ git commit -m "feat: Slice 5 경기 상세 화면 구현 (Turnstile 인증 + 이
 
 | 모듈 | 파일 | 설명 |
 |------|------|------|
-| `app` | `TurnstileManager.kt` | Cloudflare Turnstile 인증 매니저 (invisible WebView) |
-| `app` | `TurnstileBridge.kt` | JavaScript → Kotlin 인터페이스 (토큰 전달) |
-| `core-network` | `TurnstileCookieInterceptor.kt` | matchDetails 요청에 Turnstile 쿠키 자동 주입 |
-| `core-network` | `FixtureDetailDto.kt` | 상세 응답 DTO (예상 구조) |
+| `core-network` | `FixtureDetailDto.kt` | 상세 응답 DTO (SofaScore 엔드포인트별 분리) |
 | `core-network` | `EventDto.kt` | 이벤트 DTO (시간, 팀, 선수, 유형) |
 | `core-network` | `LineupDto.kt` | 라인업 DTO (포메이션, 선수, 감독, 팀컬러) |
 | `core-network` | `StatisticsDto.kt` | 통계 + 선수 레이팅 DTO |
-| `core-network` | `FootballApiService.kt` | `getMatchDetail()` 엔드포인트 추가 (FotMob) |
+| `core-network` | `FootballApiService.kt` | `getEvent()`, `getEventIncidents()`, `getEventLineups()`, `getEventStatistics()` 엔드포인트 추가 (SofaScore) |
 | `core-model` | `MatchDetail.kt` | 상세 화면 최상위 Domain Model |
 | `core-model` | `MatchEvent.kt` | 이벤트 Domain Model + EventType enum |
 | `core-model` | `MatchLineups.kt` | 라인업 Domain Model (포메이션 grid 파싱) |
@@ -1917,16 +1778,14 @@ git commit -m "feat: Slice 5 경기 상세 화면 구현 (Turnstile 인증 + 이
 | `core-domain` | `GetFixtureDetailUseCase.kt` | 상세 조회 UseCase |
 | `core-data` | `FixtureDetailMapper.kt` | 가장 복잡한 DTO→Domain 매퍼 |
 | `feature-fixture-detail` | `FixtureDetailUiState.kt` | UI 상태 sealed interface |
-| `feature-fixture-detail` | `FixtureDetailViewModel.kt` | SavedStateHandle + StateFlow + Turnstile 대기 |
+| `feature-fixture-detail` | `FixtureDetailViewModel.kt` | SavedStateHandle + StateFlow |
 | `feature-fixture-detail` | `EventsTab.kt` | 이벤트 타임라인 탭 |
 | `feature-fixture-detail` | `StatisticsTab.kt` | 통계 비교 탭 |
 | `feature-fixture-detail` | `LineupTab.kt` | 포메이션 + 선수 카드 탭 |
 | `feature-fixture-detail` | `FixtureDetailScreen.kt` | 전체 조립 (Header + Tabs + Pager) |
 
 **핵심 학습 포인트:**
-- Cloudflare Turnstile 인증을 invisible WebView + JavaScript Interface로 통과하는 패턴
-- OkHttp Interceptor로 특정 엔드포인트에만 인증 쿠키를 자동 주입하는 방법
-- LiveData → Flow 변환(`asFlow()`)으로 비동기 검증 완료를 대기하는 패턴
+- SofaScore의 분리된 엔드포인트(`event`, `incidents`, `lineups`, `statistics`)를 병렬 호출하여 하나의 Domain Model로 조합하는 패턴
 - 복잡한 API 응답을 DTO → Domain Model로 매핑할 때 Mapper에 로직을 집중시킵니다
 - `HorizontalPager` + `TabRow`는 ViewPager2 + TabLayout의 Compose 대체재입니다
 - `LargeTopAppBar` + `nestedScroll`로 기존 CoordinatorLayout 동작을 재현합니다

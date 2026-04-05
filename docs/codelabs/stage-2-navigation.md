@@ -126,13 +126,13 @@ import kotlinx.serialization.Serializable
 // 파라미터가 있으므로 data class 사용
 
 @Serializable data class FixtureDetailRoute(
-    val fixtureId: Int,                     // FotMob match ID
+    val fixtureId: Int,                     // SofaScore eventId
 )
 
 @Serializable data class LeagueStandingRoute(
-    val leagueId: Int,                      // FotMob league ID (예: EPL=47)
+    val leagueId: Int,                      // SofaScore uniqueTournamentId (예: EPL=17)
     val leagueName: String,                 // 화면 상단 표시용 리그 이름
-    val season: String,                     // 시즌 (예: "2025/2026")
+    val seasonId: Int,                      // SofaScore seasonId (정수)
 )
 ```
 
@@ -340,10 +340,10 @@ fun FeetballApp() {
                 // ── 리그 목록 화면 ──
                 entry<LeagueRoute> {
                     LeagueListScreen(
-                        onLeagueClick = { leagueId, leagueName, season ->
+                        onLeagueClick = { leagueId, leagueName, seasonId ->
                             // 리그 순위로 이동 (기존 onLeagueSelected 콜백 대체)
                             backStack.add(
-                                LeagueStandingRoute(leagueId, leagueName, season)
+                                LeagueStandingRoute(leagueId, leagueName, seasonId)
                             )
                         },
                     )
@@ -374,7 +374,7 @@ fun FeetballApp() {
       ↑                                        │
       └──────────── onBack (removeLastOrNull) ──┘
 
-[LeagueRoute] ──onLeagueClick──▶ [LeagueStandingRoute(leagueId, name, season)]
+[LeagueRoute] ──onLeagueClick──▶ [LeagueStandingRoute(leagueId, name, seasonId)]
       ↑                                        │
       └──────────── onBack (removeLastOrNull) ──┘
 
@@ -527,8 +527,8 @@ fun FeetballApp() {
             }
             composable<LeagueRoute> {
                 LeagueListScreen(
-                    onLeagueClick = { id, name, season ->
-                        navController.navigate(LeagueStandingRoute(id, name, season))
+                    onLeagueClick = { id, name, seasonId ->
+                        navController.navigate(LeagueStandingRoute(id, name, seasonId))
                     },
                 )
             }

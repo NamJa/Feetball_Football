@@ -26,7 +26,7 @@
 | TestFixtures | Fixture, TeamStanding, PlayerStanding 샘플 데이터 팩토리 |
 | UseCase 테스트 5종 | GetFixturesByDate, GetLeagueStandings, GetTopScorers, GetTopAssists, GetFixtureDetail |
 | Repository 통합 테스트 | DTO → Domain 매핑 정상 동작 검증 |
-| Mapper 단위 테스트 | FotMob MatchStatusDto 매핑, 이벤트 타입, 그리드 파싱, 통계 파싱 |
+| Mapper 단위 테스트 | SofaScore EventStatus 매핑, 이벤트 타입, 그리드 파싱, 통계 파싱 |
 | ViewModel 테스트 | FixtureViewModel, StandingViewModel — Turbine 기반 StateFlow 검증 |
 | Compose UI 테스트 | FixtureScreen, StandingScreen — 렌더링 + 인터랙션 검증 |
 | 테스트 커버리지 목표 | core-domain 90%+, core-data 80%+, feature ViewModel 80%+, Compose UI 60%+ |
@@ -136,7 +136,7 @@ import com.chase1st.feetballfootball.core.network.model.*
 class FakeFootballApiService : FootballApiService {
 
     // 테스트에서 응답을 주입할 수 있는 변수들
-    // FotMob API는 ApiResponse<T> 래퍼 없이 직접 응답을 반환
+    // SofaScore API는 ApiResponse<T> 래퍼 없이 직접 응답을 반환
     var matchesByDateResponse: MatchesDayResponseDto = MatchesDayResponseDto()
     var standingsResponse: List<TlTableResponseDto> = emptyList()
     var fixtureDetailResponse: FixtureDetailResponseDto? = null
@@ -251,8 +251,8 @@ object TestFixtures {
         time: LocalTime = LocalTime.of(20, 0),
     ) = Fixture(
         id = id,
-        homeTeam = Team(id = 42, name = homeTeam, logoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/42.png"),
-        awayTeam = Team(id = 49, name = awayTeam, logoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/49.png"),
+        homeTeam = Team(id = 42, name = homeTeam, logoUrl = "https://img.sofascore.com/api/v1/team/42/image"),
+        awayTeam = Team(id = 49, name = awayTeam, logoUrl = "https://img.sofascore.com/api/v1/team/49/image"),
         homeGoals = homeGoals,
         awayGoals = awayGoals,
         status = status,
@@ -272,7 +272,7 @@ object TestFixtures {
         points: Int = 65,
     ) = TeamStanding(
         rank = rank,
-        team = Team(id = rank, name = teamName, logoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/$rank.png"),
+        team = Team(id = rank, name = teamName, logoUrl = "https://img.sofascore.com/api/v1/team/$rank/image"),
         played = played,
         won = won,
         drawn = drawn,
@@ -291,8 +291,8 @@ object TestFixtures {
         assists: Int = 5,
     ) = PlayerStanding(
         rank = rank,
-        player = Player(id = rank, name = playerName, photoUrl = "https://images.fotmob.com/image_resources/playerimages/$rank.png"),
-        team = Team(id = rank, name = teamName, logoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/$rank.png"),
+        player = Player(id = rank, name = playerName, photoUrl = "https://img.sofascore.com/api/v1/player/$rank/image"),
+        team = Team(id = rank, name = teamName, logoUrl = "https://img.sofascore.com/api/v1/team/$rank/image"),
         goals = goals,
         assists = assists,
         appearances = 28,
@@ -394,10 +394,10 @@ fun `리그 순위 조회 성공 - 순위 정렬 확인`() = runTest {
         TestFixtures.teamStanding(rank = 2, teamName = "Chelsea", points = 55),
         TestFixtures.teamStanding(rank = 1, teamName = "Arsenal", points = 65),
     )
-    repository.standings = mapOf(47 to Result.Success(standings))
+    repository.standings = mapOf(17 to Result.Success(standings))
 
     // When
-    val result = useCase(leagueId = 47, season = 2025)
+    val result = useCase(leagueId = 17, season = 2025)
 
     // Then
     assertTrue(result is Result.Success)
@@ -455,7 +455,7 @@ class FixtureRepositoryImplTest {
 
     @Test
     fun `API 성공 시 도메인 모델로 변환`() = runTest {
-        // Given — FakeFootballApiService에 FotMob DTO 응답 설정
+        // Given — FakeFootballApiService에 SofaScore DTO 응답 설정
         fakeApi.matchesByDateResponse = createSampleMatchesDayResponse()
 
         // When
@@ -498,13 +498,13 @@ class FixtureRepositoryImplTest {
 }
 ```
 
-> ⚠️ **주의:** `createSampleMatchesDayResponse()`와 `createMixedLeagueResponse()`는 테스트 헬퍼 메서드입니다. FotMob API 응답 구조(`MatchesDayResponseDto`, `MatchesDayLeagueDto`, `MatchItemDto` 등)에 맞는 DTO 객체를 생성하도록 구현해야 합니다. 이 메서드는 같은 테스트 파일 내에 `private fun`으로 작성하거나, 별도의 TestDtoFactory 객체로 분리할 수 있습니다.
+> ⚠️ **주의:** `createSampleMatchesDayResponse()`와 `createMixedLeagueResponse()`는 테스트 헬퍼 메서드입니다. SofaScore API 응답 구조(`EventsResponseDto`, `EventDto` 등)에 맞는 DTO 객체를 생성하도록 구현해야 합니다. 이 메서드는 같은 테스트 파일 내에 `private fun`으로 작성하거나, 별도의 TestDtoFactory 객체로 분리할 수 있습니다.
 
 #### 4.2 Mapper 단위 테스트 — FixtureMapper
 
 **파일:** `core/core-data/src/test/kotlin/com/chase1st/feetballfootball/core/data/mapper/FixtureMapperTest.kt`
 
-**이유:** FotMob MatchStatusDto의 boolean 필드(`finished`, `started`, `cancelled`)와 `reason.short`를 앱 내부 MatchStatus enum으로 변환하는 핵심 로직입니다. 각 boolean 조합에 대해 올바른 상태가 반환되는지 검증합니다.
+**이유:** SofaScore EventStatus의 `status.type` 필드(`"notstarted"`, `"inprogress"`, `"finished"`, `"postponed"`, `"canceled"`)를 앱 내부 MatchStatus enum으로 변환하는 핵심 로직입니다. 각 상태값에 대해 올바른 상태가 반환되는지 검증합니다.
 
 ```kotlin
 package com.chase1st.feetballfootball.core.data.mapper
@@ -517,58 +517,55 @@ import org.junit.jupiter.api.Test
 
 class FixtureMapperTest {
 
-    // FotMob은 MatchStatusDto의 boolean 필드(finished, started, cancelled)로 상태를 판단
+    // SofaScore는 status.type 문자열("notstarted", "inprogress", "finished" 등)으로 상태를 판단
     @Test
     fun `종료된 경기 매핑`() {
-        val status = MatchStatusDto(finished = true, started = true, cancelled = false)
-        val result = MatchStatus.fromFotMobStatus(status)
+        val status = EventStatusDto(type = "finished")
+        val result = MatchStatus.fromSofaScoreStatus(status)
         assertEquals(MatchStatus.FINISHED, result)
     }
 
     @Test
     fun `진행중인 경기 매핑`() {
-        val status = MatchStatusDto(finished = false, started = true, cancelled = false)
-        val result = MatchStatus.fromFotMobStatus(status)
+        val status = EventStatusDto(type = "inprogress")
+        val result = MatchStatus.fromSofaScoreStatus(status)
         assertEquals(MatchStatus.LIVE, result)
     }
 
     @Test
     fun `취소된 경기 매핑`() {
-        val status = MatchStatusDto(finished = false, started = false, cancelled = true)
-        val result = MatchStatus.fromFotMobStatus(status)
+        val status = EventStatusDto(type = "canceled")
+        val result = MatchStatus.fromSofaScoreStatus(status)
         assertEquals(MatchStatus.CANCELLED, result)
     }
 
     @Test
     fun `하프타임 매핑`() {
-        val status = MatchStatusDto(
-            finished = false, started = true, cancelled = false,
-            reason = MatchStatusReasonDto(short = "HT"),
+        val status = EventStatusDto(
+            type = "inprogress",
+            description = "Halftime",
         )
-        val result = MatchStatus.fromFotMobStatus(status)
+        val result = MatchStatus.fromSofaScoreStatus(status)
         assertEquals(MatchStatus.HALF_TIME, result)
     }
 
     @Test
     fun `연기된 경기 매핑`() {
-        val status = MatchStatusDto(
-            finished = false, started = false, cancelled = false,
-            reason = MatchStatusReasonDto(short = "PP"),
-        )
-        val result = MatchStatus.fromFotMobStatus(status)
+        val status = EventStatusDto(type = "postponed")
+        val result = MatchStatus.fromSofaScoreStatus(status)
         assertEquals(MatchStatus.POSTPONED, result)
     }
 
     @Test
     fun `시작 전 경기는 NOT_STARTED 반환`() {
-        val status = MatchStatusDto(finished = false, started = false, cancelled = false)
-        val result = MatchStatus.fromFotMobStatus(status)
+        val status = EventStatusDto(type = "notstarted")
+        val result = MatchStatus.fromSofaScoreStatus(status)
         assertEquals(MatchStatus.NOT_STARTED, result)
     }
 }
 ```
 
-> 💡 **Tip:** FotMob API는 API-Sports와 달리 문자열 상태 코드 대신 boolean 필드(`finished`, `started`, `cancelled`)와 `reason.short`로 경기 상태를 표현합니다. 각 boolean 조합에 대한 테스트 케이스를 작성합니다.
+> 💡 **Tip:** SofaScore API는 API-Sports와 달리 `status.type` 문자열(`"notstarted"`, `"inprogress"`, `"finished"`, `"postponed"`, `"canceled"`)로 경기 상태를 표현합니다. 각 상태값에 대한 테스트 케이스를 작성합니다.
 
 #### 4.3 Mapper 단위 테스트 — FixtureDetailMapper
 
@@ -641,7 +638,7 @@ class FixtureDetailMapperTest {
 
 ### ✅ 검증
 - [ ] `FixtureRepositoryImplTest` — API 성공/에러/리그 필터링 테스트 통과
-- [ ] `FixtureMapperTest` — FotMob MatchStatusDto boolean 조합 매핑 테스트 통과
+- [ ] `FixtureMapperTest` — SofaScore EventStatus 상태값 매핑 테스트 통과
 - [ ] `FixtureDetailMapperTest` — 그리드 파싱, 이벤트 타입, 통계 파싱 테스트 통과
 - [ ] `./gradlew :core:core-data:test` 성공
 
@@ -790,16 +787,16 @@ class FixtureViewModelTest {
 @Test
 fun `리그 순위와 선수 순위 동시 로딩`() = runTest {
     // Given
-    repository.standings = mapOf(47 to Result.Success(listOf(TestFixtures.teamStanding())))
-    repository.topScorers = mapOf(47 to Result.Success(listOf(TestFixtures.playerStanding())))
-    repository.topAssists = mapOf(47 to Result.Success(listOf(TestFixtures.playerStanding(assists = 10))))
+    repository.standings = mapOf(17 to Result.Success(listOf(TestFixtures.teamStanding())))
+    repository.topScorers = mapOf(17 to Result.Success(listOf(TestFixtures.playerStanding())))
+    repository.topAssists = mapOf(17 to Result.Success(listOf(TestFixtures.playerStanding(assists = 10))))
 
-    // When — FotMob 리그 ID 사용 (Premier League = 47)
+    // When — SofaScore uniqueTournamentId 사용 (Premier League = 17)
     viewModel = StandingViewModel(
         getStandingsUseCase = GetLeagueStandingsUseCase(repository),
         getTopScorersUseCase = GetTopScorersUseCase(repository),
         getTopAssistsUseCase = GetTopAssistsUseCase(repository),
-        savedStateHandle = SavedStateHandle(mapOf("leagueId" to 47)),
+        savedStateHandle = SavedStateHandle(mapOf("leagueId" to 17)),
     )
 
     // Then
@@ -814,7 +811,7 @@ fun `리그 순위와 선수 순위 동시 로딩`() = runTest {
 }
 ```
 
-> 💡 **Tip:** `SavedStateHandle`에 `mapOf("leagueId" to 47)`를 전달하여 Navigation 인자를 시뮬레이션합니다. FotMob 리그 ID를 사용합니다 (예: Premier League = 47). 이는 Hilt의 `@assisted` 없이도 ViewModel에 Navigation 인자를 주입하는 표준 패턴입니다.
+> 💡 **Tip:** `SavedStateHandle`에 `mapOf("leagueId" to 17)`를 전달하여 Navigation 인자를 시뮬레이션합니다. SofaScore uniqueTournamentId를 사용합니다 (예: Premier League = 17). 이는 Hilt의 `@assisted` 없이도 ViewModel에 Navigation 인자를 주입하는 표준 패턴입니다.
 
 ### ✅ 검증
 - [ ] `FixtureViewModelTest` — Loading/Success/Empty/Error/날짜 변경 테스트 통과
@@ -1046,7 +1043,7 @@ fun 순위_테이블_팀명_표시() {
 - [ ] TestFixtures 팩토리 동작 확인
 - [ ] UseCase 테스트 전체 통과 (GetFixturesByDate, GetLeagueStandings, GetTopScorers, GetTopAssists, GetFixtureDetail)
 - [ ] Repository 통합 테스트 전체 통과
-- [ ] Mapper 단위 테스트 전체 통과 (FotMob MatchStatusDto 매핑, 이벤트 타입, 그리드 파싱, 통계 파싱)
+- [ ] Mapper 단위 테스트 전체 통과 (SofaScore EventStatus 매핑, 이벤트 타입, 그리드 파싱, 통계 파싱)
 - [ ] ViewModel 테스트 전체 통과 (FixtureViewModel, StandingViewModel, FixtureDetailViewModel)
 - [ ] Compose UI 테스트 전체 통과
 - [ ] `./gradlew test` 전체 성공

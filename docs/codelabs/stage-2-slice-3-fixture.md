@@ -9,7 +9,7 @@
 - Slice 2에서 확립한 **수직 스택 패턴**을 새 feature에 반복 적용하는 방법
 - `flatMapLatest`를 사용한 **반응형 날짜 선택** (날짜 변경 시 자동 API 재호출)
 - `Flow.map`을 사용한 **리그별 그룹핑** (UseCase 레벨 비즈니스 로직)
-- `enum class`를 활용한 **경기 상태 매핑** (FotMob의 finished, started, cancelled boolean 필드 기반)
+- `enum class`를 활용한 **경기 상태 매핑** (SofaScore의 status.code/status.type 필드 기반)
 - Compose `LazyColumn`의 `stickyHeader`를 사용한 **리그 헤더 고정**
 - `DateTimeFormatter`를 사용한 날짜/시간 포맷팅
 
@@ -29,106 +29,122 @@
 ## Step 1 — core-network: DTO 작성
 
 ### 목표
-> FotMob `/api/data/matches` 엔드포인트의 응답 구조에 맞는 DTO를 정의합니다. 응답은 `leagues[]` > `matches[]` 형태의 중첩 구조입니다.
+> SofaScore `/api/v1/sport/football/{date}/events/{page}` 엔드포인트의 응답 구조에 맞는 DTO를 정의합니다. 응답은 `events[]` 형태의 플랫 배열이며, 각 이벤트에 tournament 정보가 포함됩니다.
 
 ### 작업 내용
 
-FotMob `/api/data/matches` API 응답의 구조:
+SofaScore `/api/v1/sport/football/{date}/events/{page}` API 응답의 구조:
 ```
 {
-  "leagues": [
+  "events": [
     {
-      "ccode": "ENG", "id": 47, "primaryId": 47, "name": "Premier League",
-      "matches": [
-        {
-          "id": 4506355, "leagueId": 47, "time": "15.03.2026 21:00",
-          "home": { "id": 8456, "score": 1, "name": "Man City", "longName": "Manchester City" },
-          "away": { "id": 9825, "score": 2, "name": "Arsenal", "longName": "Arsenal" },
-          "status": { "utcTime": "...", "finished": true, "started": true, "cancelled": false, "scoreStr": "1 - 2", "reason": { "short": "FT", "long": "Full-Time" } },
-          "timeTS": 1710504000000
-        }
-      ],
-      "internalRank": 23
+      "id": 12345678,
+      "tournament": {
+        "uniqueTournament": { "id": 17, "name": "Premier League", "category": { "name": "England" } }
+      },
+      "season": { "id": 52186 },
+      "homeTeam": { "id": 17, "name": "Manchester City", "shortName": "Man City" },
+      "awayTeam": { "id": 42, "name": "Arsenal", "shortName": "Arsenal" },
+      "homeScore": { "current": 1, "period1": 0, "period2": 1 },
+      "awayScore": { "current": 2, "period1": 1, "period2": 1 },
+      "status": { "code": 100, "description": "Ended", "type": "finished" },
+      "startTimestamp": 1710504000,
+      "slug": "manchester-city-arsenal",
+      "roundInfo": { "round": 28 }
     }
-  ],
-  "date": "20260315"
+  ]
 }
 ```
 
-이 구조를 반영하여 6개의 DTO 클래스를 정의합니다.
+이 구조를 반영하여 DTO 클래스를 정의합니다.
 
-> 💡 **Tip:** `MatchesDayDto.kt` 하나에 모든 DTO를 모아두면 관련 클래스를 한눈에 볼 수 있습니다. API 응답 구조가 복잡할수록 한 파일에 모으는 것이 유지보수에 유리합니다.
+> 💡 **Tip:** `EventListDto.kt` 하나에 모든 DTO를 모아두면 관련 클래스를 한눈에 볼 수 있습니다. API 응답 구조가 복잡할수록 한 파일에 모으는 것이 유지보수에 유리합니다.
 
-> ⚠️ **주의:** `MatchTeamDto.score`는 nullable입니다 (아직 시작하지 않은 경기는 null). `MatchStatusDto.reason`과 `scoreStr`도 nullable이므로 기본값을 설정합니다. FotMob은 팀 로고 URL을 응답에 포함하지 않으며, `https://images.fotmob.com/image_resources/logo/teamlogo/{teamId}.png` 형식으로 직접 구성합니다.
+> ⚠️ **주의:** `EventScoreDto.current`는 nullable입니다 (아직 시작하지 않은 경기는 null). SofaScore는 팀 로고 URL을 응답에 포함하지 않으며, `https://img.sofascore.com/api/v1/team/{teamId}/image` 형식으로 직접 구성합니다. 리그 로고는 `https://img.sofascore.com/api/v1/unique-tournament/{id}/image` 패턴입니다.
 
-**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/MatchesDayDto.kt`
+**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/EventListDto.kt`
 
 ```kotlin
-// core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/MatchesDayDto.kt
+// core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/EventListDto.kt
 package com.chase1st.feetballfootball.core.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MatchesDayResponseDto(
-    @SerialName("leagues") val leagues: List<MatchesDayLeagueDto> = emptyList(),
-    @SerialName("date") val date: String = "",
+data class EventListResponseDto(
+    @SerialName("events") val events: List<EventDto> = emptyList(),
 )
 
 @Serializable
-data class MatchesDayLeagueDto(
-    @SerialName("ccode") val ccode: String = "",
+data class EventDto(
     @SerialName("id") val id: Int = 0,
-    @SerialName("primaryId") val primaryId: Int = 0,
+    @SerialName("tournament") val tournament: EventTournamentDto? = null,
+    @SerialName("season") val season: EventSeasonDto? = null,
+    @SerialName("homeTeam") val homeTeam: EventTeamDto,
+    @SerialName("awayTeam") val awayTeam: EventTeamDto,
+    @SerialName("homeScore") val homeScore: EventScoreDto? = null,
+    @SerialName("awayScore") val awayScore: EventScoreDto? = null,
+    @SerialName("status") val status: EventStatusDto,
+    @SerialName("startTimestamp") val startTimestamp: Long = 0,
+    @SerialName("slug") val slug: String = "",
+    @SerialName("roundInfo") val roundInfo: EventRoundInfoDto? = null,
+)
+
+@Serializable
+data class EventTournamentDto(
+    @SerialName("uniqueTournament") val uniqueTournament: EventUniqueTournamentDto? = null,
+)
+
+@Serializable
+data class EventUniqueTournamentDto(
+    @SerialName("id") val id: Int = 0,
     @SerialName("name") val name: String = "",
-    @SerialName("matches") val matches: List<MatchItemDto> = emptyList(),
-    @SerialName("internalRank") val internalRank: Int = 0,
+    @SerialName("category") val category: EventCategoryDto? = null,
 )
 
 @Serializable
-data class MatchItemDto(
-    @SerialName("id") val id: Int = 0,
-    @SerialName("leagueId") val leagueId: Int = 0,
-    @SerialName("time") val time: String = "",
-    @SerialName("home") val home: MatchTeamDto,
-    @SerialName("away") val away: MatchTeamDto,
-    @SerialName("statusId") val statusId: Int = 0,
-    @SerialName("tournamentStage") val tournamentStage: String = "",
-    @SerialName("status") val status: MatchStatusDto,
-    @SerialName("timeTS") val timeTS: Long = 0,
-)
-
-@Serializable
-data class MatchTeamDto(
-    @SerialName("id") val id: Int = 0,
-    @SerialName("score") val score: Int? = null,
+data class EventCategoryDto(
     @SerialName("name") val name: String = "",
-    @SerialName("longName") val longName: String = "",
 )
 
 @Serializable
-data class MatchStatusDto(
-    @SerialName("utcTime") val utcTime: String = "",
-    @SerialName("finished") val finished: Boolean = false,
-    @SerialName("started") val started: Boolean = false,
-    @SerialName("cancelled") val cancelled: Boolean = false,
-    @SerialName("scoreStr") val scoreStr: String? = null,
-    @SerialName("reason") val reason: MatchReasonDto? = null,
+data class EventSeasonDto(
+    @SerialName("id") val id: Int = 0,
 )
 
 @Serializable
-data class MatchReasonDto(
-    @SerialName("short") val short: String = "",
-    @SerialName("long") val long: String = "",
+data class EventTeamDto(
+    @SerialName("id") val id: Int = 0,
+    @SerialName("name") val name: String = "",
+    @SerialName("shortName") val shortName: String = "",
+)
+
+@Serializable
+data class EventScoreDto(
+    @SerialName("current") val current: Int? = null,
+    @SerialName("period1") val period1: Int? = null,
+    @SerialName("period2") val period2: Int? = null,
+)
+
+@Serializable
+data class EventStatusDto(
+    @SerialName("code") val code: Int = 0,
+    @SerialName("description") val description: String = "",
+    @SerialName("type") val type: String = "",
+)
+
+@Serializable
+data class EventRoundInfoDto(
+    @SerialName("round") val round: Int = 0,
 )
 ```
 
 ### ✅ 검증
-- [ ] `MatchesDayResponseDto`에 `leagues`, `date` 필드가 있는지 확인
-- [ ] `MatchesDayLeagueDto`에 `ccode`, `id`, `name`, `matches` 필드가 있는지 확인
-- [ ] `MatchStatusDto`에 `finished`, `started`, `cancelled` boolean 필드가 있는지 확인
-- [ ] `MatchTeamDto.score`가 nullable인지 확인 (아직 시작하지 않은 경기는 null)
+- [ ] `EventListResponseDto`에 `events` 필드가 있는지 확인
+- [ ] `EventDto`에 `tournament`, `homeTeam`, `awayTeam`, `homeScore`, `awayScore`, `status`, `startTimestamp` 필드가 있는지 확인
+- [ ] `EventStatusDto`에 `code` (Int), `description` (String), `type` (String) 필드가 있는지 확인
+- [ ] `EventScoreDto.current`가 nullable인지 확인 (아직 시작하지 않은 경기는 null)
 - [ ] 모든 DTO에 `@Serializable` 어노테이션이 있는지 확인
 - [ ] `core-network` 모듈 빌드 성공 확인
 
@@ -141,32 +157,31 @@ data class MatchReasonDto(
 
 ### 작업 내용
 
-FotMob `/api/data/matches` 엔드포인트는 `date` 파라미터로 특정 날짜의 경기를 조회합니다. `timezone` 파라미터를 `Asia/Seoul`로 설정하여 한국 시간 기준으로 데이터를 받습니다. `ccode3` 파라미터로 국가 코드를 지정할 수 있습니다.
+SofaScore `/api/v1/sport/football/{date}/events/{page}` 엔드포인트는 URL 경로에 날짜를 포함하여 특정 날짜의 경기를 조회합니다. 타임존 관련 파라미터는 필요 없으며, `startTimestamp` (Unix timestamp, 초 단위)를 클라이언트에서 변환하여 사용합니다.
 
-> 💡 **Tip:** `timezone`과 `ccode3` 파라미터에 기본값을 설정하면 호출 시 생략할 수 있습니다. 다른 타임존이나 국가가 필요하면 오버라이드하면 됩니다.
+> 💡 **Tip:** SofaScore는 타임존 파라미터가 필요 없습니다. `startTimestamp`가 UTC 기준 Unix timestamp(초 단위)이므로 클라이언트에서 원하는 타임존으로 변환합니다. 페이지는 기본적으로 `0`을 사용합니다.
 
-> ⚠️ **주의:** FotMob은 `ApiResponse<T>` 래퍼를 사용하지 않고 직접 `MatchesDayResponseDto`를 반환합니다. API-Sports v3와 달리 응답 래핑이 없습니다.
+> ⚠️ **주의:** SofaScore는 `ApiResponse<T>` 래퍼를 사용하지 않고 직접 `EventListResponseDto`를 반환합니다. 모든 스포츠 이벤트를 반환하므로, `tournament.uniqueTournament.id`로 지원하는 리그만 필터링해야 합니다.
 
 **파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/api/FootballApiService.kt` (기존 파일에 추가)
 
 ```kotlin
 // FootballApiService.kt에 추가
-@GET("api/data/matches")
-suspend fun getMatchesByDate(
-    @Query("date") date: String,           // YYYYMMDD 형식
-    @Query("timezone") timezone: String = "Asia/Seoul",
-    @Query("ccode3") ccode3: String = "KOR",
-): MatchesDayResponseDto
+@GET("api/v1/sport/football/{date}/events/{page}")
+suspend fun getEventsByDate(
+    @Path("date") date: String,         // yyyy-MM-dd 형식
+    @Path("page") page: Int = 0,
+): EventListResponseDto
 ```
 
-> ⚠️ **주의:** `date` 파라미터는 `"20260315"` 형식 (YYYYMMDD)입니다. `LocalDate.toString()`은 ISO 8601 형식(`2026-03-15`)을 반환하므로, `DateTimeFormatter.ofPattern("yyyyMMdd")`로 변환하여 전달해야 합니다.
+> ⚠️ **주의:** `date` 파라미터는 `"2026-03-15"` 형식 (yyyy-MM-dd)입니다. `LocalDate.toString()`이 ISO 8601 형식(`2026-03-15`)을 반환하므로 그대로 사용할 수 있습니다. 별도의 `DateTimeFormatter` 변환이 필요 없습니다.
 
 ### ✅ 검증
-- [ ] `getMatchesByDate()`가 `FootballApiService`에 추가되었는지 확인
+- [ ] `getEventsByDate()`가 `FootballApiService`에 추가되었는지 확인
 - [ ] `suspend fun`으로 선언되어 있는지 확인
-- [ ] `timezone` 기본값이 `"Asia/Seoul"`인지 확인
-- [ ] `ccode3` 기본값이 `"KOR"`인지 확인
-- [ ] 반환 타입이 `MatchesDayResponseDto`인지 확인 (ApiResponse 래퍼 없음)
+- [ ] `@Path("date")`와 `@Path("page")`로 URL 경로 파라미터가 올바른지 확인
+- [ ] `page` 기본값이 `0`인지 확인
+- [ ] 반환 타입이 `EventListResponseDto`인지 확인 (ApiResponse 래퍼 없음)
 
 ---
 
@@ -177,9 +192,9 @@ suspend fun getMatchesByDate(
 
 ### 작업 내용
 
-`MatchStatus`는 FotMob의 경기 상태 boolean 필드(`finished`, `started`, `cancelled`)와 `reason.short` 값을 Kotlin enum으로 매핑합니다. 기존 `FixtureRecyclerViewAdapter.kt`와 `FixtureDetailFragment.kt`에 분산되어 있던 상태 판단 로직을 하나의 enum에 모읍니다.
+`MatchStatus`는 SofaScore의 경기 상태 필드(`status.code` int, `status.type` string)를 Kotlin enum으로 매핑합니다. 기존 `FixtureRecyclerViewAdapter.kt`와 `FixtureDetailFragment.kt`에 분산되어 있던 상태 판단 로직을 하나의 enum에 모읍니다.
 
-> 💡 **Tip:** `MatchStatus`의 computed property (`isFinished`, `isLive`, `isClickable`)를 사용하면 UI에서 `when` 분기를 줄일 수 있습니다. 예: `if (fixture.status.isLive)` 로 간결하게 판단할 수 있습니다.
+> 💡 **Tip:** `MatchStatus`의 computed property (`isFinished`, `isLive`, `isClickable`)를 사용하면 UI에서 `when` 분기를 줄일 수 있습니다. 예: `if (fixture.status.isLive)` 로 간결하게 판단할 수 있습니다. SofaScore `status.type`은 `"notstarted"`, `"inprogress"`, `"finished"`, `"postponed"`, `"canceled"` 중 하나입니다.
 
 > ⚠️ **주의:** `Fixture`의 `league` 필드는 Slice 1에서 만든 `LeagueInfo`를 재사용합니다. `groupBy { it.league }`로 리그별 그룹핑에 사용되므로, `LeagueInfo`에 `equals()`/`hashCode()`가 올바르게 동작해야 합니다 (data class이므로 자동 생성됨).
 
@@ -204,7 +219,9 @@ data class Fixture(
     val awayGoals: Int?,
 )
 
-// FotMob은 status.finished, status.started, status.cancelled boolean으로 상태를 판단
+// SofaScore는 status.code (Int)와 status.type (String)으로 상태를 판단
+// status.type: "notstarted", "inprogress", "finished", "postponed", "canceled"
+// status.code: 0=notstarted, 6=1st half, 7=halftime, 8=2nd half, 31=halftime, 60=postponed, 70=canceled, 100=ended
 enum class MatchStatus(val displayText: String) {
     NOT_STARTED(""),
     FIRST_HALF("전반전"),
@@ -217,12 +234,17 @@ enum class MatchStatus(val displayText: String) {
     ;
 
     companion object {
-        fun fromFotMobStatus(status: MatchStatusDto): MatchStatus = when {
-            status.cancelled -> CANCELLED
-            status.reason?.short == "PP" -> POSTPONED
-            status.finished -> FINISHED
-            status.reason?.short == "HT" -> HALF_TIME
-            status.started -> LIVE  // 1H, 2H 등은 세부 구분 어려움
+        fun fromSofaScoreStatus(status: EventStatusDto): MatchStatus = when (status.type) {
+            "finished" -> FINISHED
+            "postponed" -> POSTPONED
+            "canceled" -> CANCELLED
+            "inprogress" -> when (status.code) {
+                6 -> FIRST_HALF
+                7, 31 -> HALF_TIME
+                8 -> SECOND_HALF
+                else -> LIVE
+            }
+            "notstarted" -> NOT_STARTED
             else -> NOT_STARTED
         }
     }
@@ -236,10 +258,11 @@ enum class MatchStatus(val displayText: String) {
 ### ✅ 검증
 - [ ] `Fixture` data class에 id, date, status, elapsed, venue, league, homeTeam, awayTeam, homeGoals, awayGoals 10개 필드가 있는지 확인
 - [ ] `MatchStatus`에 8개 상태가 정의되어 있는지 확인 (NOT_STARTED, FIRST_HALF, HALF_TIME, SECOND_HALF, FINISHED, POSTPONED, CANCELLED, LIVE)
-- [ ] `fromFotMobStatus()`가 `finished=true`일 때 `FINISHED`를 반환하는지 확인
-- [ ] `fromFotMobStatus()`가 `cancelled=true`일 때 `CANCELLED`를 반환하는지 확인
-- [ ] `fromFotMobStatus()`가 `reason.short="PP"`일 때 `POSTPONED`를 반환하는지 확인
-- [ ] `fromFotMobStatus()`가 `reason.short="HT"`일 때 `HALF_TIME`을 반환하는지 확인
+- [ ] `fromSofaScoreStatus()`가 `type="finished"`일 때 `FINISHED`를 반환하는지 확인
+- [ ] `fromSofaScoreStatus()`가 `type="canceled"`일 때 `CANCELLED`를 반환하는지 확인
+- [ ] `fromSofaScoreStatus()`가 `type="postponed"`일 때 `POSTPONED`를 반환하는지 확인
+- [ ] `fromSofaScoreStatus()`가 `type="inprogress"`, `code=7`일 때 `HALF_TIME`을 반환하는지 확인
+- [ ] `fromSofaScoreStatus()`가 `type="inprogress"`, `code=6`일 때 `FIRST_HALF`를 반환하는지 확인
 - [ ] `FINISHED.isFinished`가 `true`인지 확인
 - [ ] `LIVE.isLive`가 `true`인지 확인
 - [ ] `NOT_STARTED.isClickable`이 `false`인지 확인
@@ -319,16 +342,16 @@ class GetFixturesByDateUseCase @Inject constructor(
 ### 작업 내용
 
 `FixtureMapper`에는 두 가지 핵심 로직이 있습니다:
-1. **필터링:** `SupportedLeagues.ALL_LEAGUE_IDS`에 포함된 리그만 남깁니다 (FotMob API는 전체 리그의 경기를 반환하므로)
+1. **필터링:** `SupportedLeagues.ALL_LEAGUE_IDS`에 포함된 리그만 남깁니다 (SofaScore API는 모든 스포츠 이벤트를 반환하므로, `tournament.uniqueTournament.id`로 필터링)
 2. **정렬:** 경기 시작 시간 순으로 정렬합니다
 
-FotMob 응답은 `leagues[]` > `matches[]` 구조이므로, `flatMap`으로 모든 리그의 경기를 하나의 리스트로 펼칩니다.
+SofaScore 응답은 `events[]` 플랫 배열이므로, 직접 `filter`와 `map`을 적용합니다.
 
-> ⚠️ **주의:** FotMob `/api/data/matches?date=20260315` API는 해당 날짜의 **모든 리그** 경기를 반환합니다. `SupportedLeagues.ALL_LEAGUE_IDS`로 리그를 필터링하지 않으면 불필요한 데이터가 UI에 노출됩니다.
+> ⚠️ **주의:** SofaScore `/api/v1/sport/football/{date}/events/0` API는 해당 날짜의 **모든 축구 리그** 경기를 반환합니다. `SupportedLeagues.ALL_LEAGUE_IDS`로 `tournament.uniqueTournament.id`를 필터링하지 않으면 불필요한 데이터가 UI에 노출됩니다.
 
-> ⚠️ **주의:** FotMob은 팀 로고와 리그 로고 URL을 응답에 포함하지 않습니다. 대신 고정된 URL 패턴으로 직접 구성합니다:
-> - 팀 로고: `https://images.fotmob.com/image_resources/logo/teamlogo/{teamId}.png`
-> - 리그 로고: `https://images.fotmob.com/image_resources/logo/leaguelogo/dark/{leagueId}.png`
+> ⚠️ **주의:** SofaScore는 팀 로고와 리그 로고 URL을 응답에 포함하지 않습니다. 대신 SofaScore 이미지 CDN 패턴으로 직접 구성합니다:
+> - 팀 로고: `https://img.sofascore.com/api/v1/team/{teamId}/image`
+> - 리그 로고: `https://img.sofascore.com/api/v1/unique-tournament/{tournamentId}/image`
 
 **파일 경로:** `core/core-data/src/main/kotlin/com/chase1st/feetballfootball/core/data/mapper/FixtureMapper.kt`
 
@@ -360,24 +383,24 @@ class FixtureMapper @Inject constructor() {
     private fun mapMatch(dto: MatchItemDto, league: MatchesDayLeagueDto): Fixture = Fixture(
         id = dto.id,
         date = parseUtcTime(dto.status.utcTime),
-        status = MatchStatus.fromFotMobStatus(dto.status),
-        elapsed = null,  // FotMob 일별 매치 API에는 elapsed 없음
+        status = MatchStatus.fromSofaScoreStatus(dto.status),
+        elapsed = null,  // SofaScore 날짜별 경기 API에는 elapsed 없음
         venue = null,
         league = LeagueInfo(
             id = league.id,
             name = league.name,
             country = league.ccode,
-            logoUrl = "https://images.fotmob.com/image_resources/logo/leaguelogo/dark/${league.id}.png",
+            logoUrl = "https://img.sofascore.com/api/v1/unique-tournament/${league.id}/image",
         ),
         homeTeam = Team(
             id = dto.home.id,
             name = dto.home.longName.ifEmpty { dto.home.name },
-            logoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/${dto.home.id}.png",
+            logoUrl = "https://img.sofascore.com/api/v1/team/${dto.home.id}/image",
         ),
         awayTeam = Team(
             id = dto.away.id,
             name = dto.away.longName.ifEmpty { dto.away.name },
-            logoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/${dto.away.id}.png",
+            logoUrl = "https://img.sofascore.com/api/v1/team/${dto.away.id}/image",
         ),
         homeGoals = dto.home.score,
         awayGoals = dto.away.score,
@@ -391,7 +414,7 @@ class FixtureMapper @Inject constructor() {
 }
 ```
 
-> 💡 **Tip:** `DateTimeFormatter.ISO_OFFSET_DATE_TIME`은 `"2026-03-15T12:00:00.000Z"` 형식을 파싱합니다. FotMob이 `status.utcTime`에서 이 형식으로 시간을 반환합니다. 파싱 실패 시 `LocalDateTime.now()`를 기본값으로 사용하여 크래시를 방지합니다. 팀 이름은 `longName`을 우선 사용하고, 비어있으면 `name`을 폴백으로 사용합니다.
+> 💡 **Tip:** SofaScore는 `startTimestamp`를 Unix 초 단위로 반환합니다. `Instant.ofEpochSecond()`로 변환 후 `LocalDateTime`으로 파싱합니다. 파싱 실패 시 `LocalDateTime.now()`를 기본값으로 사용하여 크래시를 방지합니다.
 
 **파일 경로:** `core/core-data/src/main/kotlin/com/chase1st/feetballfootball/core/data/repository/FixtureRepositoryImpl.kt`
 
@@ -419,8 +442,8 @@ class FixtureRepositoryImpl @Inject constructor(
 ) : FixtureRepository {
 
     override fun getFixturesByDate(date: LocalDate): Flow<List<Fixture>> = flow {
-        // FotMob은 YYYYMMDD 형식 사용
-        val dateStr = date.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+        // SofaScore는 yyyy-MM-dd 형식 사용
+        val dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
         val response = apiService.getMatchesByDate(dateStr)
         emit(mapper.mapMatchesDayResponse(response))
     }.flowOn(ioDispatcher)
@@ -470,9 +493,9 @@ abstract class DataModule {
 - [ ] `flatMap`으로 모든 리그의 경기를 하나의 리스트로 펼치는지 확인
 - [ ] `parseUtcTime()`이 ISO_OFFSET_DATE_TIME 형식을 파싱하는지 확인
 - [ ] `parseUtcTime()` 실패 시 `LocalDateTime.now()`를 반환하는지 확인 (크래시 방지)
-- [ ] 팀 로고 URL이 `https://images.fotmob.com/image_resources/logo/teamlogo/{teamId}.png` 형식인지 확인
-- [ ] 리그 로고 URL이 `https://images.fotmob.com/image_resources/logo/leaguelogo/dark/{leagueId}.png` 형식인지 확인
-- [ ] `FixtureRepositoryImpl`이 날짜를 YYYYMMDD 형식으로 변환하는지 확인
+- [ ] 팀 로고 URL이 `https://img.sofascore.com/api/v1/team/{teamId}/image` 형식인지 확인
+- [ ] 리그 로고 URL이 `https://img.sofascore.com/api/v1/unique-tournament/{id}/image` 형식인지 확인
+- [ ] `FixtureRepositoryImpl`이 날짜를 `yyyy-MM-dd` 형식으로 변환하는지 확인
 - [ ] `sortedBy { it.date }`로 시간순 정렬하는지 확인
 - [ ] `DataModule`에 `bindFixtureRepository()`가 추가되었는지 확인
 - [ ] `core-data` 모듈 빌드 성공 확인
@@ -744,7 +767,7 @@ private fun FixtureStatus(fixture: Fixture, modifier: Modifier = Modifier) {
 ```
 
 > 💡 **Tip:** `FixtureStatus` Composable은 경기 상태에 따라 4가지로 분기합니다:
-> - **종료/라이브:** 스코어 표시 (라이브면 상태 텍스트를 빨간색으로 표시. FotMob 일별 매치 API에는 elapsed 분 정보가 없으므로 `displayText`를 사용)
+> - **종료/라이브:** 스코어 표시 (라이브면 상태 텍스트를 빨간색으로 표시. SofaScore 날짜별 경기 API에는 elapsed 분 정보가 없으므로 `displayText`를 사용)
 > - **연기:** "연기됨" 텍스트
 > - **취소:** "취소됨" 텍스트
 > - **예정:** 시작 시간 (HH:mm 형식)

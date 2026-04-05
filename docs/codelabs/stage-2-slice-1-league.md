@@ -26,13 +26,13 @@
 ## Step 1 — core-model: 리그 상수 정의
 
 ### 목표
-> FotMob API 기준 리그/컵 ID를 **core-model 모듈**의 도메인 객체로 정의합니다.
+> SofaScore API 기준 리그/컵 ID를 **core-model 모듈**의 도메인 객체로 정의합니다.
 
 ### 작업 내용
 
-API 호출 없이 정적 데이터만 사용하는 이 Slice의 핵심 데이터입니다. `LeagueInfo` data class와 `SupportedLeagues` object를 FotMob API의 리그 ID와 로고 URL 형식에 맞게 만들어 앱 전체에서 참조할 수 있게 합니다.
+API 호출 없이 정적 데이터만 사용하는 이 Slice의 핵심 데이터입니다. `LeagueInfo` data class와 `SupportedLeagues` object를 SofaScore API의 uniqueTournamentId와 로고 URL 형식에 맞게 만들어 앱 전체에서 참조할 수 있게 합니다.
 
-> 💡 **Tip:** `SupportedLeagues.ALL_LEAGUE_IDS`는 Slice 3(경기 일정)에서 FotMob API 응답 필터링에 사용됩니다. 지금 미리 정의해 두면 나중에 다시 수정할 필요가 없습니다.
+> 💡 **Tip:** `SupportedLeagues.ALL_LEAGUE_IDS`는 Slice 3(경기 일정)에서 SofaScore API 응답 필터링에 사용됩니다. 지금 미리 정의해 두면 나중에 다시 수정할 필요가 없습니다.
 
 **파일 경로:** `core/core-model/src/main/kotlin/com/chase1st/feetballfootball/core/model/LeagueInfo.kt`
 
@@ -47,24 +47,24 @@ data class LeagueInfo(
     val logoUrl: String,
 )
 
-// FotMob API 기준 리그 상수
+// SofaScore API 기준 리그 상수 (uniqueTournamentId)
 object SupportedLeagues {
-    private fun leagueLogoUrl(id: Int) = "https://images.fotmob.com/image_resources/logo/leaguelogo/dark/$id.png"
+    private fun leagueLogoUrl(id: Int) = "https://img.sofascore.com/api/v1/unique-tournament/$id/image"
 
     val TOP_5_LEAGUES = listOf(
-        LeagueInfo(id = 47, name = "Premier League", country = "England", logoUrl = leagueLogoUrl(47)),
-        LeagueInfo(id = 87, name = "LaLiga", country = "Spain", logoUrl = leagueLogoUrl(87)),
-        LeagueInfo(id = 55, name = "Serie A", country = "Italy", logoUrl = leagueLogoUrl(55)),
-        LeagueInfo(id = 54, name = "Bundesliga", country = "Germany", logoUrl = leagueLogoUrl(54)),
-        LeagueInfo(id = 53, name = "Ligue 1", country = "France", logoUrl = leagueLogoUrl(53)),
+        LeagueInfo(id = 17, name = "Premier League", country = "England", logoUrl = leagueLogoUrl(17)),
+        LeagueInfo(id = 8, name = "LaLiga", country = "Spain", logoUrl = leagueLogoUrl(8)),
+        LeagueInfo(id = 23, name = "Serie A", country = "Italy", logoUrl = leagueLogoUrl(23)),
+        LeagueInfo(id = 35, name = "Bundesliga", country = "Germany", logoUrl = leagueLogoUrl(35)),
+        LeagueInfo(id = 34, name = "Ligue 1", country = "France", logoUrl = leagueLogoUrl(34)),
     )
 
-    // FotMob 리그/컵 ID (경기 일정 필터링용)
+    // SofaScore uniqueTournamentId (경기 일정 필터링용)
     val ALL_LEAGUE_IDS = listOf(
-        47, 87, 55, 54, 53,             // 5대 리그
-        132, 133,                        // 잉글랜드 컵 (FA Cup, EFL Cup)
-        42, 73,                          // UEFA (Champions League, Europa League)
-        77, 50,                          // 국제대회 (World Cup, EURO)
+        17, 8, 23, 35, 34,              // 5대 리그
+        29, 21,                          // 잉글랜드 컵 (FA Cup, EFL Cup)
+        7, 679,                          // UEFA (Champions League, Europa League)
+        16, 1,                           // 국제대회 (World Cup, EURO)
     )
 }
 ```
@@ -80,13 +80,15 @@ object SupportedLeagues {
 ## Step 2 — core-model: 시즌 유틸리티
 
 ### 목표
-> FotMob API의 시즌 형식(`"YYYY/YYYY"`)에 맞는 시즌 문자열을 결정하는 **순수 유틸리티 함수**를 만듭니다.
+> SofaScore API의 시즌 방식에 맞게 **현재 seasonId를 가져오는 유틸리티**를 만듭니다.
 
 ### 작업 내용
 
-축구 시즌은 보통 8월~다음해 5~6월입니다. 따라서 7월 이전이면 전년도에 시작한 시즌으로 판단합니다. FotMob API는 시즌을 `"2025/2026"` 형식의 문자열로 사용하므로, 이에 맞는 형식으로 반환합니다.
+SofaScore API는 시즌을 정수형 `seasonId`로 관리합니다. `"2025/2026"` 같은 문자열을 직접 계산하는 것이 아니라, `GET api/v1/unique-tournament/{uniqueTournamentId}/seasons` API를 호출하여 현재 seasonId를 가져와야 합니다. 반환되는 목록의 첫 번째 항목이 현재/최신 시즌입니다.
 
-> ⚠️ **주의:** `java.time` API를 사용합니다. 이 프로젝트의 `minSdk`는 26이므로 `java.time`을 직접 사용할 수 있습니다 (ThreeTenABP 불필요).
+이 Step에서는 seasonId 개념을 정리하고, 실제 API 호출은 Slice 2의 Repository 계층에서 구현합니다. 여기서는 시즌 관련 참조용 상수만 정의합니다.
+
+> ⚠️ **주의:** SofaScore의 seasonId는 리그마다 다르며, 매 시즌 새로 발급됩니다. 따라서 클라이언트에서 직접 계산할 수 없고 반드시 API로 조회해야 합니다.
 
 **파일 경로:** `core/core-model/src/main/kotlin/com/chase1st/feetballfootball/core/model/Season.kt`
 
@@ -94,27 +96,30 @@ object SupportedLeagues {
 // core/core-model/src/main/kotlin/com/chase1st/feetballfootball/core/model/Season.kt
 package com.chase1st.feetballfootball.core.model
 
-import java.time.LocalDate
-import java.time.Year
-
+/**
+ * SofaScore 시즌 정보
+ *
+ * SofaScore API는 시즌을 정수형 seasonId로 관리합니다.
+ * 현재 시즌의 seasonId를 얻으려면 아래 API를 호출합니다:
+ *   GET https://api.sofascore.com/api/v1/unique-tournament/{uniqueTournamentId}/seasons
+ *
+ * 응답의 첫 번째 항목이 현재/최신 시즌입니다.
+ * seasonId는 리그마다 다르므로 클라이언트에서 직접 계산할 수 없습니다.
+ */
 object SeasonUtil {
     /**
-     * FotMob 시즌 문자열 결정
-     * 7월 이전이면 전년도 시즌 시작, 현재 연도에서 끝남
-     * 예: 2026년 3월 → "2025/2026", 2025년 9월 → "2025/2026"
+     * SofaScore 시즌 API 경로 생성
+     * @param uniqueTournamentId SofaScore 리그 ID
+     * @return 시즌 목록 API 경로 (예: "unique-tournament/17/seasons")
      */
-    fun currentSeason(): String {
-        val year = Year.now().value
-        val month = LocalDate.now().monthValue
-        return if (month < 7) "${year - 1}/$year" else "$year/${year + 1}"
-    }
+    fun seasonsPath(uniqueTournamentId: Int): String =
+        "unique-tournament/$uniqueTournamentId/seasons"
 }
 ```
 
 ### ✅ 검증
-- [ ] `SeasonUtil.currentSeason()`이 현재 날짜 기준으로 올바른 FotMob 시즌 문자열을 반환하는지 확인
-  - 예: 2026년 3월 → `"2025/2026"` 반환 (7월 이전이므로 전년도 시즌)
-  - 예: 2026년 8월 → `"2026/2027"` 반환 (7월 이후이므로 올해 시즌)
+- [ ] `SeasonUtil.seasonsPath(17)`이 `"unique-tournament/17/seasons"`을 반환하는지 확인
+- [ ] SofaScore seasonId가 API에서 조회되어야 한다는 점을 이해했는지 확인
 - [ ] `core-model` 모듈 빌드 성공 확인
 
 ---
@@ -190,15 +195,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chase1st.feetballfootball.core.designsystem.component.TeamLogo
 import com.chase1st.feetballfootball.core.model.LeagueInfo
-import com.chase1st.feetballfootball.core.model.SeasonUtil
 
 @Composable
 fun LeagueListScreen(
-    onLeagueClick: (leagueId: Int, leagueName: String, season: String) -> Unit,
+    onLeagueClick: (leagueId: Int, leagueName: String) -> Unit,
     viewModel: LeagueListViewModel = hiltViewModel(),
 ) {
     val leagues by viewModel.leagues.collectAsStateWithLifecycle()
-    val currentSeason = SeasonUtil.currentSeason()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -211,7 +214,7 @@ fun LeagueListScreen(
         ) { league ->
             LeagueCard(
                 league = league,
-                onClick = { onLeagueClick(league.id, league.name, currentSeason) },
+                onClick = { onLeagueClick(league.id, league.name) },
             )
         }
     }
@@ -263,7 +266,7 @@ private fun LeagueCard(
 - [ ] `collectAsStateWithLifecycle()`로 StateFlow를 구독하는지 확인
 - [ ] `LazyColumn`의 `items`에 `key = { it.id }`가 설정되어 있는지 확인
 - [ ] `LeagueCard`에 로고(48dp), 리그명, 국가명이 표시되는지 확인
-- [ ] 카드 클릭 시 `onLeagueClick`에 `leagueId`, `leagueName`, `currentSeason`(String)이 전달되는지 확인
+- [ ] 카드 클릭 시 `onLeagueClick`에 `leagueId`, `leagueName`이 전달되는지 확인 (seasonId는 순위 화면에서 SofaScore API로 조회)
 
 ---
 
@@ -285,8 +288,8 @@ Stage 2에서 Navigation 3를 통합하기 전까지, `MainActivity`의 `setCont
 setContent {
     FeetballTheme {
         LeagueListScreen(
-            onLeagueClick = { id, name, season ->
-                android.util.Log.d("Feetball", "Selected: $name ($id) season=$season")
+            onLeagueClick = { id, name ->
+                android.util.Log.d("Feetball", "Selected: $name (uniqueTournamentId=$id)")
             }
         )
     }
@@ -298,7 +301,7 @@ setContent {
 ### ✅ 검증
 - [ ] 앱 실행 시 5개 리그 카드가 화면에 표시되는지 확인
 - [ ] 각 카드에 리그 로고(Coil) + 이름 + 국가가 표시되는지 확인
-- [ ] 카드 클릭 시 Logcat에 `Selected: Premier League (47) season=2025/2026` 같은 로그가 출력되는지 확인
+- [ ] 카드 클릭 시 Logcat에 `Selected: Premier League (uniqueTournamentId=17)` 같은 로그가 출력되는지 확인
 - [ ] Hilt ViewModel 주입이 정상 동작하는지 확인 (크래시 없음)
 
 ---
@@ -334,4 +337,4 @@ setContent {
 - `feature-league`에 Hilt ViewModel과 Compose Screen을 구현했습니다
 - **Compose + Hilt + 모듈 의존성** 인프라가 정상 동작함을 확인했습니다
 
-**다음 단계:** Slice 2에서는 FotMob API 첫 연동을 통해 리그 순위 화면을 구현합니다. DTO → Domain → Repository → UseCase → ViewModel → UI 전체 수직 스택을 구축합니다.
+**다음 단계:** Slice 2에서는 SofaScore API 첫 연동을 통해 리그 순위 화면을 구현합니다. DTO → Domain → Repository → UseCase → ViewModel → UI 전체 수직 스택을 구축합니다.

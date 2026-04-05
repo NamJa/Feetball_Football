@@ -586,7 +586,7 @@ android {
 
 **파일:** `core/core-network`의 NetworkModule (Hilt DI 모듈)
 
-**이유:** FotMob API는 경기 일정 등의 데이터가 자주 변경되지 않습니다. OkHttp 캐시를 설정하면 서버가 `Cache-Control` 헤더를 반환할 때 로컬 캐시를 사용하여 네트워크 호출을 줄입니다.
+**이유:** SofaScore API는 경기 일정 등의 데이터가 자주 변경되지 않습니다. OkHttp 캐시를 설정하면 서버가 `Cache-Control` 헤더를 반환할 때 로컬 캐시를 사용하여 네트워크 호출을 줄입니다.
 
 ```kotlin
 // core-network의 NetworkModule
@@ -598,20 +598,22 @@ fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
             directory = File(context.cacheDir, "http_cache"),
             maxSize = 10L * 1024 * 1024,  // 10MB
         ))
-        .addInterceptor { chain ->
-            chain.proceed(
-                chain.request().newBuilder()
-                    .header("x-mas", xMasTokenProvider.generate())
-                    .build()
-            )
-        }
+        // SofaScore API — GET 엔드포인트는 인증 불필요
+        // Bearer Token이 필요한 경우 아래 인터셉터를 활성화
+        // .addInterceptor { chain ->
+        //     chain.proceed(
+        //         chain.request().newBuilder()
+        //             .header("Authorization", "Bearer $apiToken")
+        //             .build()
+        //     )
+        // }
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
         .build()
 }
 ```
 
-> ⚠️ **주의:** FotMob API의 응답에 `Cache-Control` 헤더가 없으면, OkHttp 캐시가 동작하지 않습니다. 이 경우 네트워크 인터셉터에서 강제로 캐시 헤더를 추가하는 방법을 고려할 수 있지만, 실시간 데이터의 신선도와 트레이드오프를 고려해야 합니다.
+> ⚠️ **주의:** SofaScore API의 응답에 `Cache-Control` 헤더가 없으면, OkHttp 캐시가 동작하지 않습니다. 이 경우 네트워크 인터셉터에서 강제로 캐시 헤더를 추가하는 방법을 고려할 수 있지만, 실시간 데이터의 신선도와 트레이드오프를 고려해야 합니다.
 
 #### 6.2 Repository 인메모리 캐싱
 

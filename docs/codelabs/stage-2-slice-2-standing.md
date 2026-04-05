@@ -20,25 +20,25 @@
 
 - 리그 순위 화면 (팀 순위 탭 + 개인 순위 탭)
 - **팀 순위 탭:** 순위, 팀 로고, 팀명, 경기수, 승/무/패, 득실차, 승점 테이블
-- **개인 순위 탭:** 추후 FotMob `/api/leagues` stats 탭 응답 구조 확인 후 추가
+- **개인 순위 탭:** SofaScore `/api/v1/unique-tournament/{id}/season/{sid}/top-players/{type}` 엔드포인트로 득점왕/도움왕 조회
 - Loading → Success / Error 상태 전환
-- FotMob API의 `/api/tltable` 엔드포인트 연동
+- SofaScore API의 `/api/v1/unique-tournament/{id}/season/{seasonId}/standings/total` 엔드포인트 연동
 
 ---
 
 ## Step 1 — core-network: DTO 작성
 
 ### 목표
-> FotMob API(`/api/tltable`)의 응답 구조에 맞는 DTO(Data Transfer Object)를 정의합니다. `kotlinx.serialization`을 사용합니다.
+> SofaScore API(`/api/v1/unique-tournament/{id}/season/{seasonId}/standings/total`)의 응답 구조에 맞는 DTO(Data Transfer Object)를 정의합니다. `kotlinx.serialization`을 사용합니다.
 
 ### 작업 내용
 
 이 Step에서는 1개의 DTO 파일을 만듭니다:
-1. **StandingDto.kt** — `/api/tltable` 엔드포인트 응답용
+1. **StandingDto.kt** — `/api/v1/unique-tournament/{id}/season/{seasonId}/standings/total` 엔드포인트 응답용
 
-> 💡 **Tip:** FotMob API는 `ApiResponse<T>` 래퍼를 사용하지 않습니다. `/api/tltable`은 JSON 배열(`List<TlTableResponseDto>`)을 직접 반환합니다.
+> 💡 **Tip:** SofaScore API는 `standings` 배열을 포함하는 JSON 객체를 반환합니다. 각 standings 항목에 `rows` 배열이 있으며, 이것이 실제 팀 순위 데이터입니다.
 
-> ⚠️ **주의:** `table` 객체에는 `all`, `home`, `away` 등 필터별 순위 배열이 있습니다. 기본적으로 `all` 배열을 사용합니다. 득점/실점은 `scoresStr` 필드("61-22" 형태)로 제공되므로 파싱이 필요합니다.
+> ⚠️ **주의:** SofaScore는 득점/실점을 `scoresFor`, `scoresAgainst`로 각각 별도의 정수 필드로 제공합니다. 골득실차는 `scoresFor - scoresAgainst`로 직접 계산합니다. `promotion` 필드로 진출권/강등권 정보를 제공합니다.
 
 **파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/StandingDto.kt`
 
@@ -50,65 +50,131 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TlTableResponseDto(
-    @SerialName("data") val data: TlTableDataDto,
+data class StandingsResponseDto(
+    @SerialName("standings") val standings: List<StandingGroupDto> = emptyList(),
 )
 
 @Serializable
-data class TlTableDataDto(
-    @SerialName("ccode") val ccode: String = "",
-    @SerialName("leagueId") val leagueId: Int = 0,
-    @SerialName("leagueName") val leagueName: String = "",
-    @SerialName("isCurrentSeason") val isCurrentSeason: Boolean = true,
-    @SerialName("tableFilterTypes") val tableFilterTypes: List<String> = emptyList(),
-    @SerialName("legend") val legend: List<LegendDto> = emptyList(),
-    @SerialName("table") val table: TableDto,
-)
-
-@Serializable
-data class LegendDto(
-    @SerialName("title") val title: String = "",
-    @SerialName("color") val color: String = "",
-    @SerialName("indices") val indices: List<Int> = emptyList(),
-)
-
-@Serializable
-data class TableDto(
-    @SerialName("all") val all: List<TableItemDto> = emptyList(),
-    @SerialName("home") val home: List<TableItemDto> = emptyList(),
-    @SerialName("away") val away: List<TableItemDto> = emptyList(),
-)
-
-@Serializable
-data class TableItemDto(
+data class StandingGroupDto(
+    @SerialName("tournament") val tournament: StandingTournamentDto? = null,
+    @SerialName("type") val type: String = "",
     @SerialName("name") val name: String = "",
-    @SerialName("shortName") val shortName: String = "",
+    @SerialName("rows") val rows: List<StandingRowDto> = emptyList(),
+)
+
+@Serializable
+data class StandingTournamentDto(
+    @SerialName("uniqueTournament") val uniqueTournament: StandingUniqueTournamentDto? = null,
+)
+
+@Serializable
+data class StandingUniqueTournamentDto(
     @SerialName("id") val id: Int = 0,
-    @SerialName("pageUrl") val pageUrl: String = "",
-    @SerialName("played") val played: Int = 0,
+    @SerialName("name") val name: String = "",
+)
+
+@Serializable
+data class StandingRowDto(
+    @SerialName("team") val team: StandingTeamDto,
+    @SerialName("position") val position: Int = 0,
+    @SerialName("matches") val matches: Int = 0,
     @SerialName("wins") val wins: Int = 0,
     @SerialName("draws") val draws: Int = 0,
     @SerialName("losses") val losses: Int = 0,
-    @SerialName("scoresStr") val scoresStr: String = "0-0",
-    @SerialName("goalConDiff") val goalConDiff: Int = 0,
-    @SerialName("pts") val pts: Int = 0,
-    @SerialName("idx") val idx: Int = 0,
-    @SerialName("qualColor") val qualColor: String? = null,
-    @SerialName("deduction") val deduction: Int? = null,
+    @SerialName("scoresFor") val scoresFor: Int = 0,
+    @SerialName("scoresAgainst") val scoresAgainst: Int = 0,
+    @SerialName("points") val points: Int = 0,
+    @SerialName("id") val id: Int = 0,
+    @SerialName("promotion") val promotion: StandingPromotionDto? = null,
+)
+
+@Serializable
+data class StandingTeamDto(
+    @SerialName("id") val id: Int = 0,
+    @SerialName("name") val name: String = "",
+    @SerialName("shortName") val shortName: String = "",
+)
+
+@Serializable
+data class StandingPromotionDto(
+    @SerialName("text") val text: String = "",
+    @SerialName("id") val id: Int = 0,
+)
+
+// 시즌 조회용 DTO (현재 시즌 ID를 얻기 위해 사용)
+@Serializable
+data class SeasonsResponseDto(
+    @SerialName("seasons") val seasons: List<SeasonDto> = emptyList(),
+)
+
+@Serializable
+data class SeasonDto(
+    @SerialName("id") val id: Int = 0,
+    @SerialName("name") val name: String = "",
+    @SerialName("year") val year: String = "",
 )
 ```
 
 **PlayerStandingDto.kt:**
 
-> FotMob에서는 선수 통계를 `/api/leagues?id={leagueId}&tab=stats&season={season}` 엔드포인트로 조회합니다. 상세 응답 구조는 추후 확인이 필요하므로, 현재는 팀 순위 기능을 우선 구현하고 선수 순위는 이후 업데이트합니다.
+> SofaScore에서는 선수 통계를 `/api/v1/unique-tournament/{id}/season/{sid}/top-players/{type}` 엔드포인트로 조회합니다. `type`에는 `goals`, `assists`, `rating` 등을 사용할 수 있습니다.
+
+**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/TopPlayersDto.kt`
+
+```kotlin
+// core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/model/TopPlayersDto.kt
+package com.chase1st.feetballfootball.core.network.model
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class TopPlayersResponseDto(
+    @SerialName("topPlayers") val topPlayers: TopPlayersDataDto,
+)
+
+@Serializable
+data class TopPlayersDataDto(
+    @SerialName("goals") val goals: List<TopPlayerItemDto> = emptyList(),
+    @SerialName("assists") val assists: List<TopPlayerItemDto> = emptyList(),
+)
+
+@Serializable
+data class TopPlayerItemDto(
+    @SerialName("statistics") val statistics: TopPlayerStatisticsDto,
+    @SerialName("player") val player: TopPlayerDto,
+    @SerialName("team") val team: TopPlayerTeamDto,
+)
+
+@Serializable
+data class TopPlayerStatisticsDto(
+    @SerialName("goals") val goals: Int = 0,
+    @SerialName("assists") val assists: Int = 0,
+    @SerialName("appearances") val appearances: Int = 0,
+)
+
+@Serializable
+data class TopPlayerDto(
+    @SerialName("id") val id: Int = 0,
+    @SerialName("name") val name: String = "",
+    @SerialName("shortName") val shortName: String = "",
+)
+
+@Serializable
+data class TopPlayerTeamDto(
+    @SerialName("id") val id: Int = 0,
+    @SerialName("name") val name: String = "",
+)
+```
 
 **공통 응답 래퍼:**
 
-> FotMob API는 `ApiResponse<T>` 형태의 공통 래퍼를 사용하지 않습니다. `/api/tltable`은 JSON 배열을 직접 반환하므로 별도의 래퍼 클래스가 필요 없습니다.
+> SofaScore API는 `ApiResponse<T>` 형태의 공통 래퍼를 사용하지 않습니다. 각 엔드포인트가 고유한 JSON 구조를 반환합니다.
 
 ### ✅ 검증
-- [ ] `StandingDto.kt`에 `TlTableResponseDto`, `TlTableDataDto`, `LegendDto`, `TableDto`, `TableItemDto` 5개 클래스가 있는지 확인
-- [ ] `TableItemDto`에 `scoresStr`, `goalConDiff`, `pts`, `idx`, `qualColor` 필드가 있는지 확인
+- [ ] `StandingDto.kt`에 `StandingsResponseDto`, `StandingGroupDto`, `StandingRowDto`, `StandingTeamDto`, `StandingPromotionDto`, `SeasonsResponseDto`, `SeasonDto` 클래스가 있는지 확인
+- [ ] `StandingRowDto`에 `scoresFor`, `scoresAgainst`, `points`, `position`, `promotion` 필드가 있는지 확인
+- [ ] `TopPlayersDto.kt`에 `TopPlayersResponseDto`, `TopPlayerItemDto`, `TopPlayerStatisticsDto` 등이 있는지 확인
 - [ ] 모든 DTO에 `@Serializable` 어노테이션이 있는지 확인
 - [ ] `core-network` 모듈 빌드 성공 확인
 
@@ -117,14 +183,16 @@ data class TableItemDto(
 ## Step 2 — core-network: API 엔드포인트 추가
 
 ### 목표
-> `FootballApiService` 인터페이스에 FotMob 순위 엔드포인트를 추가합니다.
+> `FootballApiService` 인터페이스에 SofaScore 순위 엔드포인트를 추가합니다.
 
 ### 작업 내용
 
-FotMob API의 엔드포인트를 사용합니다:
-- `/api/tltable` — 리그 팀 순위 (파라미터: `leagueId`)
+SofaScore API의 엔드포인트를 사용합니다:
+- `/api/v1/unique-tournament/{id}/season/{seasonId}/standings/total` — 리그 팀 순위
+- `/api/v1/unique-tournament/{id}/seasons` — 시즌 목록 (현재 시즌 ID 조회용)
+- `/api/v1/unique-tournament/{id}/season/{seasonId}/top-players/{type}` — 선수 통계 (득점왕, 도움왕 등)
 
-> 💡 **Tip:** FotMob `/api/tltable`은 `leagueId`만 파라미터로 받습니다. 시즌 정보는 자동으로 현재 시즌이 반환됩니다. 선수 통계는 `/api/leagues?id={leagueId}&tab=stats&season={season}` 으로 접근하며, 상세 구조 확인 후 추가합니다.
+> 💡 **Tip:** SofaScore는 `uniqueTournamentId`와 `seasonId`를 모두 필요로 합니다. 먼저 `/unique-tournament/{id}/seasons` API로 현재 시즌 ID를 조회한 후, 해당 시즌 ID로 순위를 요청합니다. 선수 통계는 `top-players/{type}`에서 `type`을 `goals`, `assists` 등으로 지정합니다.
 
 **파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/api/FootballApiService.kt` (기존 파일에 추가)
 
@@ -132,26 +200,36 @@ FotMob API의 엔드포인트를 사용합니다:
 // FootballApiService.kt에 추가
 import com.chase1st.feetballfootball.core.network.model.*
 import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.Path
 
 interface FootballApiService {
 
-    @GET("api/tltable")
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/standings/total")
     suspend fun getStandings(
-        @Query("leagueId") leagueId: Int,
-    ): List<TlTableResponseDto>
+        @Path("id") uniqueTournamentId: Int,
+        @Path("seasonId") seasonId: Int,
+    ): StandingsResponseDto
 
-    // 선수 통계는 /api/leagues 엔드포인트의 stats 탭에서 조회
-    // FotMob API에서는 별도의 topscorers/topassists 엔드포인트를 제공하지 않음
-    // → /api/leagues?id={leagueId}&tab=stats&season={season} 으로 접근
+    @GET("api/v1/unique-tournament/{id}/seasons")
+    suspend fun getSeasons(
+        @Path("id") uniqueTournamentId: Int,
+    ): SeasonsResponseDto
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/top-players/{type}")
+    suspend fun getTopPlayers(
+        @Path("id") uniqueTournamentId: Int,
+        @Path("seasonId") seasonId: Int,
+        @Path("type") type: String,  // "goals", "assists", "rating" 등
+    ): TopPlayersResponseDto
 }
 ```
 
 ### ✅ 검증
-- [ ] `FootballApiService`에 `getStandings()` 메서드가 추가되었는지 확인
-- [ ] `getStandings()`이 `suspend fun`인지 확인
-- [ ] 반환 타입이 `List<TlTableResponseDto>`인지 확인 (래퍼 없이 직접 배열)
-- [ ] `@Query("leagueId")`로 파라미터명이 올바른지 확인
+- [ ] `FootballApiService`에 `getStandings()`, `getSeasons()`, `getTopPlayers()` 메서드가 추가되었는지 확인
+- [ ] 모든 메서드가 `suspend fun`인지 확인
+- [ ] `getStandings()` 반환 타입이 `StandingsResponseDto`인지 확인
+- [ ] `@Path("id")`와 `@Path("seasonId")`로 URL 경로 파라미터가 올바른지 확인
+- [ ] `getTopPlayers()`의 `type` 파라미터가 `@Path`로 선언되어 있는지 확인
 - [ ] `core-network` 모듈 빌드 성공 확인
 
 ---
@@ -248,11 +326,13 @@ Clean Architecture에서 `core-domain`은:
 package com.chase1st.feetballfootball.core.domain.repository
 
 import com.chase1st.feetballfootball.core.model.TeamStanding
+import com.chase1st.feetballfootball.core.model.PlayerStanding
 import kotlinx.coroutines.flow.Flow
 
 interface LeagueRepository {
-    fun getLeagueStandings(leagueId: Int): Flow<List<TeamStanding>>
-    // 선수 통계 메서드는 FotMob /api/leagues stats 탭 응답 구조 확인 후 추가
+    fun getLeagueStandings(uniqueTournamentId: Int): Flow<List<TeamStanding>>
+    fun getTopScorers(uniqueTournamentId: Int): Flow<List<PlayerStanding>>
+    fun getTopAssists(uniqueTournamentId: Int): Flow<List<PlayerStanding>>
 }
 ```
 
@@ -270,23 +350,57 @@ import javax.inject.Inject
 class GetLeagueStandingsUseCase @Inject constructor(
     private val leagueRepository: LeagueRepository,
 ) {
-    operator fun invoke(leagueId: Int): Flow<List<TeamStanding>> =
-        leagueRepository.getLeagueStandings(leagueId)
+    operator fun invoke(uniqueTournamentId: Int): Flow<List<TeamStanding>> =
+        leagueRepository.getLeagueStandings(uniqueTournamentId)
 }
 ```
 
-**GetTopScorersUseCase.kt, GetTopAssistsUseCase.kt:**
+**GetTopScorersUseCase.kt:**
 
-> FotMob API에서 선수 통계는 `/api/leagues?id={leagueId}&tab=stats&season={season}` 으로 접근합니다. 상세 응답 구조 확인 후 UseCase를 추가할 예정입니다.
+```kotlin
+// core/core-domain/src/main/kotlin/com/chase1st/feetballfootball/core/domain/usecase/GetTopScorersUseCase.kt
+package com.chase1st.feetballfootball.core.domain.usecase
 
-> 💡 **Tip:** UseCase에 `operator fun invoke()`를 사용하면 `getLeagueStandingsUseCase(leagueId)` 형태로 함수처럼 호출할 수 있습니다. Kotlin의 관례적 패턴입니다.
+import com.chase1st.feetballfootball.core.domain.repository.LeagueRepository
+import com.chase1st.feetballfootball.core.model.PlayerStanding
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+
+class GetTopScorersUseCase @Inject constructor(
+    private val leagueRepository: LeagueRepository,
+) {
+    operator fun invoke(uniqueTournamentId: Int): Flow<List<PlayerStanding>> =
+        leagueRepository.getTopScorers(uniqueTournamentId)
+}
+```
+
+**GetTopAssistsUseCase.kt:**
+
+```kotlin
+// core/core-domain/src/main/kotlin/com/chase1st/feetballfootball/core/domain/usecase/GetTopAssistsUseCase.kt
+package com.chase1st.feetballfootball.core.domain.usecase
+
+import com.chase1st.feetballfootball.core.domain.repository.LeagueRepository
+import com.chase1st.feetballfootball.core.model.PlayerStanding
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+
+class GetTopAssistsUseCase @Inject constructor(
+    private val leagueRepository: LeagueRepository,
+) {
+    operator fun invoke(uniqueTournamentId: Int): Flow<List<PlayerStanding>> =
+        leagueRepository.getTopAssists(uniqueTournamentId)
+}
+```
+
+> 💡 **Tip:** UseCase에 `operator fun invoke()`를 사용하면 `getLeagueStandingsUseCase(uniqueTournamentId)` 형태로 함수처럼 호출할 수 있습니다. Kotlin의 관례적 패턴입니다. Repository 내부에서 seasonId를 자동으로 조회하므로 UseCase에는 `uniqueTournamentId`만 전달합니다.
 
 ### ✅ 검증
-- [ ] `LeagueRepository` 인터페이스에 `getLeagueStandings()` 메서드가 있는지 확인
-- [ ] `GetLeagueStandingsUseCase`가 `@Inject constructor`를 가지고 있는지 확인
-- [ ] UseCase가 `operator fun invoke()`로 선언되어 있는지 확인
+- [ ] `LeagueRepository` 인터페이스에 `getLeagueStandings()`, `getTopScorers()`, `getTopAssists()` 메서드가 있는지 확인
+- [ ] `GetLeagueStandingsUseCase`, `GetTopScorersUseCase`, `GetTopAssistsUseCase`가 `@Inject constructor`를 가지고 있는지 확인
+- [ ] 모든 UseCase가 `operator fun invoke()`로 선언되어 있는지 확인
 - [ ] UseCase의 반환 타입이 `Flow`인지 확인
-- [ ] `leagueId`만 파라미터로 받는지 확인 (FotMob은 시즌 파라미터 불필요)
+- [ ] `uniqueTournamentId`만 파라미터로 받는지 확인 (seasonId는 Repository 내부에서 자동 조회)
 - [ ] `core-domain` 모듈 빌드 성공 확인
 
 ---
@@ -299,11 +413,11 @@ class GetLeagueStandingsUseCase @Inject constructor(
 ### 작업 내용
 
 이 Step은 데이터 레이어의 핵심입니다:
-1. **StandingMapper** — FotMob DTO → Domain Model 변환 (`scoresStr` 파싱 포함)
-2. **LeagueRepositoryImpl** — API 호출 + Mapper를 통한 변환
+1. **StandingMapper** — SofaScore DTO → Domain Model 변환 (`scoresFor`/`scoresAgainst` 직접 사용)
+2. **LeagueRepositoryImpl** — 시즌 ID 조회 + API 호출 + Mapper를 통한 변환
 3. **DataModule** — Hilt 바인딩
 
-> ⚠️ **주의:** FotMob의 `scoresStr` 필드는 "61-22" 형태의 문자열입니다. `parseScoresStr()` 헬퍼로 득점/실점을 분리합니다. 팀 로고 URL은 `https://images.fotmob.com/image_resources/logo/teamlogo/{teamId}.png` 패턴으로 생성합니다.
+> ⚠️ **주의:** SofaScore는 `scoresFor`와 `scoresAgainst`를 별도의 정수 필드로 제공합니다. 문자열 파싱이 필요 없습니다. 골득실차는 `scoresFor - scoresAgainst`로 계산합니다. 팀 로고 URL은 `https://img.sofascore.com/api/v1/team/{teamId}/image` 패턴으로 생성합니다.
 
 **파일 경로:** `core/core-data/src/main/kotlin/com/chase1st/feetballfootball/core/data/mapper/StandingMapper.kt`
 
@@ -317,37 +431,65 @@ import javax.inject.Inject
 
 class StandingMapper @Inject constructor() {
 
-    fun mapTeamStandings(dtos: List<TableItemDto>): List<TeamStanding> =
+    fun mapTeamStandings(dtos: List<StandingRowDto>): List<TeamStanding> =
         dtos.map { dto ->
-            val (goalsFor, goalsAgainst) = parseScoresStr(dto.scoresStr)
             TeamStanding(
-                rank = dto.idx,
+                rank = dto.position,
                 team = Team(
-                    id = dto.id,
-                    name = dto.name,
-                    logoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/${dto.id}.png",
+                    id = dto.team.id,
+                    name = dto.team.name,
+                    logoUrl = "https://img.sofascore.com/api/v1/team/${dto.team.id}/image",
                 ),
-                points = dto.pts,
-                played = dto.played,
+                points = dto.points,
+                played = dto.matches,
                 won = dto.wins,
                 drawn = dto.draws,
                 lost = dto.losses,
-                goalsFor = goalsFor,
-                goalsAgainst = goalsAgainst,
-                goalDifference = dto.goalConDiff,
-                form = null,  // form 탭에서 별도 조회 가능
-                description = dto.qualColor,  // 진출권 색상으로 대체
+                goalsFor = dto.scoresFor,
+                goalsAgainst = dto.scoresAgainst,
+                goalDifference = dto.scoresFor - dto.scoresAgainst,
+                form = null,  // SofaScore standings에는 form 정보 미포함
+                description = dto.promotion?.text,  // 진출권/강등권 텍스트
             )
         }
 
-    private fun parseScoresStr(scoresStr: String): Pair<Int, Int> {
-        val parts = scoresStr.split("-")
-        return if (parts.size == 2) {
-            (parts[0].trim().toIntOrNull() ?: 0) to (parts[1].trim().toIntOrNull() ?: 0)
-        } else {
-            0 to 0
+    fun mapTopScorers(dtos: List<TopPlayerItemDto>): List<PlayerStanding> =
+        dtos.mapIndexed { index, dto ->
+            PlayerStanding(
+                rank = index + 1,
+                player = Player(
+                    id = dto.player.id,
+                    name = dto.player.name,
+                    photoUrl = "https://img.sofascore.com/api/v1/player/${dto.player.id}/image",
+                ),
+                team = Team(
+                    id = dto.team.id,
+                    name = dto.team.name,
+                    logoUrl = "https://img.sofascore.com/api/v1/team/${dto.team.id}/image",
+                ),
+                goals = dto.statistics.goals,
+                assists = dto.statistics.assists,
+            )
         }
-    }
+
+    fun mapTopAssists(dtos: List<TopPlayerItemDto>): List<PlayerStanding> =
+        dtos.mapIndexed { index, dto ->
+            PlayerStanding(
+                rank = index + 1,
+                player = Player(
+                    id = dto.player.id,
+                    name = dto.player.name,
+                    photoUrl = "https://img.sofascore.com/api/v1/player/${dto.player.id}/image",
+                ),
+                team = Team(
+                    id = dto.team.id,
+                    name = dto.team.name,
+                    logoUrl = "https://img.sofascore.com/api/v1/team/${dto.team.id}/image",
+                ),
+                goals = dto.statistics.goals,
+                assists = dto.statistics.assists,
+            )
+        }
 }
 ```
 
@@ -360,6 +502,7 @@ package com.chase1st.feetballfootball.core.data.repository
 import com.chase1st.feetballfootball.core.common.dispatcher.IoDispatcher
 import com.chase1st.feetballfootball.core.data.mapper.StandingMapper
 import com.chase1st.feetballfootball.core.domain.repository.LeagueRepository
+import com.chase1st.feetballfootball.core.model.PlayerStanding
 import com.chase1st.feetballfootball.core.model.TeamStanding
 import com.chase1st.feetballfootball.core.network.api.FootballApiService
 import kotlinx.coroutines.CoroutineDispatcher
@@ -374,17 +517,37 @@ class LeagueRepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : LeagueRepository {
 
-    override fun getLeagueStandings(leagueId: Int): Flow<List<TeamStanding>> = flow {
-        val response = apiService.getStandings(leagueId)
-        val standings = response.firstOrNull()?.data?.table?.all ?: emptyList()
-        emit(mapper.mapTeamStandings(standings))
+    // 현재 시즌 ID를 조회하는 헬퍼
+    private suspend fun getCurrentSeasonId(uniqueTournamentId: Int): Int {
+        val seasonsResponse = apiService.getSeasons(uniqueTournamentId)
+        return seasonsResponse.seasons.firstOrNull()?.id
+            ?: throw IllegalStateException("시즌 정보를 찾을 수 없습니다")
+    }
+
+    override fun getLeagueStandings(uniqueTournamentId: Int): Flow<List<TeamStanding>> = flow {
+        val seasonId = getCurrentSeasonId(uniqueTournamentId)
+        val response = apiService.getStandings(uniqueTournamentId, seasonId)
+        val rows = response.standings.firstOrNull()?.rows ?: emptyList()
+        emit(mapper.mapTeamStandings(rows))
+    }.flowOn(ioDispatcher)
+
+    override fun getTopScorers(uniqueTournamentId: Int): Flow<List<PlayerStanding>> = flow {
+        val seasonId = getCurrentSeasonId(uniqueTournamentId)
+        val response = apiService.getTopPlayers(uniqueTournamentId, seasonId, "goals")
+        emit(mapper.mapTopScorers(response.topPlayers.goals))
+    }.flowOn(ioDispatcher)
+
+    override fun getTopAssists(uniqueTournamentId: Int): Flow<List<PlayerStanding>> = flow {
+        val seasonId = getCurrentSeasonId(uniqueTournamentId)
+        val response = apiService.getTopPlayers(uniqueTournamentId, seasonId, "assists")
+        emit(mapper.mapTopAssists(response.topPlayers.assists))
     }.flowOn(ioDispatcher)
 }
 ```
 
 > 💡 **Tip:** `flowOn(ioDispatcher)`를 사용하면 API 호출이 IO 스레드에서 실행됩니다. `@IoDispatcher`는 core-common 모듈에서 정의된 Hilt qualifier입니다.
 
-> ⚠️ **주의:** `response.firstOrNull()?.data?.table?.all`에서 `firstOrNull()`은 FotMob 응답 배열의 첫 번째 요소를 꺼냅니다. `data.table.all`이 전체 순위(홈/원정 구분 없이)입니다.
+> ⚠️ **주의:** SofaScore는 `uniqueTournamentId`와 `seasonId`를 모두 필요로 합니다. `getCurrentSeasonId()`로 먼저 시즌 목록을 조회하고, 첫 번째 시즌(최신 시즌)의 ID를 사용합니다. `response.standings.firstOrNull()?.rows`에서 `firstOrNull()`은 standings 배열의 첫 번째 그룹을 꺼냅니다.
 
 **파일 경로:** `core/core-data/src/main/kotlin/com/chase1st/feetballfootball/core/data/di/DataModule.kt`
 
@@ -412,8 +575,11 @@ abstract class DataModule {
 
 ### ✅ 검증
 - [ ] `StandingMapper`에 `@Inject constructor()`가 있어서 Hilt가 자동 주입할 수 있는지 확인
-- [ ] `parseScoresStr()`이 "61-22" 형태를 올바르게 파싱하는지 확인
-- [ ] 팀 로고 URL이 `https://images.fotmob.com/image_resources/logo/teamlogo/{teamId}.png` 패턴으로 생성되는지 확인
+- [ ] `mapTeamStandings()`가 `scoresFor`/`scoresAgainst`를 직접 사용하고, `scoresFor - scoresAgainst`로 골득실차를 계산하는지 확인
+- [ ] `mapTopScorers()`와 `mapTopAssists()`가 `TopPlayerItemDto`를 `PlayerStanding`으로 변환하는지 확인
+- [ ] 팀 로고 URL이 `https://img.sofascore.com/api/v1/team/{teamId}/image` 패턴으로 생성되는지 확인
+- [ ] 선수 사진 URL이 `https://img.sofascore.com/api/v1/player/{playerId}/image` 패턴으로 생성되는지 확인
+- [ ] `LeagueRepositoryImpl`이 `getCurrentSeasonId()`로 시즌 ID를 먼저 조회하는지 확인
 - [ ] `LeagueRepositoryImpl`이 `LeagueRepository` 인터페이스를 구현하는지 확인
 - [ ] `DataModule`에서 `@Binds`로 인터페이스-구현체 바인딩이 되어 있는지 확인
 - [ ] `core-data` 모듈 빌드 성공 확인
@@ -470,8 +636,8 @@ class StandingViewModel @Inject constructor(
 ) : ViewModel() {
 
     // Navigation 인자에서 추출 (Navigation 3 통합 전에는 임시 하드코딩)
-    // FotMob 리그 ID 사용 (예: Premier League = 47)
-    private val leagueId: Int = savedStateHandle["leagueId"] ?: 47
+    // SofaScore uniqueTournamentId 사용 (예: Premier League = 17)
+    private val uniqueTournamentId: Int = savedStateHandle["uniqueTournamentId"] ?: 17
 
     private val _uiState = MutableStateFlow<StandingUiState>(StandingUiState.Loading)
     val uiState: StateFlow<StandingUiState> = _uiState.asStateFlow()
@@ -483,7 +649,7 @@ class StandingViewModel @Inject constructor(
     private fun loadData() {
         viewModelScope.launch {
             try {
-                val standings = getLeagueStandingsUseCase(leagueId).first()
+                val standings = getLeagueStandingsUseCase(uniqueTournamentId).first()
 
                 _uiState.value = StandingUiState.Success(
                     clubStandings = standings,
@@ -500,13 +666,13 @@ class StandingViewModel @Inject constructor(
 }
 ```
 
-> ⚠️ **주의:** `savedStateHandle["leagueId"] ?: 47`은 Navigation 통합 전 임시 기본값입니다. FotMob 리그 ID를 사용합니다 (Premier League = 47). Navigation 3 통합 시 실제 Navigation 인자로 교체됩니다.
+> ⚠️ **주의:** `savedStateHandle["uniqueTournamentId"] ?: 17`은 Navigation 통합 전 임시 기본값입니다. SofaScore uniqueTournamentId를 사용합니다 (Premier League = 17). Navigation 3 통합 시 실제 Navigation 인자로 교체됩니다.
 
 ### ✅ 검증
 - [ ] `StandingUiState`에 `Loading`, `Success`, `Error` 3개 상태가 있는지 확인
 - [ ] `StandingViewModel`이 `@HiltViewModel`로 선언되어 있는지 확인
 - [ ] `GetLeagueStandingsUseCase`가 생성자에 주입되는지 확인
-- [ ] `leagueId` 기본값이 `47` (FotMob Premier League ID)인지 확인
+- [ ] `uniqueTournamentId` 기본값이 `17` (SofaScore Premier League ID)인지 확인
 - [ ] `init` 블록에서 `loadData()`가 호출되는지 확인
 - [ ] `retry()` 함수가 `loadData()`를 다시 호출하는지 확인
 
@@ -515,11 +681,11 @@ class StandingViewModel @Inject constructor(
 ## Step 7 — feature-league: Compose UI
 
 ### 목표
-> 순위 화면의 Compose UI를 구현합니다. 현재는 팀 순위만 구현하며, 선수 순위 탭은 FotMob stats API 확인 후 추가합니다.
+> 순위 화면의 Compose UI를 구현합니다. 팀 순위와 선수 순위(득점왕/도움왕) 탭을 구현합니다.
 
 ### 작업 내용
 
-현재는 팀 순위 화면만 구현합니다. 선수 순위 탭은 FotMob `/api/leagues` stats 응답 구조 확인 후 추가합니다.
+팀 순위 화면을 구현합니다. 선수 순위 탭은 SofaScore `/api/v1/unique-tournament/{id}/season/{sid}/top-players/{type}` 엔드포인트를 사용합니다.
 
 1. **StandingScreen.kt** — 전체 화면 (Scaffold + 팀 순위)
 2. **ClubStandingTab.kt** — 팀 순위 테이블 (헤더 + 순위 행)
@@ -673,12 +839,12 @@ private fun StandingRow(standing: TeamStanding) {
 
 **PlayerStandingTab.kt:**
 
-> 선수 순위 탭은 FotMob `/api/leagues?id={leagueId}&tab=stats&season={season}` 응답 구조 확인 후 추가합니다. 현재 Slice에서는 팀 순위 기능을 우선 구현합니다.
+> 선수 순위 탭은 SofaScore `/api/v1/unique-tournament/{id}/season/{sid}/top-players/goals` (득점왕) 및 `/top-players/assists` (도움왕) 엔드포인트를 사용합니다. ViewModel에 `GetTopScorersUseCase`, `GetTopAssistsUseCase`를 주입하여 구현합니다.
 
 ### ✅ 검증
 - [ ] `StandingScreen`에 `Scaffold` + `TopAppBar` + 뒤로가기 버튼이 있는지 확인
 - [ ] `ClubStandingTab`에 테이블 헤더(#, 팀, 경기, 승, 무, 패, 득실, 승점)가 있는지 확인
-- [ ] 팀 로고가 FotMob CDN URL로 정상 로딩되는지 확인
+- [ ] 팀 로고가 SofaScore 이미지 CDN URL (`https://img.sofascore.com/api/v1/team/{teamId}/image`)로 정상 로딩되는지 확인
 - [ ] Loading, Error, Success 상태 전환이 정상적인지 확인
 - [ ] `feature-league` 모듈 빌드 성공 확인
 
@@ -698,14 +864,14 @@ private fun StandingRow(standing: TeamStanding) {
 
 ### ✅ 검증
 - [ ] 리그 선택 → 순위 화면 전환 (임시 하드코딩 or Logcat)
-- [ ] 클럽 순위 탭: FotMob `/api/tltable` API 호출 → 20개 팀 순위표 표시
-- [ ] 팀 로고가 FotMob CDN URL (`https://images.fotmob.com/image_resources/logo/teamlogo/{teamId}.png`)로 정상 로딩되는지 확인
-- [ ] `scoresStr` ("61-22" 형태) 파싱이 정상적인지 확인
+- [ ] 클럽 순위 탭: SofaScore `/api/v1/unique-tournament/{id}/season/{seasonId}/standings/total` API 호출 → 20개 팀 순위표 표시
+- [ ] 팀 로고가 SofaScore 이미지 CDN URL (`https://img.sofascore.com/api/v1/team/{teamId}/image`)로 정상 로딩되는지 확인
+- [ ] `scoresFor`/`scoresAgainst` 필드가 올바르게 매핑되는지 확인
 - [ ] 로딩 상태 → 성공 상태 전환 정상
 - [ ] 에러 상태 → 다시 시도 동작
 - [ ] 팀 로고 이미지 로딩 정상 (Coil)
 - [ ] **이 시점에서 DTO → Domain → Repository → UseCase → ViewModel → UI 패턴 확립**
-- [ ] `git commit -m "feat: Slice 2 리그 순위 화면 구현 (FotMob API 연동)"`
+- [ ] `git commit -m "feat: Slice 2 리그 순위 화면 구현 (SofaScore API 연동)"`
 
 ---
 
@@ -715,10 +881,10 @@ private fun StandingRow(standing: TeamStanding) {
 
 **이 Slice에서 달성한 것:**
 - **DTO → Domain → Repository → UseCase → ViewModel → UI** 전체 수직 스택을 구축했습니다
-- FotMob API(`/api/tltable`)에 맞춘 `kotlinx.serialization` DTO와 도메인 모델을 분리했습니다
+- SofaScore API(`/api/v1/unique-tournament/{id}/season/{seasonId}/standings/total`)에 맞춘 `kotlinx.serialization` DTO와 도메인 모델을 분리했습니다
 - Hilt `@Binds`로 Repository 인터페이스-구현체를 바인딩했습니다
 - `Flow`와 `StateFlow`를 활용한 반응형 데이터 흐름을 구현했습니다
-- FotMob CDN을 활용한 팀 로고 URL 생성 패턴을 확립했습니다
+- SofaScore 이미지 CDN(`https://img.sofascore.com/api/v1/team/{id}/image`)을 활용한 팀 로고 URL 생성 패턴을 확립했습니다
 
 **이 패턴이 중요한 이유:** 이후 모든 Slice(경기 일정, 경기 상세 등)에서 동일한 패턴을 반복합니다. DTO 작성 → Domain Model → Repository → UseCase → ViewModel → Compose UI 순서로 작업하면 됩니다.
 

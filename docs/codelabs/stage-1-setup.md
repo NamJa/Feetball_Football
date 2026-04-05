@@ -13,7 +13,7 @@
 - Jetpack Compose 기반 UI 셋업 및 Material 3 테마 시스템
 - Retrofit 3 + kotlinx.serialization 네트워크 레이어 구성
 - Room Database 기반 코드 셋업
-- FotMob API 인증 처리 (X-Mas 헤더 + Turnstile)
+- SofaScore API 인증 처리 (Bearer Token 기반)
 
 ---
 
@@ -1192,7 +1192,7 @@ dependencies {
 - Retrofit 2.9.0 → 3.0.0
 - GSON → kotlinx.serialization
 - OkHttp 3.x → 5.x
-- API-Sports → FotMob API (API 키 불필요, X-Mas 헤더 기반 인증)
+- API-Sports → SofaScore API (Bearer Token 기반 인증)
 
 #### 1. `FootballApiService.kt`
 
@@ -1216,7 +1216,8 @@ interface FootballApiService {
 package com.chase1st.feetballfootball.core.network.di
 
 import com.chase1st.feetballfootball.core.network.api.FootballApiService
-import com.chase1st.feetballfootball.core.network.interceptor.XMasInterceptor
+import com.chase1st.feetballfootball.core.network.interceptor.AuthInterceptor
+import com.chase1st.feetballfootball.core.network.token.TokenManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -1243,9 +1244,11 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient =
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor,
+    ): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(XMasInterceptor())
+            .addInterceptor(authInterceptor)
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
@@ -1255,7 +1258,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://www.fotmob.com/")
+            .baseUrl("https://api.sofascore.com/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
@@ -1267,227 +1270,227 @@ object NetworkModule {
 }
 ```
 
-> 💡 **Tip:** FotMob API는 API Key가 필요 없습니다. 대신 `XMasInterceptor`가 모든 요청에 `x-mas` 헤더를 자동으로 추가합니다. `ignoreUnknownKeys = true`는 API 응답에 새로운 필드가 추가되어도 앱이 크래시하지 않도록 합니다. `coerceInputValues = true`는 null 값이 non-null 필드에 올 때 기본값으로 대체합니다.
+> 💡 **Tip:** SofaScore API는 Bearer Token 기반 인증을 사용합니다. `AuthInterceptor`가 non-GET/HEAD 요청에 `Authorization: Bearer {token}` 헤더를 자동으로 추가합니다. `ignoreUnknownKeys = true`는 API 응답에 새로운 필드가 추가되어도 앱이 크래시하지 않도록 합니다. `coerceInputValues = true`는 null 값이 non-null 필드에 올 때 기본값으로 대체합니다.
 
-#### 3. `XMasInterceptor.kt`
+#### 3. `AuthInterceptor.kt`
 
-FotMob API는 `x-mas` 헤더를 통해 요청을 인증합니다. 이 헤더는 요청 URL, 현재 타임스탬프, 프로덕션 해시를 기반으로 MD5 시그니처를 생성하여 Base64 인코딩한 값입니다.
+SofaScore API는 Bearer Token 기반 인증을 사용합니다. non-GET/HEAD 요청에 `Authorization: Bearer {token}` 헤더를 자동으로 추가하고, 서버가 `X-Token-Refresh` 헤더로 토큰 갱신을 요청하면 자동으로 갱신합니다.
 
-**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/interceptor/XMasInterceptor.kt`
+**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/interceptor/AuthInterceptor.kt`
 
 ```kotlin
 package com.chase1st.feetballfootball.core.network.interceptor
 
+import com.chase1st.feetballfootball.core.network.token.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.security.MessageDigest
-import android.util.Base64
-import org.json.JSONObject
+import javax.inject.Inject
 
-class XMasInterceptor : Interceptor {
+class AuthInterceptor @Inject constructor(
+    private val tokenManager: TokenManager,
+) : Interceptor {
 
     companion object {
-        private const val PRODUCTION_HASH = "production:c3326dbe307f25cb698f764c46cb5a473dcd6773"
-        // Three Lions 가사 (X-Mas 시그니처 생성용 시크릿)
-        private const val SECRET = "..." // FotMob _app.js에서 추출한 시크릿 문자열
+        private val AUTH_REQUIRED_METHODS = setOf("POST", "PUT", "PATCH", "DELETE")
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
-        val url = original.url.encodedPath +
-            if (original.url.encodedQuery != null) "?${original.url.encodedQuery}" else ""
 
-        val xMas = generateXMas(url)
-
-        val request = original.newBuilder()
-            .header("x-mas", xMas)
-            .build()
-
-        return chain.proceed(request)
-    }
-
-    private fun generateXMas(url: String): String {
-        val body = JSONObject().apply {
-            put("url", url)
-            put("code", System.currentTimeMillis())
-            put("foo", PRODUCTION_HASH)
+        val request = if (original.method in AUTH_REQUIRED_METHODS) {
+            val token = tokenManager.getToken()
+            original.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+        } else {
+            original
         }
-        val signature = md5(body.toString() + SECRET).uppercase()
-        val payload = JSONObject().apply {
-            put("body", body)
-            put("signature", signature)
-        }
-        return Base64.encodeToString(payload.toString().toByteArray(), Base64.NO_WRAP)
-    }
 
-    private fun md5(input: String): String {
-        val md = MessageDigest.getInstance("MD5")
-        val digest = md.digest(input.toByteArray())
-        return digest.joinToString("") { "%02x".format(it) }
+        val response = chain.proceed(request)
+
+        // 서버가 토큰 갱신을 요청하는 경우
+        if (response.header("X-Token-Refresh") != null) {
+            tokenManager.refreshToken()
+        }
+
+        return response
     }
 }
 ```
 
-X-Mas 헤더 생성 흐름:
-1. 요청 URL 경로 + 쿼리를 추출
-2. `{ url, code(타임스탬프), foo(프로덕션 해시) }` JSON body 생성
-3. `MD5(JSON.stringify(body) + SECRET)` → 시그니처 생성
-4. `{ body, signature }` → Base64 인코딩 → `x-mas` 헤더 값
+Bearer Token 인증 흐름:
+1. 앱 시작 시 `POST api/v1/token/init`으로 초기 토큰 발급
+2. non-GET/HEAD 요청에 `Authorization: Bearer {token}` 헤더 추가
+3. 서버가 `X-Token-Refresh` 응답 헤더를 반환하면 `POST api/v1/token/refresh`로 토큰 갱신
+4. GET/HEAD 요청은 인증 없이 접근 가능
 
-> ⚠️ **주의:** `SECRET` 값은 FotMob의 `_app.js` 번들에서 추출해야 합니다. 이 값은 주기적으로 변경될 수 있으므로, 업데이트 메커니즘을 고려해야 합니다.
+> 💡 **Tip:** SofaScore API는 GET 요청(데이터 조회)에는 인증이 불필요합니다. POST/PUT 등 상태 변경 요청에만 Bearer Token이 필요합니다. 별도의 CAPTCHA나 봇 검증도 필요하지 않습니다.
 
 ### ✅ 검증
 - [ ] `FootballApiService.kt`가 올바른 패키지에 생성되었다
 - [ ] `NetworkModule.kt`이 Hilt `@Module`로 선언되어 있다
 - [ ] `provideJson()`, `provideOkHttpClient()`, `provideRetrofit()`, `provideFootballApiService()` 4개 `@Provides` 함수가 있다
-- [ ] Base URL이 `https://www.fotmob.com/`으로 설정되어 있다
-- [ ] `XMasInterceptor.kt`가 `core/core-network`의 `interceptor` 패키지에 생성되었다
-- [ ] `OkHttpClient`에 `XMasInterceptor`가 추가되어 있다
+- [ ] Base URL이 `https://api.sofascore.com/`으로 설정되어 있다
+- [ ] `AuthInterceptor.kt`가 `core/core-network`의 `interceptor` 패키지에 생성되었다
+- [ ] `OkHttpClient`에 `AuthInterceptor`가 추가되어 있다
 
 ---
 
-## Step 9 — Turnstile 인증 설계 (matchDetails용)
+## Step 9 — Bearer Token 관리 설계
 
 ### 목표
-> FotMob의 `matchDetails` 엔드포인트에 필요한 Cloudflare Turnstile 인증 시스템을 설계한다.
+> SofaScore API의 Bearer Token 발급/갱신 시스템을 설계한다.
 
 ### 작업 내용
 
-FotMob API는 API Key가 불필요하지만, `matchDetails` 엔드포인트만 Cloudflare Turnstile 인증이 필요합니다. 이 엔드포인트에 인증 없이 접근하면 403 응답이 반환됩니다. 나머지 엔드포인트(`/api/leagues`, `/api/matches` 등)는 Step 8에서 설정한 X-Mas 헤더만으로 접근 가능합니다.
+SofaScore API는 Bearer Token 기반 인증을 사용합니다. GET/HEAD 요청은 인증 없이 접근 가능하지만, POST/PUT/PATCH/DELETE 등 상태 변경 요청에는 `Authorization: Bearer {token}` 헤더가 필요합니다. 토큰은 앱 시작 시 발급받고, 서버가 `X-Token-Refresh` 응답 헤더를 반환하면 자동으로 갱신합니다.
 
-> 💡 **Tip:** Turnstile은 Cloudflare의 CAPTCHA 대체 서비스입니다. 사용자에게 보이지 않는 방식으로 봇 여부를 검증하며, 검증 성공 시 `cf_clearance` 쿠키가 발급됩니다.
+> 💡 **Tip:** SofaScore API의 토큰 관리는 두 가지 엔드포인트를 사용합니다. `POST api/v1/token/init`으로 초기 토큰을 발급받고, `POST api/v1/token/refresh`로 만료된 토큰을 갱신합니다. 별도의 CAPTCHA나 봇 검증은 필요하지 않습니다.
 
-#### 1. `TurnstileManager.kt` — Turnstile 상태 관리 (Singleton)
+#### 1. `TokenManager.kt` — 토큰 상태 관리 (Singleton)
 
-Turnstile 토큰 획득과 쿠키 관리를 담당합니다. WebView를 사용하여 Cloudflare Turnstile 챌린지를 수행하고, 획득한 `cf_clearance` 쿠키를 저장합니다.
+Bearer Token의 발급, 저장, 갱신을 담당합니다. 앱 시작 시 `initToken()`을 호출하여 초기 토큰을 발급받고, 서버 요청에 따라 자동으로 갱신합니다.
 
-**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/turnstile/TurnstileManager.kt`
+**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/token/TokenManager.kt`
 
 ```kotlin
-package com.chase1st.feetballfootball.core.network.turnstile
+package com.chase1st.feetballfootball.core.network.token
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TurnstileManager @Inject constructor() {
+class TokenManager @Inject constructor() {
 
-    private val _cfClearance = MutableStateFlow<String?>(null)
-    val cfClearance: StateFlow<String?> = _cfClearance.asStateFlow()
+    private val _token = MutableStateFlow<String?>(null)
+    val token: StateFlow<String?> = _token.asStateFlow()
 
-    private val _isVerifying = MutableStateFlow(false)
-    val isVerifying: StateFlow<Boolean> = _isVerifying.asStateFlow()
+    // 토큰 전용 OkHttpClient (AuthInterceptor 없이 — 순환 의존 방지)
+    private val tokenClient = OkHttpClient.Builder().build()
 
-    fun updateClearance(cookie: String) {
-        _cfClearance.value = cookie
+    companion object {
+        private const val BASE_URL = "https://api.sofascore.com/api/v1"
     }
 
-    fun startVerification() {
-        _isVerifying.value = true
-    }
+    fun getToken(): String? = _token.value
 
-    fun endVerification() {
-        _isVerifying.value = false
-    }
+    /**
+     * 앱 시작 시 호출하여 초기 토큰을 발급받는다.
+     * POST api/v1/token/init
+     */
+    fun initToken() {
+        runBlocking {
+            val request = Request.Builder()
+                .url("$BASE_URL/token/init")
+                .post("{}".toRequestBody("application/json".toMediaType()))
+                .build()
 
-    fun isAuthenticated(): Boolean = _cfClearance.value != null
-}
-```
-
-> 💡 **Tip:** `TurnstileManager`는 `@Singleton`으로 선언되어 앱 전체에서 하나의 인스턴스를 공유합니다. `cf_clearance` 쿠키는 일정 시간 동안 유효하므로, 한 번 획득하면 여러 `matchDetails` 요청에 재사용됩니다.
-
-#### 2. `TurnstileBridge.kt` — JavaScript Interface
-
-WebView에서 Turnstile 챌린지 완료 시 네이티브 코드로 콜백합니다.
-
-**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/turnstile/TurnstileBridge.kt`
-
-```kotlin
-package com.chase1st.feetballfootball.core.network.turnstile
-
-import android.webkit.JavascriptInterface
-
-class TurnstileBridge(
-    private val onTokenReceived: (String) -> Unit,
-) {
-    @JavascriptInterface
-    fun onTurnstileSuccess(token: String) {
-        onTokenReceived(token)
-    }
-}
-```
-
-#### 3. `TurnstileCookieInterceptor.kt` — OkHttp Interceptor
-
-`matchDetails` 요청 시 `cf_clearance` 쿠키를 자동으로 주입하는 Interceptor입니다.
-
-**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/interceptor/TurnstileCookieInterceptor.kt`
-
-```kotlin
-package com.chase1st.feetballfootball.core.network.interceptor
-
-import com.chase1st.feetballfootball.core.network.turnstile.TurnstileManager
-import okhttp3.Interceptor
-import okhttp3.Response
-import javax.inject.Inject
-
-class TurnstileCookieInterceptor @Inject constructor(
-    private val turnstileManager: TurnstileManager,
-) : Interceptor {
-
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val original = chain.request()
-        val path = original.url.encodedPath
-
-        // matchDetails 엔드포인트만 Turnstile 쿠키 필요
-        if (path.contains("/api/matchDetails")) {
-            val cookie = turnstileManager.cfClearance.value
-            if (cookie != null) {
-                val request = original.newBuilder()
-                    .header("Cookie", "cf_clearance=$cookie")
-                    .build()
-                return chain.proceed(request)
+            tokenClient.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val body = response.body?.string()
+                    // 응답에서 토큰 추출 (실제 응답 형식에 맞게 파싱)
+                    _token.value = parseToken(body)
+                }
             }
         }
+    }
 
-        return chain.proceed(original)
+    /**
+     * 서버가 X-Token-Refresh 헤더를 반환한 경우 호출하여 토큰을 갱신한다.
+     * POST api/v1/token/refresh
+     */
+    fun refreshToken() {
+        runBlocking {
+            val currentToken = _token.value ?: return@runBlocking
+            val request = Request.Builder()
+                .url("$BASE_URL/token/refresh")
+                .header("Authorization", "Bearer $currentToken")
+                .post("{}".toRequestBody("application/json".toMediaType()))
+                .build()
+
+            tokenClient.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val body = response.body?.string()
+                    _token.value = parseToken(body)
+                }
+            }
+        }
+    }
+
+    fun isAuthenticated(): Boolean = _token.value != null
+
+    private fun parseToken(body: String?): String? {
+        // TODO: 실제 응답 JSON 형식에 맞게 파싱 구현
+        return body?.let {
+            try {
+                Json.parseToJsonElement(it)
+                    .toString()  // 실제 토큰 필드명에 맞게 수정
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 }
 ```
 
-#### 4. `NetworkModule.kt`의 `provideOkHttpClient` 수정
+> 💡 **Tip:** `TokenManager`는 `@Singleton`으로 선언되어 앱 전체에서 하나의 인스턴스를 공유합니다. 토큰 발급용 `tokenClient`는 `AuthInterceptor`를 포함하지 않는 별도의 `OkHttpClient`를 사용하여 순환 의존을 방지합니다.
 
-Step 8에서 만든 `NetworkModule.kt`의 `provideOkHttpClient` 함수에 `TurnstileCookieInterceptor`를 추가합니다.
+#### 2. `TokenInitializer.kt` — 앱 시작 시 토큰 초기화
+
+앱 시작 시 자동으로 토큰을 초기화하는 Initializer입니다. `FeetballApp`의 `onCreate()`에서 호출합니다.
+
+**파일 경로:** `core/core-network/src/main/kotlin/com/chase1st/feetballfootball/core/network/token/TokenInitializer.kt`
 
 ```kotlin
-@Provides
+package com.chase1st.feetballfootball.core.network.token
+
+import javax.inject.Inject
+import javax.inject.Singleton
+
 @Singleton
-fun provideOkHttpClient(
-    turnstileCookieInterceptor: TurnstileCookieInterceptor,
-): OkHttpClient =
-    OkHttpClient.Builder()
-        .addInterceptor(XMasInterceptor())
-        .addInterceptor(turnstileCookieInterceptor)
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
-        .build()
+class TokenInitializer @Inject constructor(
+    private val tokenManager: TokenManager,
+) {
+    fun initialize() {
+        tokenManager.initToken()
+    }
+}
 ```
 
-> 💡 **Tip:** Interceptor 순서가 중요합니다. `XMasInterceptor` → `TurnstileCookieInterceptor` → `HttpLoggingInterceptor` 순서로 추가합니다. 로깅 인터셉터가 마지막에 위치해야 최종 요청/응답 내용을 확인할 수 있습니다.
+#### 3. `FeetballApp.kt` 업데이트 — 토큰 초기화 호출
 
-#### 5. 검증 대기 패턴 (matchDetail 화면 진입 시)
+Step 10에서 생성하는 `FeetballApp.kt`에 `TokenInitializer`를 주입하고 `onCreate()`에서 호출합니다.
 
-matchDetail 화면 진입 시, `TurnstileManager.isAuthenticated()`가 `false`이면 WebView 기반 Turnstile 챌린지를 먼저 수행합니다. 인증 완료 후 matchDetails API를 호출합니다. 이 흐름은 feature-fixture-detail 모듈에서 구현합니다.
+```kotlin
+@HiltAndroidApp
+class FeetballApp : Application() {
+
+    @Inject
+    lateinit var tokenInitializer: TokenInitializer
+
+    override fun onCreate() {
+        super.onCreate()
+        tokenInitializer.initialize()
+    }
+}
+```
+
+> 💡 **Tip:** Hilt의 `@Inject` 필드 주입은 `super.onCreate()` 호출 시점에 완료됩니다. 따라서 `tokenInitializer.initialize()`를 `super.onCreate()` 이후에 호출해야 합니다. 토큰 발급은 네트워크 요청이므로 실제 프로덕션에서는 비동기로 처리하는 것이 좋습니다.
 
 ### ✅ 검증
-- [ ] `TurnstileManager.kt`가 `core-network`의 `turnstile` 패키지에 생성되었다
-- [ ] `TurnstileBridge.kt`가 `@JavascriptInterface` 어노테이션을 포함한다
-- [ ] `TurnstileCookieInterceptor.kt`가 `matchDetails` 경로를 체크한다
-- [ ] `NetworkModule`의 `provideOkHttpClient`에 `TurnstileCookieInterceptor`가 추가되었다
+- [ ] `TokenManager.kt`가 `core-network`의 `token` 패키지에 생성되었다
+- [ ] `TokenInitializer.kt`가 `@Singleton`으로 선언되어 있다
+- [ ] `TokenManager`가 `initToken()`과 `refreshToken()` 메서드를 포함한다
+- [ ] `FeetballApp`의 `onCreate()`에서 `tokenInitializer.initialize()`가 호출된다
 
 ---
 
@@ -1890,7 +1893,7 @@ object DatabaseModule {
 - [ ] Kotlin 2.3.10 / AGP 9.1.0 / Gradle 9.4.0
 - [ ] compileSdk 36, targetSdk 35
 - [ ] Hilt DI 그래프 런타임 동작 (FeetballApp + MainActivity)
-- [ ] Retrofit + OkHttp 설정 완료 (X-Mas 헤더 + Turnstile 인증)
+- [ ] Retrofit + OkHttp 설정 완료 (Bearer Token 인증)
 - [ ] FeetballTheme + 공통 컴포넌트 존재
 - [ ] Room Database 연결 (빈 상태)
 - [ ] 빈 Compose 화면 표시

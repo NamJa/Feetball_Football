@@ -24,7 +24,7 @@
 | core-model | `kotlinx-datetime` 적용, commonMain으로 이동 |
 | core-domain | UseCase + Repository 인터페이스, Hilt 어노테이션 제거 |
 | core-common | `Result` sealed interface + `expect/actual` Dispatcher |
-| core-network | Ktor 기반 `FotMobApiService` (Retrofit + API-Sports 대체) |
+| core-network | Ktor 기반 `SofaScoreApiService` (Retrofit + API-Sports 대체) |
 | core-data | Repository 구현체 + Mapper, `kotlinx-datetime` 적용 |
 | DI | Koin 모듈 (sharedModule + androidModule) |
 | iosApp | Xcode 프로젝트 기반, SwiftUI + shared framework 연동 |
@@ -80,23 +80,20 @@ class GetFixturesByDateUseCase(
 
 > ⚠️ **주의:** `@Inject`, `@HiltViewModel`, `@Module`, `@InstallIn` 등 모든 Hilt 어노테이션을 제거해야 합니다. ViewModel에서도 `@HiltViewModel` 대신 Koin의 `viewModelOf()`를 사용합니다.
 
-### 3. Retrofit → Ktor — HTTP 클라이언트 전환 (FotMob API)
+### 3. Retrofit → Ktor — HTTP 클라이언트 전환 (SofaScore API)
 
 ```
 // 변경 전 (Retrofit + API-Sports)
 @GET("fixtures")
 suspend fun getFixtures(@Query("date") date: String): ApiResponse<List<FixtureResponseDto>>
 
-// 변경 후 (Ktor + FotMob)
-suspend fun getMatches(date: String, timezone: String = "Asia/Seoul"): MatchesResponseDto {
-    return client.get("$baseUrl/api/data/matches") {
-        parameter("date", date)
-        parameter("timezone", timezone)
-    }.body()
+// 변경 후 (Ktor + SofaScore)
+suspend fun getEventsByDate(date: String): EventsResponseDto {
+    return client.get("$baseUrl/sport/football/$date/events/0").body()
 }
 ```
 
-> ⚠️ **주의:** Retrofit의 선언적 인터페이스 방식에서 Ktor의 명시적 함수 호출 방식으로 변경됩니다. 또한 API-Sports에서 FotMob API로 전환되므로 엔드포인트와 응답 형식이 모두 달라집니다. FotMob은 API 키가 불필요하며, X-Mas 헤더를 MD5 기반으로 동적 생성하는 것이 권장됩니다.
+> ⚠️ **주의:** Retrofit의 선언적 인터페이스 방식에서 Ktor의 명시적 함수 호출 방식으로 변경됩니다. 또한 API-Sports에서 SofaScore API로 전환되므로 엔드포인트와 응답 형식이 모두 달라집니다. SofaScore는 Bearer Token 인증을 사용하며, GET 엔드포인트는 인증 없이도 동작합니다.
 
 ---
 
@@ -505,28 +502,28 @@ actual val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
 ---
 
-## Step 6 — core-network → Ktor + FotMob API 전환
+## Step 6 — core-network → Ktor + SofaScore API 전환
 
 ### 목표
-> Retrofit 기반의 `FootballApiService`를 Ktor 기반의 `FotMobApiService`로 전환합니다. API-Sports에서 FotMob API로 변경하고, HttpClient를 `expect/actual` 패턴으로 플랫폼별 설정합니다.
+> Retrofit 기반의 `FootballApiService`를 Ktor 기반의 `SofaScoreApiService`로 전환합니다. API-Sports에서 SofaScore API로 변경하고, HttpClient를 `expect/actual` 패턴으로 플랫폼별 설정합니다.
 
 ### 작업 내용
 
-#### 6.1 FotMobApiService — Retrofit + API-Sports → Ktor + FotMob
+#### 6.1 SofaScoreApiService — Retrofit + API-Sports → Ktor + SofaScore
 
-**파일:** `shared/src/commonMain/kotlin/com/chase1st/feetballfootball/network/FotMobApiService.kt`
+**파일:** `shared/src/commonMain/kotlin/com/chase1st/feetballfootball/network/SofaScoreApiService.kt`
 
-**이유:** Retrofit은 JVM 전용입니다. Ktor는 KMP를 지원하는 HTTP 클라이언트로, Android(OkHttp 엔진)와 iOS(Darwin 엔진)에서 동일한 API를 사용할 수 있습니다. 동시에 API-Sports v3에서 FotMob API로 전환합니다. FotMob은 API 키가 불필요하고, X-Mas 헤더(MD5 기반)를 선택적으로 추가할 수 있습니다.
+**이유:** Retrofit은 JVM 전용입니다. Ktor는 KMP를 지원하는 HTTP 클라이언트로, Android(OkHttp 엔진)와 iOS(Darwin 엔진)에서 동일한 API를 사용할 수 있습니다. 동시에 API-Sports v3에서 SofaScore API로 전환합니다. SofaScore는 Bearer Token 인증을 사용하며, GET 엔드포인트는 인증 없이도 동작합니다.
 
 **변경 포인트:**
 - Retrofit의 `@GET`/`@Query` 어노테이션 → Ktor의 `client.get()` + `parameter()`
 - Retrofit 인터페이스 → 일반 Kotlin 클래스
-- Base URL: `https://v3.football.api-sports.io` → `https://www.fotmob.com`
-- 인증: `x-apisports-key` 헤더 제거 (FotMob은 API 키 불필요)
-- 엔드포인트: `/fixtures` → `/api/data/matches`, `/standings` → `/api/tltable` 등
+- Base URL: `https://v3.football.api-sports.io` → `https://api.sofascore.com/api/v1`
+- 인증: `x-apisports-key` 헤더 제거 (SofaScore GET 엔드포인트는 인증 불필요)
+- 엔드포인트: `/fixtures` → `/sport/football/{date}/events/{page}`, `/standings` → `/unique-tournament/{id}/season/{seasonId}/standings/total` 등
 
 ```kotlin
-// shared/src/commonMain/kotlin/.../network/FotMobApiService.kt
+// shared/src/commonMain/kotlin/.../network/SofaScoreApiService.kt
 package com.chase1st.feetballfootball.network
 
 import io.ktor.client.*
@@ -534,53 +531,46 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import com.chase1st.feetballfootball.network.dto.*
 
-class FotMobApiService(
+class SofaScoreApiService(
     private val client: HttpClient,
 ) {
-    private val baseUrl = "https://www.fotmob.com"
+    private val baseUrl = "https://api.sofascore.com/api/v1"
 
-    suspend fun getMatches(date: String, timezone: String = "Asia/Seoul"): MatchesResponseDto {
-        return client.get("$baseUrl/api/data/matches") {
-            parameter("date", date)
-            parameter("timezone", timezone)
-        }.body()
+    suspend fun getEventsByDate(date: String, page: Int = 0): EventsResponseDto {
+        return client.get("$baseUrl/sport/football/$date/events/$page").body()
     }
 
-    suspend fun getStandings(leagueId: Int): StandingResponseDto {
-        return client.get("$baseUrl/api/tltable") {
-            parameter("leagueId", leagueId)
-        }.body()
+    suspend fun getStandings(tournamentId: Int, seasonId: Int): StandingResponseDto {
+        return client.get("$baseUrl/unique-tournament/$tournamentId/season/$seasonId/standings/total").body()
     }
 
-    suspend fun getLeagueFixtures(leagueId: Int, season: String): LeagueResponseDto {
-        return client.get("$baseUrl/api/leagues") {
-            parameter("id", leagueId)
-            parameter("tab", "fixtures")
-            parameter("season", season)
-        }.body()
+    suspend fun getSeasons(tournamentId: Int): SeasonsResponseDto {
+        return client.get("$baseUrl/unique-tournament/$tournamentId/seasons").body()
     }
 
-    suspend fun getAllLeagues(): AllLeaguesResponseDto {
-        return client.get("$baseUrl/api/allLeagues").body()
+    suspend fun getTopPlayers(tournamentId: Int, seasonId: Int, type: String): TopPlayersResponseDto {
+        return client.get("$baseUrl/unique-tournament/$tournamentId/season/$seasonId/top-players/$type").body()
     }
 
-    suspend fun getMatchDetails(matchId: Int): MatchDetailsResponseDto {
-        // ⚠️ matchDetails 엔드포인트는 Turnstile 보호 — 별도 처리 필요
-        return client.get("$baseUrl/api/matchDetails") {
-            parameter("matchId", matchId)
-        }.body()
+    suspend fun getEventDetail(eventId: Int): EventDetailResponseDto {
+        return client.get("$baseUrl/event/$eventId").body()
     }
 
-    suspend fun getTeamFixtures(teamId: Int): TeamResponseDto {
-        return client.get("$baseUrl/api/teams") {
-            parameter("id", teamId)
-            parameter("tab", "fixtures")
-        }.body()
+    suspend fun getEventIncidents(eventId: Int): EventIncidentsResponseDto {
+        return client.get("$baseUrl/event/$eventId/incidents").body()
+    }
+
+    suspend fun getEventLineups(eventId: Int): EventLineupsResponseDto {
+        return client.get("$baseUrl/event/$eventId/lineups").body()
+    }
+
+    suspend fun getEventStatistics(eventId: Int): EventStatisticsResponseDto {
+        return client.get("$baseUrl/event/$eventId/statistics").body()
     }
 }
 ```
 
-> 💡 **Tip:** FotMob API는 API 키가 불필요합니다. X-Mas 헤더(MD5 기반 동적 생성)를 추가하면 요청 안정성이 높아집니다. `HttpClient`의 `defaultRequest {}` 또는 별도 Interceptor에서 X-Mas 헤더를 자동 생성하도록 구성하는 것을 권장합니다.
+> 💡 **Tip:** SofaScore API의 GET 엔드포인트는 인증 없이도 동작합니다. Bearer Token이 필요한 경우 `HttpClient`의 `defaultRequest {}` 블록에서 `header("Authorization", "Bearer $token")`으로 설정할 수 있습니다.
 
 #### 6.2 HttpClient 플랫폼별 설정 — expect/actual
 
@@ -607,17 +597,18 @@ fun createHttpClient(): HttpClient {
             })
         }
         install(DefaultRequest) {
-            // FotMob은 API 키 불필요
-            // X-Mas 헤더는 XMasInterceptor에서 MD5 기반으로 동적 생성
+            // SofaScore GET 엔드포인트는 인증 불필요
+            // Bearer Token이 필요한 경우 아래 주석 해제
+            // header("Authorization", "Bearer $apiToken")
         }
     }
 }
 ```
 
 ```kotlin
-// shared/src/commonMain/kotlin/.../network/XMasInterceptor.kt
-// X-Mas 헤더 생성 로직 (MD5 기반, 선택사항이나 권장)
-// 요청 시점에 동적으로 생성하여 헤더에 추가
+// shared/src/commonMain/kotlin/.../network/AuthInterceptor.kt
+// Bearer Token 인증이 필요한 경우 사용 (선택사항)
+// SofaScore GET 엔드포인트는 인증 없이 동작
 ```
 
 **파일:** `shared/src/androidMain/kotlin/com/chase1st/feetballfootball/network/HttpClientFactory.android.kt`
@@ -660,8 +651,8 @@ actual fun createPlatformHttpClient(): HttpClient {
 > ⚠️ **주의:** Android의 `OkHttp` 엔진은 `ktor-client-okhttp` 의존성이 필요하고, iOS의 `Darwin` 엔진은 `ktor-client-darwin` 의존성이 필요합니다. 각각 `androidMain`과 `iosMain`의 dependencies에만 추가합니다 (Step 2의 `build.gradle.kts` 참조).
 
 ### ✅ 검증
-- [ ] `FotMobApiService`가 Ktor 기반으로 변환됨
-- [ ] 6개 API 엔드포인트(getMatches, getStandings, getLeagueFixtures, getAllLeagues, getMatchDetails, getTeamFixtures)가 모두 구현됨
+- [ ] `SofaScoreApiService`가 Ktor 기반으로 변환됨
+- [ ] 8개 API 엔드포인트(getEventsByDate, getStandings, getSeasons, getTopPlayers, getEventDetail, getEventIncidents, getEventLineups, getEventStatistics)가 모두 구현됨
 - [ ] `createPlatformHttpClient()`의 `expect`/`actual`이 Android/iOS 모두 구현됨
 - [ ] `./gradlew :shared:build` 성공
 
@@ -692,7 +683,7 @@ import org.koin.dsl.module
 val sharedModule = module {
     // Network
     single { createHttpClient() }
-    single { FotMobApiService(get()) }  // FotMob은 API 키 불필요
+    single { SofaScoreApiService(get()) }  // SofaScore GET 엔드포인트는 인증 불필요
 
     // Repository
     singleOf(::FixtureRepositoryImpl) bind FixtureRepository::class
@@ -707,7 +698,7 @@ val sharedModule = module {
 }
 ```
 
-> 💡 **Tip:** Koin의 `singleOf(::FixtureRepositoryImpl) bind FixtureRepository::class`는 "FixtureRepositoryImpl을 싱글톤으로 생성하되, FixtureRepository 인터페이스로 요청하면 이 인스턴스를 반환하라"는 의미입니다. FotMob은 API 키가 불필요하므로 `FotMobApiService`에는 `HttpClient`만 주입합니다.
+> 💡 **Tip:** Koin의 `singleOf(::FixtureRepositoryImpl) bind FixtureRepository::class`는 "FixtureRepositoryImpl을 싱글톤으로 생성하되, FixtureRepository 인터페이스로 요청하면 이 인스턴스를 반환하라"는 의미입니다. SofaScore GET 엔드포인트는 인증 불필요하므로 `SofaScoreApiService`에는 `HttpClient`만 주입합니다.
 
 #### 7.2 Android 앱에서 Koin 초기화
 
@@ -728,7 +719,7 @@ class FeetballApp : Application() {
 }
 ```
 
-> ⚠️ **주의:** `@HiltAndroidApp` 어노테이션을 제거하면, 기존 Hilt로 주입받던 모든 곳에서 에러가 발생합니다. `@AndroidEntryPoint`, `@HiltViewModel` 등도 모두 제거하고 Koin 방식으로 교체해야 합니다. 이 작업은 한 번에 진행하는 것을 권장합니다. FotMob은 API 키가 불필요하므로 `properties(mapOf("apiKey" to ...))` 설정도 제거합니다.
+> ⚠️ **주의:** `@HiltAndroidApp` 어노테이션을 제거하면, 기존 Hilt로 주입받던 모든 곳에서 에러가 발생합니다. `@AndroidEntryPoint`, `@HiltViewModel` 등도 모두 제거하고 Koin 방식으로 교체해야 합니다. 이 작업은 한 번에 진행하는 것을 권장합니다. SofaScore GET 엔드포인트는 인증 불필요하므로 `properties(mapOf("apiKey" to ...))` 설정도 제거합니다.
 
 #### 7.3 ViewModel에서 Koin 사용
 
@@ -773,7 +764,7 @@ val androidModule = module {
 
 #### 8.1 날짜 처리 변환
 
-**이유:** `java.time.LocalDate.parse()`는 `DateTimeFormatter`를 인자로 받지만, `kotlinx.datetime.LocalDate.parse()`는 ISO 8601 형식(yyyy-MM-dd)을 기본 지원합니다. FotMob의 날짜 파라미터가 `YYYYMMDD` 형식이므로 Mapper에서 적절히 변환해야 합니다.
+**이유:** `java.time.LocalDate.parse()`는 `DateTimeFormatter`를 인자로 받지만, `kotlinx.datetime.LocalDate.parse()`는 ISO 8601 형식(yyyy-MM-dd)을 기본 지원합니다. SofaScore의 날짜 파라미터가 `yyyy-MM-dd` 형식이므로 `kotlinx.datetime.LocalDate.parse()`로 직접 파싱할 수 있습니다.
 
 ```kotlin
 // 변경 전
@@ -1001,7 +992,7 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 - [ ] core-model → commonMain 이동 (kotlinx-datetime 적용)
 - [ ] core-domain → commonMain 이동
 - [ ] core-common → commonMain 이동 (expect/actual Dispatcher)
-- [ ] core-network → Ktor + FotMob API 전환 (commonMain + androidMain/iosMain)
+- [ ] core-network → Ktor + SofaScore API 전환 (commonMain + androidMain/iosMain)
 - [ ] core-data → commonMain 이동
 - [ ] DI: Hilt → Koin 전환
 - [ ] `./gradlew :shared:build` 성공 (Android + iOS)
@@ -1021,8 +1012,8 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 #### Breaking Change 대응 확인
 - [ ] kotlinx-datetime 0.7.x — `kotlin.time.Clock` 사용 (`kotlinx.datetime.Clock` 아님)
 - [ ] Hilt → Koin — 모든 `@Inject`, `@HiltViewModel`, `@Module`, `@InstallIn` 제거 확인
-- [ ] Retrofit + API-Sports → Ktor + FotMob — 6개 API 엔드포인트 모두 변환 확인
-- [ ] `x-apisports-key` 헤더 제거, X-Mas 헤더 Interceptor 구성 확인
+- [ ] Retrofit + API-Sports → Ktor + SofaScore — 8개 API 엔드포인트 모두 변환 확인
+- [ ] `x-apisports-key` 헤더 제거, SofaScore Bearer Token 설정 확인 (GET은 인증 불필요)
 
 #### 선택사항
 - [ ] Compose Multiplatform 1.10.2 적용

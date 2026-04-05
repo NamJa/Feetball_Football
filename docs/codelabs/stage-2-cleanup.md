@@ -368,7 +368,7 @@ rm app/src/main/java/com/example/feetballfootball/viewModel/StandingViewModel.kt
 - `thread {}` 블록으로 비동기 처리 (Coroutines으로 대체)
 - 40+개의 모델 클래스가 flat한 패키지 구조
 
-새 `core-network` 모듈에서는 FotMob API(`https://www.fotmob.com/`) + Retrofit 3.0.0 + kotlinx.serialization + Coroutines로 재구성되었습니다. FotMob API는 별도의 API Key가 불필요하며, 선택적으로 `x-mas` 헤더를 동적 생성하여 전송합니다.
+새 `core-network` 모듈에서는 SofaScore API(`https://api.sofascore.com/api/v1/`) + Retrofit 3.0.0 + kotlinx.serialization + Coroutines로 재구성되었습니다. SofaScore API는 Bearer Token 인증을 사용하며, GET 엔드포인트는 인증 없이도 동작합니다.
 
 ### 작업 내용
 
