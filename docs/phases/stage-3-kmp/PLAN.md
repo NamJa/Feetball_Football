@@ -87,12 +87,12 @@ feetball-football/
 
 ```toml
 [versions]
-kotlin = "2.3.10"          # 기존 유지 (KMP 지원)
-ktor = "3.4.1"
-koin = "4.1.1"
-kotlinx-datetime = "0.7.1"    # 0.7.0에서 Instant/Clock이 kotlin.time으로 마이그레이션 — 코드 변경 필요
+kotlin = "2.3.20"          # Stage 1에서 이미 사용 중. KMP targets 그대로 유지
+ktor = "3.4.2"             # 3.4.0 (2026-01)의 후속 패치. 3.4.x 시리즈 안정성 개선 포함
+koin = "4.1.1"             # Koin BOM — KMP에서 DI 구성할 때 BOM 사용을 권장
+kotlinx-datetime = "0.7.1" # 0.7.0에서 Instant/Clock이 kotlinx.datetime → kotlin.time으로 마이그레이션 — Step 8 참조
 kotlinx-coroutines = "1.10.2"
-room = "2.8.4"             # Room KMP 지원 버전 (2.7.0부터 KMP 지원)
+room = "2.8.4"             # 2.7.0부터 KMP 지원. Room 3.0-alpha01(2026-03, androidx.room3:room3-*)에서 Kotlin-only 생성/coroutine-first API 예정
 
 [libraries]
 # Ktor (Retrofit 대체)
@@ -675,7 +675,7 @@ UI 레이어까지 공유하려면 Compose Multiplatform을 도입합니다. 이
 
 ```toml
 [versions]
-compose-multiplatform = "1.10.2"
+compose-multiplatform = "1.10.3"
 
 [plugins]
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
@@ -721,6 +721,6 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 
 ### 최종
 - [ ] kotlinx-datetime 0.7.x Breaking Change 대응 (Clock/Instant 패키지 변경)
-- [ ] Compose Multiplatform 1.10.2 적용
+- [ ] Compose Multiplatform 1.10.3 적용
 - [ ] Navigation 3 KMP 지원 평가 (1.1.0-beta01+)
 - [ ] `git commit -m "feat: KMP 전환 — shared 모듈 + Ktor + Koin + kotlinx-datetime"`

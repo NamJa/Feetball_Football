@@ -3,7 +3,7 @@
 > **목표:** UseCase, Repository, ViewModel, Compose UI에 대한 테스트 커버리지 확보
 > **선행 조건:** Stage 2 전체 완료 (모든 Slice + Navigation + Cleanup)
 > **Git 브랜치:** `feature/renewal-testing`
-> **테스트 프레임워크:** JUnit 5 + MockK + Turbine + Compose UI Test
+> **테스트 프레임워크:** JUnit Jupiter 6.0.3 + MockK + Turbine + Compose UI Test
 
 ---
 
@@ -13,15 +13,16 @@
 
 ```toml
 [versions]
-junit5 = "5.14.3"
+junit-jupiter = "6.0.3"          # JUnit 6 GA (2026-02-15). Jupiter API는 5.x 호환, JDK 17+ 필수
 mockk = "1.14.7"
 turbine = "1.2.1"
 coroutines-test = "1.10.2"
 
 [libraries]
-junit5-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
-junit5-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5" }
-junit5-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit5" }
+# JUnit 6: 좌표는 5.x와 동일 (org.junit.jupiter:*), BOM(`org.junit:junit-bom:6.0.3`) 사용도 가능
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter" }
+junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-jupiter" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
@@ -31,7 +32,7 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 
 ```kotlin
 // build-logic/convention/src/main/kotlin/AndroidTestConventionPlugin.kt
-// Stage 1에서 이미 생성됨 — JUnit 5 + MockK + Turbine + Coroutines Test 설정
+// Stage 1에서 이미 생성됨 — JUnit Jupiter (6.0.3) + MockK + Turbine + Coroutines Test 설정
 ```
 
 ---

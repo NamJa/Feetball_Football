@@ -45,11 +45,11 @@
 
 ### 목표
 
-> Navigation 3 라이브러리(1.0.1)가 프로젝트에 올바르게 선언되어 있는지 확인하고, 필요시 추가한다.
+> Navigation 3 라이브러리(1.1.0)가 프로젝트에 올바르게 선언되어 있는지 확인하고, 필요시 추가한다.
 
 ### 배경
 
-Navigation 3는 2025년 11월 stable 1.0.0이 출시되었으며, 최신 stable은 **1.0.1 (2026-02-11)** 입니다. Navigation 2.x와 근본적으로 다른 점은 **BackStack을 개발자가 직접 소유**한다는 것입니다. `NavController`가 내부적으로 상태를 관리하던 Navigation 2.x와 달리, Navigation 3에서는 `SnapshotStateList`로 BackStack을 직접 조작합니다.
+Navigation 3는 2025년 11월 stable 1.0.0이 출시되었으며, 2026-04-08 **1.1.0이 stable**로 승격되면서 Scene 기반 Shared Elements 기능이 정식 지원됩니다. Navigation 2.x와 근본적으로 다른 점은 **BackStack을 개발자가 직접 소유**한다는 것입니다. `NavController`가 내부적으로 상태를 관리하던 Navigation 2.x와 달리, Navigation 3에서는 `SnapshotStateList`로 BackStack을 직접 조작합니다.
 
 Navigation 3는 두 개의 아티팩트로 분리되어 있습니다:
 - `navigation3-runtime` — 핵심 런타임 (BackStack, Route 등)
@@ -63,7 +63,7 @@ Navigation 3는 두 개의 아티팩트로 분리되어 있습니다:
 
 ```toml
 [versions]
-navigation3 = "1.0.1"
+navigation3 = "1.1.0"            # 2026-04-08 stable 승격. Scene 기반 공유 요소(Shared Elements) 지원 추가
 
 [libraries]
 # Navigation 3는 runtime과 ui 두 개의 아티팩트로 분리
@@ -82,11 +82,11 @@ dependencies {
 }
 ```
 
-> 💡 **Tip:** Navigation 3 1.1.0-beta01 (2026-03-11)부터 KMP (JVM, Native, Web) 타겟도 지원합니다. Stage 3 KMP 전환 시 활용 가능하지만, 현 단계에서는 stable 1.0.1을 사용합니다.
+> 💡 **Tip:** Navigation 3는 1.1.0에서 stable로 승격되면서 KMP (JVM, Native, Web) 타겟을 포함한 Scene 기반 Shared Elements를 정식 지원합니다. 차기 1.2.0-alpha01도 이미 공개되어 있으나 본 단계에서는 stable 1.1.0을 사용합니다.
 
 ### ✅ 검증
 
-- [ ] `./gradlew dependencies --configuration debugRuntimeClasspath | grep navigation3` 실행 시 `navigation3-runtime:1.0.1`과 `navigation3-ui:1.0.1`이 출력됨
+- [ ] `./gradlew dependencies --configuration debugRuntimeClasspath | grep navigation3` 실행 시 `navigation3-runtime:1.1.0`과 `navigation3-ui:1.1.0`이 출력됨
 - [ ] Sync 에러 없음
 
 ---
@@ -577,7 +577,7 @@ fun FeetballApp() {
 - [ ] **Bottom Bar 숨김:** 상세 화면(FixtureDetail, LeagueStanding)에서 Bottom Bar 숨김
 - [ ] **탭 전환 시 스택 초기화:** 탭 전환 시 이전 탭의 BackStack이 초기화됨
 - [ ] **시스템 뒤로가기:** 시스템 뒤로가기 버튼이 BackStack을 따라 정상 동작
-- [ ] **의존성:** `navigation3-runtime` + `navigation3-ui` 1.0.1 사용 중
+- [ ] **의존성:** `navigation3-runtime` + `navigation3-ui` 1.1.0 사용 중
 - [ ] **빌드 성공:** `./gradlew assembleDebug` 에러 없음
 
 ### 커밋

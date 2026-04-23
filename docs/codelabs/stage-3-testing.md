@@ -46,15 +46,16 @@ Stage 1에서 이미 추가한 테스트 라이브러리 버전과 의존성이 
 
 ```toml
 [versions]
-junit5 = "5.14.3"
+junit-jupiter = "6.0.3"          # JUnit 6 GA (2026-02-15). Jupiter API는 5.x 호환, JDK 17+ 필수
 mockk = "1.14.7"
 turbine = "1.2.1"
 coroutines-test = "1.10.2"
 
 [libraries]
-junit5-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
-junit5-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5" }
-junit5-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit5" }
+# JUnit 6: 좌표는 5.x와 동일 (org.junit.jupiter:*), BOM(`org.junit:junit-bom:6.0.3`) 사용도 가능
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter" }
+junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit-jupiter" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
@@ -62,17 +63,17 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 
 **파일:** `build-logic/convention/src/main/kotlin/AndroidTestConventionPlugin.kt`
 
-Stage 1에서 이미 생성된 Convention Plugin입니다. `feetball.android.test` 플러그인을 적용하면 JUnit 5 + MockK + Turbine + Coroutines Test가 자동으로 설정됩니다.
+Stage 1에서 이미 생성된 Convention Plugin입니다. `feetball.android.test` 플러그인을 적용하면 JUnit Jupiter(6.0.3) + MockK + Turbine + Coroutines Test가 자동으로 설정됩니다.
 
 ```kotlin
 // build-logic/convention/src/main/kotlin/AndroidTestConventionPlugin.kt
-// Stage 1에서 이미 생성됨 — JUnit 5 + MockK + Turbine + Coroutines Test 설정
+// Stage 1에서 이미 생성됨 — JUnit Jupiter(6.0.3) + MockK + Turbine + Coroutines Test 설정
 ```
 
 > 💡 **Tip:** Convention Plugin 덕분에 각 모듈의 `build.gradle.kts`에서 테스트 의존성을 개별 선언할 필요가 없습니다. `plugins { id("feetball.android.test") }` 한 줄이면 충분합니다.
 
 ### ✅ 검증
-- [ ] `libs.versions.toml`에 junit5, mockk, turbine, coroutines-test 버전이 선언되어 있다
+- [ ] `libs.versions.toml`에 junit-jupiter(6.0.3), mockk, turbine, coroutines-test 버전이 선언되어 있다
 - [ ] `AndroidTestConventionPlugin.kt`이 존재하고 올바르게 등록되어 있다
 - [ ] 각 모듈의 `build.gradle.kts`에서 `feetball.android.test` 플러그인이 적용되어 있다
 

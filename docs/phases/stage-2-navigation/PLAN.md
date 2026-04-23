@@ -11,11 +11,11 @@
 
 ### libs.versions.toml
 
-Navigation 3는 2025년 11월 stable 1.0.0이 출시되었으며, 최신 stable은 1.0.1 (2026-02-11) 입니다.
+Navigation 3는 2025년 11월 stable 1.0.0이 출시되었으며, 2026-04-08 1.1.0이 stable로 승격되었습니다 (Scene 기반 Shared Elements 정식 지원).
 
 ```toml
 [versions]
-navigation3 = "1.0.1"
+navigation3 = "1.1.0"            # 2026-04-08 stable. Scene 기반 Shared Elements 지원
 
 [libraries]
 # Navigation 3는 runtime과 ui 두 개의 아티팩트로 분리
@@ -23,7 +23,7 @@ androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigat
 androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 ```
 
-> **참고:** Navigation 3 1.1.0-beta01 (2026-03-11)부터 KMP (JVM, Native, Web) 타겟도 지원합니다. Stage 3 KMP 전환 시 활용 가능합니다.
+> **참고:** 1.2.0-alpha01이 이미 공개되어 있으며 KMP (JVM, Native, Web) 타겟을 더 풍부하게 지원합니다. Stage 3 KMP 전환 시 활용 가능합니다.
 
 ---
 
@@ -288,5 +288,5 @@ fun FeetballApp() {
 - [ ] 탭 전환 시 이전 탭 상태 유지 (또는 초기화 — 정책 결정)
 - [ ] 시스템 뒤로가기 버튼 정상 동작
 - [ ] 딥링크 (필요시)
-- [ ] Navigation 3 의존성: `navigation3-runtime` + `navigation3-ui` 1.0.1
+- [ ] Navigation 3 의존성: `navigation3-runtime` + `navigation3-ui` 1.1.0
 - [ ] `git commit -m "feat: Navigation 3 통합 + Bottom Navigation"`

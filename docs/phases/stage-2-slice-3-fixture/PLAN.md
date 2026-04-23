@@ -527,7 +527,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel  // 1.3.0부터 신규 경로
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chase1st.feetballfootball.core.designsystem.component.ErrorContent
 import com.chase1st.feetballfootball.core.designsystem.component.FeetballLoadingIndicator

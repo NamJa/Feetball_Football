@@ -389,7 +389,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel  // 1.3.0부터 신규 경로
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chase1st.feetballfootball.core.designsystem.component.ErrorContent
 import com.chase1st.feetballfootball.core.designsystem.component.FeetballLoadingIndicator
